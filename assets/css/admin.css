@@ -1,0 +1,788 @@
+/* Persona Assistant: admin settings styling. */
+
+.persona-assistant-status {
+	margin: 16px 0 24px;
+	padding: 18px 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	max-width: 1040px;
+	border-left-width: 4px;
+}
+
+.persona-assistant-status--ok { border-left-color: #00a32a; }
+.persona-assistant-status--warn { border-left-color: #dba617; }
+.persona-assistant-status--info { border-left-color: #2271b1; }
+
+.persona-assistant-status-summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+}
+
+.persona-assistant-status-summary h2,
+.persona-assistant-status-summary p {
+	margin: 0;
+}
+
+.persona-assistant-status-summary p { margin-top: 4px; color: #50575e; }
+.persona-assistant-status-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.persona-assistant-status h2 {
+	margin-top: 0;
+}
+
+.persona-assistant-wrap { max-width: 1100px; }
+.persona-assistant-form { max-width: 1040px; }
+
+.persona-assistant-page-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	max-width: 1040px;
+	margin-bottom: 18px;
+}
+
+.persona-assistant-page-heading h1 { margin-bottom: 4px; }
+.persona-assistant-page-heading .button { margin-top: 10px; }
+.persona-assistant-nav { max-width: 1040px; margin-bottom: 20px; }
+.persona-assistant-setup-return { max-width: 1040px; margin: -8px 0 16px; }
+.persona-assistant-workspace { margin-top: 0; }
+
+.persona-assistant-onboarding {
+	max-width: 880px;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.persona-assistant-onboarding-hero {
+	padding: 28px 32px 24px;
+	background: linear-gradient(135deg, #f0f6fc 0%, #fff 68%);
+	border-bottom: 1px solid #dcdcde;
+}
+
+.persona-assistant-onboarding-hero h2 {
+	margin: 5px 0 8px;
+	font-size: 26px;
+	line-height: 1.25;
+}
+
+.persona-assistant-onboarding-hero > p {
+	max-width: 650px;
+	margin: 0;
+	color: #50575e;
+	font-size: 14px;
+}
+
+.persona-assistant-eyebrow {
+	color: #2271b1;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+}
+
+.persona-assistant-progress {
+	height: 8px;
+	margin-top: 22px;
+	overflow: hidden;
+	background: #dcdcde;
+	border-radius: 999px;
+}
+
+.persona-assistant-progress span {
+	display: block;
+	height: 100%;
+	background: #2271b1;
+	border-radius: inherit;
+	transition: width .2s ease;
+}
+
+.persona-assistant-onboarding-hero .persona-assistant-progress-label {
+	margin-top: 7px;
+	font-size: 12px;
+}
+
+.persona-assistant-task-list { padding: 8px 32px; }
+
+.persona-assistant-task {
+	display: grid;
+	grid-template-columns: 38px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 16px;
+	padding: 20px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.persona-assistant-task:last-child { border-bottom: 0; }
+.persona-assistant-task h3 { margin: 0 0 4px; font-size: 15px; }
+.persona-assistant-task h3 small {
+	margin-left: 5px;
+	color: #646970;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+}
+.persona-assistant-task p { margin: 0; color: #50575e; }
+
+.persona-assistant-task-state {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: 2px solid #8c8f94;
+	border-radius: 999px;
+	color: #50575e;
+	font-weight: 700;
+}
+
+.persona-assistant-task.is-complete .persona-assistant-task-state {
+	background: #00a32a;
+	border-color: #00a32a;
+	color: #fff;
+}
+
+.persona-assistant-task-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 14px;
+	margin-top: 8px;
+}
+
+.persona-assistant-setup-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 20px 32px 26px;
+	background: #f6f7f7;
+	border-top: 1px solid #dcdcde;
+}
+
+.persona-assistant-overview-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	max-width: 1040px;
+}
+
+.persona-assistant-overview-card {
+	padding: 22px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+}
+
+.persona-assistant-overview-card-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.persona-assistant-overview-card-head .dashicons {
+	width: 28px;
+	height: 28px;
+	color: #2271b1;
+	font-size: 28px;
+}
+
+.persona-assistant-overview-card h2 { margin: 18px 0 4px; }
+.persona-assistant-overview-card p { min-height: 38px; margin: 0 0 18px; color: #50575e; }
+
+.persona-assistant-overview-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	max-width: 1000px;
+	margin-top: 18px;
+	padding: 14px 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+}
+
+.persona-assistant-overview-footer p { margin: 0; }
+
+.persona-assistant-card {
+	margin: 18px 0;
+	padding: 24px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.persona-assistant-card > h2 { margin: 2px 0 4px; }
+
+.persona-assistant-choice-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin: 18px 0;
+}
+
+.persona-assistant-choice-grid--placement { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.persona-assistant-page-page {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid #dcdcde;
+}
+
+.persona-assistant-page-page h3 {
+	margin-top: 0;
+}
+
+.persona-assistant-page-page select {
+	min-width: min(100%, 360px);
+}
+
+.persona-assistant-choice {
+	display: flex;
+	gap: 12px;
+	padding: 16px;
+	border: 1px solid #c3c4c7;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.persona-assistant-choice:hover { border-color: #2271b1; }
+.persona-assistant-choice:has(input:checked) {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	background: #f0f6fc;
+}
+.persona-assistant-choice input { margin-top: 3px; }
+.persona-assistant-choice strong,
+.persona-assistant-choice small { display: block; }
+.persona-assistant-choice small { margin-top: 4px; color: #50575e; line-height: 1.4; }
+
+.persona-assistant-provider-section {
+	margin-top: 20px;
+	padding-top: 8px;
+	border-top: 1px solid #f0f0f1;
+}
+
+.persona-assistant-details { margin: 12px 0; }
+.persona-assistant-details summary { color: #2271b1; cursor: pointer; font-weight: 600; }
+.persona-assistant-details[open] summary { margin-bottom: 10px; }
+
+.persona-assistant-customize-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(320px, .8fr);
+	gap: 32px;
+}
+
+.persona-assistant-customize-grid--single { grid-template-columns: minmax(0, 760px); }
+
+.persona-assistant-preview-panel {
+	padding: 18px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	/* Follow the reader down the (long) field column; 46px clears the
+	   admin bar. align-self keeps the grid from stretching it full-height. */
+	position: sticky;
+	top: 46px;
+	align-self: start;
+}
+
+/*
+ * The Assistant Page is a page-design workflow, not a compact widget
+ * configurator. Flatten its control wrapper into the grid so the live preview
+ * can sit between the presets and the optional tuning disclosure, at the full
+ * available admin width.
+ */
+.persona-assistant-customize-grid--assistant {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0;
+}
+
+.persona-assistant-customize-grid--assistant > div:first-child {
+	display: contents;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-preview-panel {
+	order: 2;
+	position: static;
+	width: auto;
+	margin-top: 20px;
+	padding: 20px;
+	background: #eef0f2;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-tuning {
+	order: 3;
+	margin-top: 20px;
+	padding: 0;
+	background: #fff;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-tuning > summary {
+	padding: 16px 18px;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-tuning[open] {
+	padding-bottom: 12px;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-tuning[open] > summary {
+	margin-bottom: 0;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-tuning .form-table {
+	width: calc(100% - 36px);
+	margin: 12px 18px 0;
+}
+
+.persona-assistant-customize-grid--assistant .persona-assistant-page-welcome {
+	order: 1;
+}
+
+.persona-assistant-page-welcome > summary .persona-assistant-badge {
+	margin-left: 8px;
+}
+
+.persona-assistant-page-welcome-intro {
+	margin: 14px 18px 0;
+}
+
+.persona-assistant-subhead {
+	margin: 24px 0 0;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #dcdcde;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: #50575e;
+}
+.persona-assistant-subhead:first-of-type { margin-top: 0; }
+
+.persona-assistant-preset-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin: 14px 0 16px;
+}
+
+.persona-assistant-preset {
+	position: relative;
+	display: block;
+}
+
+.persona-assistant-preset input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.persona-assistant-preset span {
+	display: block;
+	min-height: 76px;
+	padding: 14px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.persona-assistant-preset:hover span { border-color: #2271b1; }
+.persona-assistant-preset input:checked + span {
+	border-color: #2271b1;
+	box-shadow: inset 0 0 0 1px #2271b1;
+	background: #f0f6fc;
+}
+.persona-assistant-preset input:focus-visible + span { box-shadow: inset 0 0 0 2px #2271b1; }
+.persona-assistant-preset strong,
+.persona-assistant-preset small { display: block; }
+.persona-assistant-preset small {
+	margin-top: 5px;
+	color: #50575e;
+	line-height: 1.35;
+}
+
+.persona-assistant-page-tuning {
+	margin: 12px 0 0;
+	padding: 12px 14px 4px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+}
+
+.persona-assistant-page-tuning > summary { margin-bottom: 4px; }
+.persona-assistant-page-tuning .form-table { margin-top: 0; }
+.persona-assistant-page-tuning .form-table th { width: 150px; }
+
+.persona-assistant-checkbox-stack {
+	display: grid;
+	gap: 8px;
+}
+
+.persona-assistant-checkbox-stack .description { margin-top: 2px; }
+
+/* Segmented control: a row of radio "chips". */
+.persona-assistant-segmented {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 0;
+	border: 1px solid #8c8f94;
+	border-radius: 6px;
+	overflow: hidden;
+}
+.persona-assistant-segment { display: inline-flex; }
+.persona-assistant-segment input { position: absolute; opacity: 0; pointer-events: none; }
+.persona-assistant-segment span {
+	display: block;
+	padding: 6px 14px;
+	border-left: 1px solid #dcdcde;
+	background: #fff;
+	color: #2c3338;
+	cursor: pointer;
+	line-height: 1.6;
+}
+.persona-assistant-segment:first-child span { border-left: 0; }
+.persona-assistant-segment:hover span { background: #f0f0f1; }
+.persona-assistant-segment input:checked + span { background: #2271b1; color: #fff; }
+.persona-assistant-segment input:focus-visible + span { box-shadow: inset 0 0 0 2px #2271b1; }
+
+/* Chat-icon control: swatch + summary + Change/Clear. The raw value field
+   stays visible only when admin.js could not enhance the control. */
+.persona-assistant-icon-field { display: flex; align-items: center; gap: 10px; }
+.persona-assistant-icon-field.is-enhanced .persona-assistant-icon-raw { display: none; }
+.persona-assistant-icon-swatch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	color: #1d2327;
+	font-size: 20px;
+	line-height: 1;
+}
+.persona-assistant-icon-swatch img { max-width: 100%; max-height: 100%; object-fit: cover; }
+.persona-assistant-icon-clear { text-decoration: none; }
+
+/* "Choose icon" modal: searchable grid over the widget's built-in registry. */
+/* The overlay/cells are hidden via the `hidden` attribute, which their own
+   display rules would otherwise override. */
+.persona-assistant-icon-modal-overlay[hidden],
+.persona-assistant-icon-modal-cell[hidden],
+.persona-assistant-icon-modal-pane[hidden] { display: none; }
+.persona-assistant-icon-modal-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 160000; /* above #adminmenuwrap and wp.media (159900) */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.55);
+}
+.persona-assistant-icon-modal {
+	display: flex;
+	flex-direction: column;
+	width: 560px;
+	max-width: calc(100vw - 40px);
+	max-height: min(620px, calc(100vh - 80px));
+	padding: 16px;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.25);
+}
+.persona-assistant-icon-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+.persona-assistant-icon-modal-close {
+	text-decoration: none;
+	color: #646970;
+	font-size: 16px;
+	cursor: pointer;
+}
+.persona-assistant-icon-modal-close:hover { color: #135e96; }
+.persona-assistant-icon-modal-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid #dcdcde;
+}
+.persona-assistant-icon-modal-tab {
+	padding: 6px 10px 8px;
+	background: none;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	color: #50575e;
+	cursor: pointer;
+}
+.persona-assistant-icon-modal-tab:hover { color: #135e96; }
+.persona-assistant-icon-modal-tab.is-active {
+	border-bottom-color: #2271b1;
+	color: #1d2327;
+	font-weight: 600;
+}
+.persona-assistant-icon-modal-pane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.persona-assistant-icon-modal-help { margin: 0 0 12px; color: #646970; }
+.persona-assistant-icon-modal-text-row { display: flex; gap: 8px; }
+.persona-assistant-icon-modal-text-row input { flex: 1 1 auto; }
+.persona-assistant-icon-modal-search { width: 100%; margin-bottom: 12px; }
+.persona-assistant-icon-modal-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 6px;
+	overflow-y: auto;
+	padding: 2px; /* keep focus rings from clipping against the scroll edge */
+}
+.persona-assistant-icon-modal-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 4px 8px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	color: #1d2327;
+	cursor: pointer;
+}
+.persona-assistant-icon-modal-cell:hover { border-color: #2271b1; background: #f6f7f7; }
+.persona-assistant-icon-modal-cell.is-selected { border-color: #2271b1; box-shadow: inset 0 0 0 1px #2271b1; background: #f0f6fc; }
+.persona-assistant-icon-modal-cell span {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 11px;
+	color: #646970;
+}
+.persona-assistant-icon-modal-empty { margin: 8px 0 0; color: #646970; }
+
+.persona-assistant-wp-ai-readiness { margin: 0 0 16px; }
+.persona-assistant-wp-ai-options { list-style: disc; margin: 0 0 8px 20px; }
+
+.persona-assistant-preview-subtitle { color: #646970; font-style: normal; }
+
+.persona-assistant-preview-panel h3 { margin-top: 0; }
+/* Fixed height: the widget mounts inline with launcher.fullHeight, filling
+   this box and scrolling the transcript inside it instead of growing. */
+.persona-assistant-preview-root { height: 560px; max-height: 75vh; background: #fff; border-radius: 6px; overflow: hidden; }
+
+.persona-assistant-preview-iframe {
+	display: block;
+	width: 100%;
+	height: min(72vh, 760px);
+	min-height: 620px;
+	max-height: none;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+	background: #fff;
+}
+
+.persona-assistant-save-bar {
+	position: sticky;
+	bottom: 0;
+	z-index: 5;
+	display: flex;
+	justify-content: flex-end;
+	padding: 12px 0;
+	background: rgba(240, 240, 241, .94);
+	backdrop-filter: blur(4px);
+}
+
+.persona-assistant-status-list {
+	margin: 0;
+}
+
+.persona-assistant-status-list li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.persona-assistant-status-list li:last-child {
+	border-bottom: 0;
+}
+
+.persona-assistant-status-label {
+	min-width: 180px;
+	font-weight: 600;
+}
+
+.persona-assistant-badge {
+	display: inline-block;
+	padding: 2px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	line-height: 1.6;
+	font-weight: 600;
+}
+
+.persona-assistant-badge--ok {
+	background: #e6f4ea;
+	color: #18794e;
+}
+
+.persona-assistant-badge--warn {
+	background: #fdf3e1;
+	color: #8a5300;
+}
+
+.persona-assistant-badge--off {
+	background: #f0f0f1;
+	color: #646970;
+}
+
+.persona-assistant-badge--info {
+	background: #e7eefc;
+	color: #1d4ed8;
+}
+
+.persona-assistant-origin {
+	font-size: 12px;
+	color: #646970;
+}
+
+.persona-assistant-disabled-option {
+	color: #646970;
+}
+
+.persona-assistant-pill {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background: #f0f0f1;
+	color: #646970;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.persona-assistant-block {
+	display: block;
+	margin: 4px 0 12px 24px;
+	max-width: 640px;
+}
+
+/* The Connect/Disconnect action needs air between it and the copy above it;
+   core's `.form-table td p` margins (which outrank a lone class) put the
+   button right under the text. */
+.form-table td p.persona-assistant-oauth-action,
+.persona-assistant-oauth-action {
+	margin: 14px 0 2px;
+}
+
+/* First-run onboarding shown in place of the agent select when the workspace
+   has zero agents. */
+.persona-assistant-agent-empty {
+	max-width: 560px;
+}
+
+.form-table td p.persona-assistant-agent-empty-action {
+	margin: 12px 0;
+}
+
+.persona-assistant-agent-empty-prompt {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.persona-assistant-agent-empty-prompt code {
+	padding: 6px 8px;
+	user-select: all;
+}
+
+.persona-assistant-inline-status {
+	margin-left: 8px;
+	color: #646970;
+}
+
+.persona-assistant-inline-status--error {
+	color: #b32d2e;
+}
+
+.persona-assistant-actions {
+	margin-top: 8px;
+	display: flex;
+	gap: 8px;
+}
+
+.persona-assistant-manual-help {
+	margin-top: 14px;
+	padding: 10px 14px;
+	background: #f0f6fc;
+	border-left: 4px solid #72aee6;
+}
+
+.persona-assistant-cost-warning { margin: 12px 0 0 !important; }
+
+/* "Previewing unsaved changes" hint under the live preview heading. */
+.persona-assistant-preview-note {
+	color: #996800;
+	font-style: italic;
+}
+.persona-assistant-preview-note[hidden] { display: none; }
+
+@media (max-width: 782px) {
+	.persona-assistant-page-heading,
+	.persona-assistant-overview-footer { align-items: flex-start; flex-direction: column; }
+	.persona-assistant-task { grid-template-columns: 36px minmax(0, 1fr); }
+	.persona-assistant-task > .button { grid-column: 2; justify-self: start; }
+	.persona-assistant-task-list,
+	.persona-assistant-onboarding-hero,
+	.persona-assistant-setup-actions { padding-left: 20px; padding-right: 20px; }
+	.persona-assistant-overview-grid { grid-template-columns: 1fr; }
+	.persona-assistant-status-summary { align-items: flex-start; flex-direction: column; }
+	.persona-assistant-choice-grid,
+	.persona-assistant-choice-grid--placement,
+	.persona-assistant-customize-grid,
+	.persona-assistant-preset-grid { grid-template-columns: 1fr; }
+	.persona-assistant-preview-iframe {
+		height: 620px;
+		min-height: 0;
+	}
+	.persona-assistant-card { padding: 18px; }
+}
+
+/* Behavior settings gated on Runtype mode (AI activity, page tools):
+   breathing room between stacked settings, and a greyed-out state when the
+   resolved mode isn't Runtype (the checkboxes are also `disabled`; the
+   "requires Runtype" note stays at full strength). */
+.persona-assistant-gated-setting + .persona-assistant-gated-setting {
+	margin-top: 16px;
+}
+.persona-assistant-needs-runtype .persona-assistant-gated-setting {
+	opacity: 0.55;
+}
+/* Two classes so this outranks wp-admin's `.form-table td p` margin reset. */
+.persona-assistant-needs-runtype .persona-assistant-requires-note {
+	margin: 0 0 14px;
+}
+
+/* Editor placeholder for the block. */
+.persona-assistant-block-placeholder {
+	padding: 16px;
+	border: 1px dashed #c3c4c7;
+	border-radius: 6px;
+	color: #646970;
+	background: #f6f7f7;
+}

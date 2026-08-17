@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "persona-assistant/widget",
+	"title": "Persona Assistant",
+	"category": "widgets",
+	"icon": "format-chat",
+	"description": "Embed the Persona assistant at this location.",
+	"textdomain": "persona-assistant",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"attributes": {
+		"agentId": { "type": "string", "default": "" },
+		"launcher": { "type": "boolean", "default": false }
+	},
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"customClassName": false
+	}
+}

@@ -1,0 +1,3 @@
+var u=/\s/;function g(n,e,t){if(t==="input-start")return e===0;let r=e>0?n[e-1]:"";return t==="line-start"?r===""||r===`
+`:r===""||u.test(r)}function l(n,e,t="@",r="anywhere",o=!1){if(!t||e<=0||e>n.length)return null;let i=e-1;for(;i>=0;){let s=n[i];if(s===t)return g(n,i,r)?{triggerIndex:i,query:n.slice(i+1,e)}:null;if(s===`
+`||s==="\uFFFC"||!o&&u.test(s))return null;i--}return null}function c(n,e,t){for(let r of t){let o=l(n,e,r.trigger,r.position??"anywhere",r.allowSpaces??!1);if(o)return{channel:r,match:o}}return null}function a(n){return n?n!=="insertFromPaste"&&n!=="insertFromDrop":!0}function f(n,e,t){return{value:n.slice(0,e.triggerIndex)+n.slice(t),caret:e.triggerIndex}}export{c as a,a as b,f as c};

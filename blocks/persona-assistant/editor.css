@@ -1,0 +1,37 @@
+.persona-assistant-editor-preview {
+	display: flex;
+	min-height: 220px;
+	padding: 28px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 14px;
+	text-align: center;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-top-width: 4px;
+	border-radius: 8px;
+}
+
+.persona-assistant-editor-preview > .dashicons {
+	font-size: 34px;
+	width: 34px;
+	height: 34px;
+}
+
+.persona-assistant-editor-input {
+	box-sizing: border-box;
+	width: min(360px, 90%);
+	padding: 10px 14px;
+	color: #646970;
+	text-align: left;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+}
+
+.persona-assistant-editor-warning {
+	margin: 4px 0 0;
+	padding: 8px 12px;
+	background: #fcf0f1;
+	border-left: 4px solid #d63638;
+}

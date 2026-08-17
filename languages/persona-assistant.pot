@@ -1,0 +1,2230 @@
+# Copyright (C) 2026 Runtype
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Persona Assistant 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/persona-assistant\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-06T20:35:50+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: persona-assistant\n"
+
+#. Plugin Name of the plugin
+#: persona-assistant.php
+#: includes/class-persona-assistant-settings.php:59
+#: includes/class-persona-assistant-settings.php:60
+#: includes/class-persona-assistant-settings.php:1323
+#: blocks/persona-assistant/index.js:40
+msgid "Persona Assistant"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: persona-assistant.php
+msgid "https://github.com/runtypelabs/persona-wordpress-plugin"
+msgstr ""
+
+#. Description of the plugin
+#: persona-assistant.php
+msgid "Add a customizable AI assistant to your site."
+msgstr ""
+
+#. Author of the plugin
+#: persona-assistant.php
+#: includes/class-persona-assistant-settings.php:1510
+#: includes/class-persona-assistant-settings.php:1615
+#: includes/class-persona-assistant-settings.php:1817
+msgid "Runtype"
+msgstr ""
+
+#. Author URI of the plugin
+#: persona-assistant.php
+msgid "https://runtype.com"
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:96
+#: includes/class-persona-assistant-ai.php:122
+msgid "Empty prompt."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:107
+#: includes/class-persona-assistant-ai.php:148
+#: includes/class-persona-assistant-ai.php:450
+#: includes/class-persona-assistant-ai.php:501
+#: includes/class-persona-assistant-rest.php:181
+msgid "No built-in AI is configured."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:165
+msgid "The AI returned an unsupported result."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:190
+#: includes/class-persona-assistant-ai.php:475
+#: includes/class-persona-assistant-ai.php:520
+msgid "The AI returned no text."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:195
+msgid "The AI requested a tool that is not enabled."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:218
+msgid "I used the selected WordPress Ability."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:226
+msgid "The assistant reached the tool-turn limit."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:342
+msgid "Open Connectors settings"
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:352
+msgid "Open AI Services settings"
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:392
+msgid "Provider"
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:420
+msgid "AI service"
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:455
+msgid "No built-in AI service is available."
+msgstr ""
+
+#: includes/class-persona-assistant-ai.php:468
+msgid "The AI service cannot generate text."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:93
+msgid "No Runtype API key is configured."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:104
+msgid "The selected source does not mint client tokens."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:126
+msgid "Login with Runtype is not connected yet."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:144
+#: includes/class-persona-assistant-credential.php:276
+msgid "Login with Runtype needs to be reconnected."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:204
+msgid "A Runtype login refresh is already in progress. Please try again in a moment."
+msgstr ""
+
+#: includes/class-persona-assistant-credential.php:239
+msgid "Runtype did not return a refreshed access token."
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:264
+msgid "Assistant unavailable"
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:265
+msgid "The assistant is not connected yet. Please try again later."
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:281
+msgid "Persona Assistant already appears on this page. Only the first instance is rendered."
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:319
+msgid "The Persona Assistant site-wide launcher is already enabled, so this shortcode is not rendered."
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:322
+#: includes/class-persona-assistant-frontend.php:352
+msgid "Persona Assistant is not published. Choose block or shortcode placement in Persona Assistant settings."
+msgstr ""
+
+#: includes/class-persona-assistant-frontend.php:349
+msgid "The Persona Assistant site-wide launcher is already enabled, so this block is not rendered."
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:112
+#: includes/class-persona-assistant-settings.php:373
+#: includes/class-persona-assistant-settings.php:773
+#: includes/class-persona-assistant-settings.php:803
+#: includes/class-persona-assistant-settings.php:855
+#: includes/class-persona-assistant-settings.php:948
+#: includes/class-persona-assistant-settings.php:1187
+msgid "Permission denied."
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:121
+msgid "The selected assistant Page already exists."
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:129
+#: templates/fullscreen-assistant.php:62
+msgid "Assistant"
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:130
+msgid "This page is powered by Persona Assistant while the plugin is active."
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:139
+msgid "The assistant Page could not be created. Please create a Page manually and select it here."
+msgstr ""
+
+#: includes/class-persona-assistant-fullscreen.php:146
+msgid "The full-screen assistant Page was created and published."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:149
+msgid "Account conversation history is not available."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:185
+msgid "Loading conversations…"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:186
+msgid "Conversation history is unavailable."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:187
+#: includes/class-persona-assistant-history.php:220
+#: includes/class-persona-assistant-history.php:271
+#: includes/class-persona-assistant-history.php:307
+#: templates/fullscreen-assistant.php:35
+msgid "New conversation"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:188
+msgid "Delete this conversation?"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:189
+msgid "Delete all saved conversations? This cannot be undone."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:190
+msgid "Conversation history request failed."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:245
+msgid "You have reached the saved conversation limit. Delete an older conversation and try again."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:265
+msgid "The conversation could not be created."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:284
+#: includes/class-persona-assistant-history.php:320
+#: includes/class-persona-assistant-history.php:334
+msgid "Conversation not found."
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:462
+#: includes/class-persona-assistant-history.php:506
+#: includes/class-persona-assistant-history.php:517
+msgid "Persona Assistant conversation history"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:493
+msgid "Conversation ID"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:494
+msgid "Title"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:495
+msgid "Created"
+msgstr ""
+
+#: includes/class-persona-assistant-history.php:496
+msgid "Last updated"
+msgstr ""
+
+#. translators: 1: message number, 2: role.
+#: includes/class-persona-assistant-history.php:500
+#, php-format
+msgid "Message %1$d (%2$s)"
+msgstr ""
+
+#: includes/class-persona-assistant-plugin.php:133
+msgid "Settings"
+msgstr ""
+
+#: includes/class-persona-assistant-plugin.php:149
+#: blocks/persona-assistant/index.js:44
+msgid "Use the default agent"
+msgstr ""
+
+#. translators: %s: configured Runtype agent identifier.
+#: includes/class-persona-assistant-plugin.php:169
+#, php-format
+msgid "Configured agent (%s)"
+msgstr ""
+
+#: includes/class-persona-assistant-plugin.php:182
+#: includes/class-persona-assistant-settings.php:327
+#: includes/class-persona-assistant-settings.php:2531
+#: includes/class-persona-assistant-settings.php:2847
+#: includes/helpers.php:497
+#: blocks/persona-assistant/index.js:65
+msgid "Hello 👋"
+msgstr ""
+
+#: includes/class-persona-assistant-plugin.php:183
+#: includes/class-persona-assistant-settings.php:329
+#: includes/class-persona-assistant-settings.php:2579
+#: includes/class-persona-assistant-settings.php:2909
+#: includes/helpers.php:499
+#: blocks/persona-assistant/index.js:66
+msgid "How can I help..."
+msgstr ""
+
+#: includes/class-persona-assistant-privacy.php:26
+msgid "When visitors use the assistant, their messages and any files they attach are sent to the AI service selected by the site owner. Persona Assistant itself does not collect telemetry."
+msgstr ""
+
+#: includes/class-persona-assistant-privacy.php:27
+msgid "In Runtype mode, messages, attachments, page context, and tool results may be sent to Runtype and its configured AI providers. In WordPress AI mode, that content is sent through the WordPress AI Client to the connector selected in WordPress. Retention and processing depend on those services and the site owner's configuration."
+msgstr ""
+
+#: includes/class-persona-assistant-privacy.php:28
+msgid "Depending on the site configuration, text-only conversation history may be kept in session storage for the current tab, in local storage on the visitor's device, or (only for logged-in WordPress AI users who are offered account history) in dedicated WordPress database tables. Browser and account history exclude attachments, inline file data, reasoning, tool calls, tool results, artifacts, and execution metadata."
+msgstr ""
+
+#: includes/class-persona-assistant-privacy.php:29
+msgid "Account history is private to its WordPress user, follows the retention period selected by the site owner, and is included in WordPress personal-data export and erasure tools. Runtype session transcripts are not duplicated in WordPress; Runtype retention settings apply to them."
+msgstr ""
+
+#. translators: 1: privacy URL, 2: terms URL.
+#: includes/class-persona-assistant-privacy.php:32
+#, php-format
+msgid "Runtype service information: <a href=\"%1$s\">Privacy Policy</a> and <a href=\"%2$s\">Terms of Service</a>."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:127
+msgid "Please sign in to use chat."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:154
+msgid "Too many chat messages. Please wait a minute and try again."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:292
+msgid "The conversation text is too long. Start a new conversation or shorten the message."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:298
+msgid "File attachments are not enabled."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:301
+msgid "Too many attached files."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:306
+msgid "An attached file is invalid."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:311
+msgid "That file type is not allowed."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:314
+msgid "An attached file is too large."
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:320
+msgid "attachment"
+msgstr ""
+
+#: includes/class-persona-assistant-rest.php:330
+msgid "No message to respond to."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-persona-assistant-runtype.php:261
+#, php-format
+msgid "Runtype API request failed (HTTP %d)."
+msgstr ""
+
+#: includes/class-persona-assistant-runtype.php:274
+msgid "No allowed origin to scope the token to."
+msgstr ""
+
+#: includes/class-persona-assistant-runtype.php:279
+msgid "Choose an agent before connecting."
+msgstr ""
+
+#: includes/class-persona-assistant-runtype.php:302
+msgid "Runtype did not return a client token."
+msgstr ""
+
+#: includes/class-persona-assistant-runtype.php:357
+msgid "No client-token id to revoke."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:206
+msgid "This is an appearance preview. Connect an AI to enable live responses."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:296
+#: includes/class-persona-assistant-settings.php:308
+msgid "Choose a chat icon"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:297
+msgid "Use this image"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:299
+msgid "Loading…"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:300
+#: includes/class-persona-assistant-settings.php:1925
+msgid "Refresh"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:301
+msgid "No agents were returned."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:302
+msgid "Copied"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:303
+msgid "Could not reach Runtype. Check the connection and try again."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:304
+msgid "— Select —"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:305
+msgid "Agents loaded. Choose one below, then save."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:306
+msgid "Clear chat"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:307
+#: includes/helpers.php:551
+msgid "Dismiss message"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:309
+msgid "Search icons…"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:310
+msgid "No icons match your search."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:311
+msgid "Close"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:312
+msgid "Icons"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:313
+msgid "Media Library"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:314
+msgid "Emoji or URL"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:315
+msgid "Use any image from your Media Library."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:316
+msgid "Browse Media Library…"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:317
+msgid "An emoji or short text, or the URL of an image."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:318
+msgid "Apply"
+msgstr ""
+
+#. translators: %s: built-in icon name.
+#: includes/class-persona-assistant-settings.php:320
+#, php-format
+msgid "%s (built-in icon)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:321
+msgid "Custom image"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:322
+msgid "Emoji or text"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:323
+msgid "Site Icon (default)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:324
+msgid "Widget default"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:328
+#: includes/class-persona-assistant-settings.php:2258
+#: includes/class-persona-assistant-settings.php:2834
+#: includes/helpers.php:498
+msgid "Ask anything about your account or products."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:330
+#: includes/class-persona-assistant-settings.php:2527
+#: includes/helpers.php:500
+msgid "Here to help you get answers fast"
+msgstr ""
+
+#. translators: %s: contrast ratio.
+#: includes/class-persona-assistant-settings.php:333
+#, php-format
+msgid "Good contrast with white text (%s:1)."
+msgstr ""
+
+#. translators: %s: contrast ratio.
+#: includes/class-persona-assistant-settings.php:335
+#, php-format
+msgid "Low contrast with white text (%s:1). Choose a darker accent."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:379
+msgid "Invalid preview settings."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:467
+msgid "Choose an existing WordPress Page for the full-screen assistant."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:667
+msgid "Enter a Runtype client token to finish connecting."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:689
+msgid "Choose an agent to connect Runtype."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/class-persona-assistant-settings.php:736
+#, php-format
+msgid "Could not connect to Runtype: %s"
+msgstr ""
+
+#. translators: %s: site origin.
+#: includes/class-persona-assistant-settings.php:759
+#, php-format
+msgid "Connected to Runtype. Minted a client token scoped to %s."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:838
+msgid "Disconnected from Runtype."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:961
+msgid "Login with Runtype requires the WordPress admin to be on the same origin as your site address. Connect manually with a client token instead."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:970
+msgid "Login with Runtype requires your site to be served over HTTPS. Connect manually with a client token instead."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/class-persona-assistant-settings.php:984
+#, php-format
+msgid "Could not start Login with Runtype: %s"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:994
+msgid "Runtype did not return a verification challenge."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1015
+msgid "the site could not be verified."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/class-persona-assistant-settings.php:1020
+#, php-format
+msgid "Site verification failed: %s Your site must be publicly reachable over HTTPS. If it is not, connect manually with a client token below instead."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1106
+msgid "Login with Runtype did not complete. Please try connecting again."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1111
+msgid "Your Login with Runtype session expired. Please try connecting again."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1116
+msgid "Login with Runtype could not be verified (state mismatch). Please try again."
+msgstr ""
+
+#. translators: %s: error detail.
+#: includes/class-persona-assistant-settings.php:1129
+#, php-format
+msgid "Could not finish Login with Runtype: %s"
+msgstr ""
+
+#. translators: %s: Runtype organization name.
+#: includes/class-persona-assistant-settings.php:1168
+#, php-format
+msgid "Connected to %s on Runtype."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1169
+#: includes/class-persona-assistant-settings.php:2024
+msgid "Connected to Runtype."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1216
+msgid "Disconnected Login with Runtype."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1266
+msgid "Persona Assistant is ready to set up."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1267
+msgid "Connect an AI, customize the chat, and choose where to publish it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1269
+msgid "Start setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1282
+msgid "Persona Assistant is configured to appear on the site, but no AI connection is ready. Connect Runtype or configure WordPress AI."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1284
+msgid "Configure Persona Assistant"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1324
+msgid "Connect once, then manage each chat surface in its own focused workspace."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1327
+msgid "Setup checklist"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1336
+msgid "Back to setup checklist"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1352
+msgid "Overview"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1353
+#: includes/class-persona-assistant-settings.php:1395
+#: includes/class-persona-assistant-settings.php:1522
+msgid "Connection"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1354
+#: includes/class-persona-assistant-settings.php:1401
+#: includes/class-persona-assistant-settings.php:1552
+msgid "Brand & Copy"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1355
+#: includes/class-persona-assistant-settings.php:1405
+#: includes/class-persona-assistant-settings.php:1532
+msgid "Launcher"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1356
+#: includes/class-persona-assistant-settings.php:1410
+#: includes/class-persona-assistant-settings.php:1542
+#: includes/class-persona-assistant-settings.php:1766
+msgid "Assistant Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1357
+#: includes/class-persona-assistant-settings.php:1415
+#: includes/class-persona-assistant-settings.php:2092
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1360
+msgid "Persona Assistant settings"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1396
+msgid "Choose the AI service and assistant that should answer your visitors."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1402
+msgid "These shared colors and words are used by both the launcher and the assistant Page."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1406
+msgid "Control where the floating chat appears and how visitors open it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1411
+msgid "Choose the WordPress Page and design its full-screen conversation experience."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1416
+msgid "Optional reasoning visibility and site tool integrations."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1420
+msgid "Save changes"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1441
+msgid "Guided setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1442
+msgid "Review your Persona Assistant setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1442
+msgid "Set up Persona Assistant"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1443
+msgid "Complete the essentials first. Appearance controls stay out of the way until you choose a surface to customize."
+msgstr ""
+
+#. translators: 1: completed setup tasks, 2: total setup tasks.
+#: includes/class-persona-assistant-settings.php:1444
+#, php-format
+msgid "%1$d of %2$d setup tasks complete"
+msgstr ""
+
+#. translators: 1: completed essential tasks, 2: total essential tasks.
+#: includes/class-persona-assistant-settings.php:1447
+#, php-format
+msgid "%1$d of %2$d essential tasks complete"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1454
+msgid "Connect an AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1455
+msgid "Your assistant is connected and ready to answer."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1455
+msgid "Choose Runtype or your WordPress AI provider, then select an assistant."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1457
+msgid "Review connection"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1457
+msgid "Connect AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1463
+msgid "Choose where chat appears"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1464
+msgid "At least one visitor-facing surface is configured."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1464
+msgid "Enable a floating launcher, create an assistant Page, or use manual embeds."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1466
+msgid "Configure launcher"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1467
+msgid "Configure assistant Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1475
+msgid "Make it yours"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1475
+msgid "Optional"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1476
+msgid "Adjust shared colors and copy now, or return to them whenever you want."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1478
+#: includes/class-persona-assistant-settings.php:1554
+msgid "Edit brand & copy"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1486
+msgid "Finish setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1488
+msgid "Skip guided setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1491
+msgid "Return to overview"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1510
+#: includes/class-persona-assistant-settings.php:1820
+msgid "WordPress AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1510
+#: includes/class-persona-assistant-settings.php:1677
+msgid "Not connected"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1513
+msgid "Setup complete. You can return to these workspaces whenever you need to make a change."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1520
+msgid "Ready"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1520
+msgid "Needs setup"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1524
+msgid "Manage connection"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1530
+msgid "Live"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1530
+#: includes/class-persona-assistant-settings.php:1540
+msgid "Off"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1533
+msgid "Floating chat is shown across the site."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1533
+msgid "The site-wide floating launcher is disabled."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1534
+msgid "Customize launcher"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1540
+msgid "Configured"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1543
+msgid "No full-screen assistant Page is selected."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1544
+msgid "Customize assistant Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1550
+msgid "Shared"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1553
+msgid "Shared colors, greeting, placeholder, and suggested prompts."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1558
+msgid "Manual embeds"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1558
+msgid "or the Persona Assistant block."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1562
+msgid "Run setup checklist again"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1590
+msgid "Finish connecting an AI to preview or publish chat."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1593
+msgid "Chat is live site-wide and the full-screen assistant Page is configured."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1596
+msgid "Chat is live site-wide."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1599
+msgid "Chat is ready for embeds and the full-screen assistant Page is configured."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1602
+msgid "Chat is ready for a block or shortcode."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1606
+msgid "The full-screen assistant Page is live."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1607
+msgid "The full-screen assistant Page is configured but not published."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1610
+msgid "Chat is connected but not published."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1616
+msgid "WordPress built-in AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1617
+msgid "Disabled"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1620
+msgid "No AI connection is ready."
+msgstr ""
+
+#. translators: %s: resolved AI provider name.
+#: includes/class-persona-assistant-settings.php:1622
+#, php-format
+msgid "Powered by %s."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1631
+msgid "Preview assistant"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1633
+msgid "View assistant"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1633
+#: includes/class-persona-assistant-settings.php:1635
+#: includes/class-persona-assistant-settings.php:1782
+msgid "(opens in a new tab)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1635
+msgid "View site"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1639
+msgid "Connection details"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1642
+msgid "Resolved mode"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1649
+msgid "Runtype client token"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1657
+msgid "None"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1662
+msgid "Credential source"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1667
+#: includes/class-persona-assistant-settings.php:3116
+msgid "Login with Runtype"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1670
+msgid "Reconnect required"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1673
+msgid "Connected"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1683
+msgid "Built-in AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1686
+msgid "Detected"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1688
+msgid "Not detected"
+msgstr ""
+
+#. translators: %s: the words "Surface → WebMCP" naming the Runtype dashboard tab.
+#: includes/class-persona-assistant-settings.php:1701
+#, php-format
+msgid "Page tools (WebMCP) are on. For the assistant to use them, WebMCP must also be enabled on this chat surface in your Runtype dashboard (%s); otherwise Runtype rejects the tools."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1702
+msgid "Surface → WebMCP"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1731
+#: includes/class-persona-assistant-settings.php:1742
+msgid "— No full-screen assistant Page —"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1747
+msgid "Publish"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1750
+msgid "Publishing mode"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1752
+msgid "Floating button on every page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1752
+msgid "Publish a floating launcher site-wide."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1753
+msgid "Block or shortcode only"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1753
+msgid "Place chat exactly where you want it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1754
+msgid "No launcher or embeds"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1754
+msgid "Keep the connection without a site-wide launcher, block, or shortcode."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1757
+msgid "Add the Persona Assistant block in the editor, or use:"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1763
+msgid "WordPress Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1764
+msgid "Turn any WordPress Page into a full-height assistant. This remains independent of the launcher."
+msgstr ""
+
+#. translators: %s: WordPress Page status.
+#: includes/class-persona-assistant-settings.php:1778
+#, php-format
+msgid "Selected Page status: %s."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1782
+msgid "View"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1785
+msgid "Edit Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1790
+msgid "The previously selected Page is missing or in the Trash. Choose another Page or create a new one."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1792
+msgid "Create and publish assistant Page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1794
+msgid "Selecting no Page disables this surface without deleting or changing the Page itself."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1817
+msgid "Use an agent on Runtype, with over 200 built-in models and tools."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1822
+msgid "Use your site's connected AI. Already set up, no extra account needed."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1823
+msgid "Use a provider already connected to WordPress."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1866
+#: includes/class-persona-assistant-settings.php:1892
+msgid "Connect Runtype"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1868
+msgid "Runtype is connected in code for this site (via wp-config.php), so there is nothing to configure here."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1870
+msgid "The agent is also set in code."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1895
+#: includes/class-persona-assistant-settings.php:2057
+msgid "Connect with Runtype"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1902
+msgid "Using the Runtype API key defined in wp-config.php. Agents are loaded with that key below."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1903
+msgid "Using the Runtype API key saved by an earlier version of this plugin. Agents are loaded with that key below. Disconnecting removes it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1909
+msgid "Login with Runtype needs your site to be publicly reachable over HTTPS, on the same origin as the WordPress admin, so Runtype can verify you control it. That is not the case here, so connect manually with a client token below instead."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1919
+#: includes/class-persona-assistant-settings.php:1929
+#: blocks/persona-assistant/index.js:42
+msgid "Agent"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1922
+msgid "The agent is set in code via the PERSONA_ASSISTANT_AGENT_ID constant in wp-config.php, which overrides any selection here."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1931
+msgid "— None —"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1946
+msgid "Your Runtype workspace has no agents yet. Create your first one and it will appear here."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1948
+msgid "Create your first agent on Runtype"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1950
+msgid "Prefer to build it with AI? Paste this prompt into your assistant:"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1953
+#: includes/class-persona-assistant-settings.php:2519
+msgid "Copy"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1955
+msgid "When your agent is ready, click Refresh above and it is selected automatically."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1964
+msgid "Manual connection"
+msgstr ""
+
+#. translators: %s: the site's browser origin.
+#: includes/class-persona-assistant-settings.php:1970
+#, php-format
+msgid "Create a client token in the Runtype dashboard, scoped to this site's origin (%s) and your agent, then paste it here. It is used as-is (no minting)."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1976
+msgid "Client token"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1980
+msgid "Agent ID"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:1984
+msgid "The agent is set in code via the PERSONA_ASSISTANT_AGENT_ID constant in wp-config.php."
+msgstr ""
+
+#. translators: %s: Runtype organization name.
+#: includes/class-persona-assistant-settings.php:2023
+#, php-format
+msgid "Connected to %s."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2030
+msgid "Disconnect Login with Runtype? Your minted client token keeps working until replaced."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2031
+msgid "Disconnect"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2044
+msgid "Reconnect required. Your Runtype login expired or was revoked. The existing client token keeps working until you reconnect."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2050
+msgid "Connect your Runtype account in one click. You approve on a Runtype consent page and land back here connected. No API keys to copy."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2057
+msgid "Reconnect with Runtype"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2070
+msgid "Configure WordPress AI"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2074
+msgid "System prompt"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2077
+msgid "Prepended to each conversation when the widget is powered by your built-in AI."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2081
+msgid "Visitor access"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2086
+msgid "Require visitors to be logged in to chat"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2088
+msgid "Public chat can create provider usage and cost. A per-visitor rate limit is still applied server-side."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2095
+msgid "Model"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2096
+msgid "Model (optional)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2109
+msgid "Provider default"
+msgstr ""
+
+#. translators: %s: model id saved in settings.
+#: includes/class-persona-assistant-settings.php:2114
+#, php-format
+msgid "%s (saved)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2126
+msgid "Models offered by your connected AI providers. Choose \"Provider default\" to let the AI provider pick."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2129
+msgid "Leave blank to use your AI provider's default model. (Connect an AI provider to pick from a list.)"
+msgstr ""
+
+#. translators: %s: AI backend name (e.g. "WordPress AI Client").
+#: includes/class-persona-assistant-settings.php:2194
+#, php-format
+msgid "WordPress AI is ready, using the %s."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2196
+msgid "Manage AI providers"
+msgstr ""
+
+#. translators: %s: AI backend name (e.g. "WordPress AI Client").
+#: includes/class-persona-assistant-settings.php:2211
+#, php-format
+msgid "The %s is installed, but no AI provider is connected yet. Chat cannot answer until one is."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2217
+msgid "Connect a provider in your WordPress AI settings, then return here."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2226
+msgid "This WordPress site does not include a built-in AI yet. To use this option, either:"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2230
+msgid "Update to WordPress 7.0 or newer, which includes the AI Client and a Settings → Connectors screen."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2232
+msgid "Check for updates"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2237
+msgid "Install the free AI Services plugin and connect a provider there."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2239
+msgid "Find the plugin"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2243
+msgid "Or choose Runtype above, which needs no local AI."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2270
+msgid "Appearance"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2273
+msgid "Assistant page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2274
+msgid "Choose a starting style for the full-screen Page, then fine-tune its layout. These controls do not change the floating launcher or shortcode."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2279
+msgid "Classic"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2280
+msgid "The current Persona layout with a branded header and roomy conversation."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2283
+msgid "ChatGPT-like"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2284
+msgid "A centered conversation, neutral chrome, flat replies, and pill composer."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2287
+#: includes/class-persona-assistant-settings.php:2337
+#: includes/class-persona-assistant-settings.php:2354
+msgid "Minimal"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2288
+msgid "Header-free, narrow, and distraction-free."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2291
+#: includes/class-persona-assistant-settings.php:2336
+msgid "Branded"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2292
+msgid "Keeps your accent-led header while tightening the content layout."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2311
+msgid "Additional design settings"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2311
+msgid "Fine-tune assistant page"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2314
+msgid "Conversation width"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2320
+msgid "Narrow"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2321
+msgid "Standard"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2322
+msgid "Wide"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2330
+msgid "Header"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2338
+#: includes/class-persona-assistant-settings.php:2546
+#: includes/class-persona-assistant-settings.php:2646
+#: includes/class-persona-assistant-settings.php:2863
+msgid "Hidden"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2346
+msgid "Messages"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2352
+msgid "Bubbles"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2353
+msgid "Flat"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2362
+msgid "Composer"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2368
+msgid "Persona default"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2369
+msgid "Floating pill"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2377
+msgid "Visible elements"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2379
+msgid "Welcome message"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2380
+msgid "Message avatars"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2381
+msgid "Message timestamps"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2382
+msgid "New chat / clear control"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2383
+msgid "File attachment button"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2384
+msgid "Voice input button"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2385
+msgid "Attachments and voice also require support from the selected assistant and visitor's browser."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2389
+msgid "AI disclaimer"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2391
+#: includes/helpers.php:702
+msgid "AI can make mistakes. Check important information."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2399
+msgid "Launcher appearance"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2399
+msgid "Brand"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2403
+msgid "Accent color"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2407
+msgid "Reset"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2412
+msgid "Theme mode"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2418
+msgid "Light"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2419
+msgid "Dark"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2420
+msgid "Auto"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2425
+msgid "Auto follows the visitor's system preference."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2429
+msgid "Corner style"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2435
+msgid "Rounded"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2436
+msgid "Soft"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2437
+msgid "Square"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2447
+msgid "Chat icon"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2457
+#: includes/class-persona-assistant-settings.php:2877
+msgid "Change"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2458
+#: includes/class-persona-assistant-settings.php:2878
+msgid "Clear"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2460
+msgid "Shown in the chat header and launcher. Leave unset to use your Site Icon, or the widget default if none is set."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2464
+msgid "Launcher position"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2470
+msgid "Bottom right"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2471
+msgid "Bottom left"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2479
+msgid "Teaser message"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2481
+msgid "Questions about pricing?"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2482
+msgid "Optional proactive message above the collapsed launcher. Clicking it opens chat."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2486
+msgid "Teaser behavior"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2489
+msgid "Show after"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2491
+msgid "seconds"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2497
+msgid "Once per visitor"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2498
+msgid "Every page load"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2503
+msgid "Let visitors dismiss the message without opening chat"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2504
+msgid "\"Once per visitor\" remembers dismissal in that browser. Use \"Every page load\" sparingly."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2508
+msgid "Attachments"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2510
+msgid "Let visitors attach files in launcher and embedded chats"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2511
+msgid "Accepted types and size limits are configured in Advanced."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2522
+msgid "Header title"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2526
+msgid "Header subtitle"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2530
+#: includes/class-persona-assistant-settings.php:2846
+msgid "Welcome title"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2534
+#: includes/class-persona-assistant-settings.php:2850
+msgid "Welcome subtitle"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2538
+msgid "Welcome layout"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2544
+#: includes/class-persona-assistant-settings.php:2861
+msgid "Card"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2545
+#: includes/class-persona-assistant-settings.php:2862
+msgid "Centered hero"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2551
+msgid "Show the chat icon above the welcome title"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2552
+msgid "The centered hero dismisses after the first message. Card can remain visible or dismiss using the option below."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2556
+#: includes/class-persona-assistant-settings.php:2885
+msgid "Welcome dismissal"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2562
+#: includes/class-persona-assistant-settings.php:2892
+msgid "Keep visible"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2563
+#: includes/class-persona-assistant-settings.php:2893
+msgid "After first message"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2571
+#: includes/class-persona-assistant-settings.php:2901
+msgid "Greeting bubble"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2573
+#: includes/class-persona-assistant-settings.php:2903
+msgid "Hi! What can I help you with today?"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2574
+msgid "Optional display-only assistant message. It is never sent to the model or saved in conversation history, and is ignored by the centered hero."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2578
+#: includes/class-persona-assistant-settings.php:2908
+msgid "Input placeholder"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2582
+#: includes/class-persona-assistant-settings.php:2912
+msgid "Suggested prompts"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2585
+msgid "One prompt per line. These become starter actions before the visitor's first message. Leave blank for none."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2589
+msgid "Suggestion display"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2592
+msgid "Style and behavior"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2593
+#: includes/class-persona-assistant-settings.php:2921
+msgid "Style"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2598
+#: includes/class-persona-assistant-settings.php:2927
+msgid "Cards"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2599
+#: includes/class-persona-assistant-settings.php:2928
+msgid "Chips"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2600
+#: includes/class-persona-assistant-settings.php:2929
+msgid "List"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2605
+#: includes/class-persona-assistant-settings.php:2934
+msgid "Placement"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2610
+#: includes/class-persona-assistant-settings.php:2940
+msgid "Automatic"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2611
+#: includes/class-persona-assistant-settings.php:2941
+msgid "Welcome"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2612
+#: includes/class-persona-assistant-settings.php:2942
+msgid "Above input"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2617
+#: includes/class-persona-assistant-settings.php:2947
+msgid "On click"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2622
+#: includes/class-persona-assistant-settings.php:2953
+msgid "Send immediately"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2623
+#: includes/class-persona-assistant-settings.php:2954
+msgid "Fill the input"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2629
+#: includes/class-persona-assistant-settings.php:2960
+msgid "Maximum items"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2632
+msgid "Wrap chip rows"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2632
+msgid "Scroll chip rows"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2633
+msgid "Overflow only affects the chip style. Cards and lists manage their own stacking."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2638
+msgid "Scrollbars"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2644
+msgid "While scrolling"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2645
+msgid "Browser default"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2651
+msgid "Controls the transcript, suggestion strips, and artifact scrollers."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2658
+msgid "Advanced Behavior"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2666
+#: templates/fullscreen-assistant.php:32
+msgid "Conversation history"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2669
+msgid "Browser history lifetime"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2670
+msgid "On this browser"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2675
+msgid "This tab session"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2676
+msgid "This device"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2677
+msgid "Do not remember"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2682
+msgid "Persona stores only user and assistant text. Attachments, reasoning, tool activity, artifacts, and execution metadata are removed before browser storage. Runtype also resumes its opaque server session ID for the selected lifetime."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2686
+msgid "Let logged-in visitors save Assistant Page conversations to their WordPress account"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2688
+msgid "Delete saved conversations after"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2690
+msgid "7 days"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2691
+msgid "30 days"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2692
+msgid "90 days"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2693
+msgid "1 year"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2694
+msgid "Only when erased"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2697
+msgid "Account history is opt-in, text-only, owner-scoped, and available on the full-screen Assistant Page. It participates in WordPress personal-data export and erasure. Anonymous visitors fall back to the browser policy above."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2701
+msgid "Runtype keeps the remote session canonical, so this plugin does not duplicate its transcripts in WordPress. Retention for those sessions is managed in Runtype."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2706
+msgid "AI activity"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2711
+msgid "Show the AI's working steps (reasoning and tool activity)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2713
+msgid "Runtype streams activity live. WordPress AI shows provider-returned reasoning and completed Ability calls when the connector supplies them."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2718
+msgid "File policy"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2720
+msgid "Images (JPEG, PNG, GIF, WebP)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2721
+msgid "Documents (PDF, text, Markdown, CSV, JSON)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2722
+msgid "Maximum files"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2722
+msgid "Maximum size per file (MB)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2723
+msgid "The plugin validates type and size before sending files. The selected AI connector may support fewer formats."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2728
+msgid "WordPress AI tools"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2730
+msgid "Let WordPress AI use selected read-only Abilities"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2732
+msgid "No explicitly read-only Abilities are registered on this site."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2738
+msgid "Only Abilities marked read-only and non-destructive can appear here. WordPress permission callbacks still run for every call, and each response is capped at four tool turns."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2748
+msgid "Follow-up suggestions"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2752
+msgid "Automatic follow-up suggestions require Runtype's streaming tool protocol."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2757
+msgid "Ask the assistant to suggest useful next questions after each answer"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2759
+msgid "Persona advertises its built-in suggest_replies tool to the selected Runtype agent. Do not also declare a server-side tool with the same purpose."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2764
+msgid "Page tools (WebMCP)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2770
+msgid "Page tools require Runtype. Connect with Runtype in the Connection workspace to enable them."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2775
+msgid "Let the assistant call tools on your site (search, content lookup, the current page)"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2777
+msgid "Each tool call shows the visitor an approval prompt before it runs. You must also enable WebMCP on the chat surface in your Runtype dashboard (Surface → WebMCP), or Runtype rejects the tools."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2782
+msgid "Automatically expose Abilities API tools"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2784
+msgid "When page tools are on, every ability registered on this site (WordPress 6.9+) that the visitor is allowed to use also becomes a tool. Turn this off to expose only the built-in read-only tools."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2790
+msgid "System report"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2791
+msgid "Copy this secret-free report when asking for help."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2793
+msgid "Copy system report"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2799
+#: includes/class-persona-assistant-settings.php:2807
+msgid "Assistant Page preview"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2799
+msgid "Chat preview"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2800
+msgid "Page layout changes preview here instantly."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2800
+msgid "Shared appearance changes preview here instantly."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2801
+msgid "Previewing unsaved changes. Save to keep them."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2814
+msgid "Connect an AI and save to enable live testing."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2838
+msgid "Welcome screen"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2839
+msgid "Shared content"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2842
+msgid "Title, greeting, icon, placeholder, and starter prompts are shared with the launcher and embedded chat. Layout and prompt presentation below affect only the Assistant Page."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2854
+msgid "Assistant layout"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2860
+#: includes/class-persona-assistant-settings.php:2891
+#: includes/class-persona-assistant-settings.php:2926
+#: includes/class-persona-assistant-settings.php:2939
+#: includes/class-persona-assistant-settings.php:2952
+#: includes/class-persona-assistant-settings.php:2969
+msgid "Use shared"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2868
+msgid "Use shared follows the Welcome layout configured in Brand & Copy."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2872
+msgid "Welcome icon"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2880
+msgid "Show this icon above the welcome title"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2881
+msgid "This icon is shared with the launcher and chat header. Leave it unset to use your Site Icon, or the widget default if none is set."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2904
+msgid "Display-only assistant message; it is never sent to the model and is ignored by the centered hero."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2915
+msgid "One prompt per line. These starter actions are shared across chat surfaces."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2919
+msgid "Prompt presentation"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2962
+msgid "Use 0 to inherit the shared limit."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2964
+msgid "Chip overflow"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2970
+msgid "Wrap"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:2971
+msgid "Scroll"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3009
+msgid "Reconnect"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3011
+msgid "Disconnect Runtype, clear the plugin connection and agent, and unpublish chat?"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3011
+msgid "Disconnect and unpublish"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3011
+msgid "Disconnect and remove credentials"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3014
+msgid "The API key remains defined in wp-config.php. Selecting Runtype and saving will reconnect it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3016
+msgid "The client token remains defined in wp-config.php. Selecting Runtype and saving will reconnect it."
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3114
+msgid "Pasted client token"
+msgstr ""
+
+#: includes/class-persona-assistant-settings.php:3119
+msgid "API key (auto-mint)"
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:97
+msgid "Page tools are not available."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:106
+msgid "Your session could not be verified. Reload the page and try again."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:143
+#: includes/class-persona-assistant-webmcp.php:516
+#: includes/class-persona-assistant-webmcp.php:552
+msgid "Unknown tool."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:155
+msgid "This tool is answered in the browser and has no server action."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:209
+msgid "Too many tool requests. Please wait a minute and try again."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:270
+msgid "Search posts"
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:271
+msgid "Full-text search of published posts on this site. Returns up to ten matches with id, title, excerpt, url, and date."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:277
+msgid "Free-text search query."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:283
+msgid "Maximum results to return (1-10)."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:292
+msgid "Get post"
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:293
+msgid "Fetch one published post by numeric id or slug. Returns title, url, date, author, and the plain-text content."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:299
+msgid "Numeric post id."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:303
+msgid "Post slug (used when no id is given)."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:311
+msgid "List categories or tags"
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:312
+msgid "List the site's categories or tags. Returns name, slug, post count, and archive url."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:319
+msgid "Which taxonomy to list: \"category\" or \"post_tag\"."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:328
+msgid "Get current page"
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:329
+msgid "Return details about the page the visitor is currently viewing: its url and title, plus the id, type, and excerpt when it is a single post or page."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:511
+msgid "The Abilities API is not available."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:565
+msgid "A search query is required."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:635
+msgid "No published post matched."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:641
+msgid "This post is password protected."
+msgstr ""
+
+#: includes/class-persona-assistant-webmcp.php:670
+msgid "Taxonomy must be \"category\" or \"post_tag\"."
+msgstr ""
+
+#: includes/helpers.php:864
+msgid "Connecting…"
+msgstr ""
+
+#: includes/helpers.php:865
+msgid "Connection error"
+msgstr ""
+
+#: templates/fullscreen-assistant.php:30
+msgid "Toggle conversation history"
+msgstr ""
+
+#: templates/fullscreen-assistant.php:37
+msgid "Saved conversations"
+msgstr ""
+
+#: templates/fullscreen-assistant.php:39
+msgid "Your saved conversations will appear here."
+msgstr ""
+
+#: templates/fullscreen-assistant.php:43
+msgid "Delete this conversation"
+msgstr ""
+
+#: templates/fullscreen-assistant.php:44
+msgid "Delete all history"
+msgstr ""
+
+#. translators: %d: number of days conversation text is kept before automatic deletion.
+#: templates/fullscreen-assistant.php:51
+#, php-format
+msgid "Text is saved to your account for %d days. Files and AI activity are not saved."
+msgstr ""
+
+#: templates/fullscreen-assistant.php:55
+msgid "Text is saved until you erase it. Files and AI activity are not saved."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:45
+msgid "Agent choices are loaded from Persona Assistant settings."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:49
+msgid "Floating launcher"
+msgstr ""
+
+#: blocks/persona-assistant/index.js:51
+msgid "On: a floating chat button appears; the chat opens in an overlay."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:52
+msgid "Off: the chat renders inline, right where this block is placed."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:70
+msgid "Connect an AI before publishing this block."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:72
+msgid "Open settings"
+msgstr ""
+
+#: blocks/persona-assistant/index.js:77
+msgid "The site-wide launcher is active, so this block will not render another chat."
+msgstr ""
+
+#: blocks/persona-assistant/index.js:82
+msgid "Chat is not published. Choose block or shortcode placement in Persona Assistant settings."
+msgstr ""
+
+#: blocks/persona-assistant/block.json
+msgctxt "block title"
+msgid "Persona Assistant"
+msgstr ""
+
+#: blocks/persona-assistant/block.json
+msgctxt "block description"
+msgid "Embed the Persona chat widget at this location."
+msgstr ""

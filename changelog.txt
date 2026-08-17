@@ -1,0 +1,78 @@
+Persona Assistant changelog
+======================
+
+Unreleased
+----------
+* Updated the bundled Persona runtime to a 4.18.0 pre-release with the conversation-history UX (Messages rail/panel, per-conversation titles).
+* The full-screen assistant Page now mounts the widget bundle directly (instead of the installer) so the history rail presentation can render, and shows Persona's rail in place of the former server-rendered sidebar.
+* Runtype mode uses Persona's Runtype-backed visitor history; WordPress AI account history is served to the rail through a custom Persona history provider backed by the plugin's existing REST routes
+* Conversation list responses now include preview text and message counts, and conversations without stored messages are hidden from the list.
+* Collapsed the four Assistant Page style presets into two (Branded and ChatGPT-like): each removed preset differed from its sibling only by the default conversation width, which remains a fine-tune control. Saved "Classic" and "Minimal" selections migrate automatically.
+
+1.0.0
+-----
+* Bundled Persona 4.16.0 locally for WordPress.org-compatible asset delivery.
+* Added secure image and document attachments with independent surface toggles and configurable type, count, and size policy.
+* Upgraded WordPress AI mode to structured history, provider-returned reasoning, and allowlisted read-only WordPress Abilities with visible tool activity and a bounded execution loop.
+* Added a Welcome screen editor to the Assistant Page workspace, including the shared icon picker plus Page-specific layout, dismissal, and starter-prompt presentation overrides.
+* Added suggested Privacy Policy text and explicit external-service disclosures.
+
+0.9.0
+-----
+* Updated and pinned the widget runtime to Persona 4.16.0.
+* Migrated welcome copy and starter prompts to Persona's new `welcome` and rich `suggestions` configuration namespaces.
+* Added customizable welcome layout, dismissal, icon, display-only greeting, starter card/chip/list style, placement, click behavior, overflow, and item limit.
+* Added Persona's proactive launcher teaser with delay, frequency, and dismissibility controls.
+* Added scrollbar visibility and Runtype follow-up-suggestion controls.
+
+0.8.0
+-----
+* Replaced the permanent three-step settings form with a resumable first-run setup checklist and a post-setup Overview.
+* Split ongoing administration into Connection, Brand & Copy, Launcher, Assistant Page, and Advanced workspaces.
+* Added scoped partial saves so one workspace cannot reset settings owned by another.
+* Added query-based admin routes and surface-specific live previews; the Assistant preview now runs the real full-screen template in an isolated iframe, and existing configured sites migrate past onboarding automatically.
+
+0.7.0
+-----
+* Added customizable assistant Page presets: Classic, ChatGPT-like, Minimal, and Branded.
+* Added controls for conversation width, header chrome, message treatment, composer shape, welcome content, avatars, timestamps, attachments, voice input, new-chat action, and disclaimer copy.
+* Added a Persona `renderComposer` integration for the optional pill composer while preserving native send, attachment, recording, and disabled-state behavior.
+* Changed the admin preview to the full-screen context so Page-specific appearance changes update live before saving.
+
+0.6.0
+-----
+* Added an optional full-screen assistant surface backed by a native WordPress Page.
+* Administrators can select an existing Page or explicitly create and publish one from Persona Assistant settings.
+* The Page uses a plugin-owned document template and Persona's supported `launcher.enabled: false` + `launcher.fullHeight: true` layout while preserving WordPress head/footer hooks, the admin bar, and Page permalinks.
+* Full-screen publishing is independent of the site-wide launcher and manual block/shortcode placement; disabling it never deletes or changes the assigned Page.
+
+0.5.0
+-----
+* Added Page tools (WebMCP): when powered by Runtype, the assistant can call read-only site tools (search posts, get a post, list categories/tags, and read the current page) registered on `document.modelContext`, each behind a visitor approval prompt.
+* Sites with the WordPress 6.9+ Abilities API can automatically expose every ability the visitor is permitted to use as a tool.
+* Server-side tool execution is guarded by the `wp_rest` nonce, a per-tool permission re-check, input validation, and a per-visitor rate limit (`persona_assistant_webmcp_rate_limit`); the tool manifest is filterable via `persona_assistant_webmcp_tools`. The feature is Runtype-only and requires WebMCP to be enabled on the chat surface in the Runtype dashboard.
+
+0.4.0
+-----
+* Expanded the "Customize and test" step into a curated Brand / Copy / Behavior editor: theme mode (light/dark/auto), corner style, chat icon (emoji or media-library image), launcher position, header/welcome copy, suggested prompts, and an option to show the AI's reasoning and tool activity.
+* Every control is live-previewed in place, and blank copy fields use translated defaults.
+* Front-end chat now matches the site's body font (filterable via `persona_assistant_match_site_font`), and the widget config is composed from a single source of truth, filterable via `persona_assistant_widget_config`.
+
+0.3.0
+-----
+* "Login with Runtype" is now available: one-click connect using the site-verified OAuth 2.0 Authorization Code flow with PKCE. No API keys to copy; requires the site to be publicly reachable over HTTPS.
+* Automatic, single-flighted refresh of the rotating access/refresh token pair; scoped-API-key paste remains the fallback for sites that are not publicly reachable.
+* The Device Authorization Grant remains designed-but-disabled; no device codes are shown anywhere.
+
+0.2.0
+-----
+* Guided Connect → Customize → Publish settings flow with task-oriented readiness status.
+* Live saved-chat test panel, clearer agent loading, accessible feedback, and appearance preview.
+* Explicit site-wide, manual, and unpublished placement modes with editor-visible conflict warnings.
+* WordPress AI public/logged-in access and configurable per-visitor rate limiting.
+* Improved block editor preview, cached agent picker, plugin-row Settings link, and activation setup prompt.
+* Disconnect now removes the saved Runtype setup and requires an explicit reconnect.
+
+0.1.0
+-----
+* Initial release: Runtype client-token minting, paste-a-token fallback, WordPress built-in AI mode, footer/shortcode/block placement, and the "Login with Runtype" seam.
