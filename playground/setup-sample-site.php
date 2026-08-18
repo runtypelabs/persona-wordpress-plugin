@@ -110,7 +110,7 @@ $home_content = <<<HTML
 <!-- wp:group {"style":{"border":{"top":{"color":"#d1d5db","width":"1px"}},"spacing":{"padding":{"top":"1.5rem","bottom":"1.5rem"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="border-top-color:#d1d5db;border-top-width:1px;padding-top:1.5rem;padding-bottom:1.5rem">
 <!-- wp:heading {"level":3} --><h3 class="wp-block-heading">01 — Connect</h3><!-- /wp:heading -->
-<!-- wp:paragraph --><p>Connecting replaces the simulated demo with real answers. Choose Runtype or WordPress built-in AI — in Playground, a manually pasted, origin-scoped Runtype client token is the most direct path.</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>Connecting replaces the simulated demo with real answers. Choose WordPress built-in AI or Runtype — in Playground, a manually pasted, origin-scoped Runtype client token is the most direct path.</p><!-- /wp:paragraph -->
 <!-- wp:paragraph --><p><a href="{$connection_url}"><strong>Open Connection settings →</strong></a></p><!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
@@ -193,7 +193,7 @@ $home_content = <<<HTML
 <!-- /wp:heading -->
 <!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"2rem","top":"2rem"}}}} -->
 <div class="wp-block-columns">
-<!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"level":3} --><h3 class="wp-block-heading">History</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Privacy-first browser history, Runtype session resumption, and optional WordPress AI account history for signed-in users.</p><!-- /wp:paragraph --></div><!-- /wp:column -->
+<!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"level":3} --><h3 class="wp-block-heading">History</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Privacy-first browser history, optional WordPress AI account history for signed-in users, and Runtype session resumption.</p><!-- /wp:paragraph --></div><!-- /wp:column -->
 <!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Attachments</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Allow images and documents independently on the launcher and Assistant Page, with type, count, and size limits.</p><!-- /wp:paragraph --></div><!-- /wp:column -->
 <!-- wp:column --><div class="wp-block-column"><!-- wp:heading {"level":3} --><h3 class="wp-block-heading">Site tools</h3><!-- /wp:heading --><!-- wp:paragraph --><p>Let assistants read site content through WebMCP or selected read-only WordPress Abilities, with explicit safeguards.</p><!-- /wp:paragraph --></div><!-- /wp:column -->
 </div>
@@ -248,7 +248,7 @@ if ( ! is_wp_error( $assistant_id ) ) {
 	$settings['suggested_prompts']    = "What can you help me with?\nSummarize this page.\nHow do I get started?";
 	$settings['launcher_teaser_text'] = 'Questions? Ask the assistant.';
 	$settings['theme_color']          = '#4f46e5';
-	$settings['power_source']         = 'auto';
+	$settings['ai_backend']           = 'auto';
 	update_option( $option, $settings );
 	// Demo mode activates the moment an administrator loads the site (no AI is
 	// connected yet). Pre-seed the demo-plane health probe so Playground's

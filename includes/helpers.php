@@ -56,7 +56,7 @@ function persona_assistant_default_settings() {
 		'attachment_max_size_mb' => 5,
 		'assistant_voice' => false,
 		'assistant_disclaimer' => '',
-		'power_source'        => 'runtype',    // auto (legacy) | runtype | wordpress_ai.
+		'ai_backend'          => 'runtype',    // auto (legacy) | runtype | wordpress_ai.
 		'api_key'             => '',           // rt_... management key: server-side secret, NEVER localized. No UI, constant/legacy only.
 		'client_token'        => '',           // ct_... pasted directly (fallback source).
 		'agent_id'            => '',           // Chosen agent to scope the minted/embedded token to.
@@ -1382,7 +1382,7 @@ function persona_assistant_demo_retired() {
 }
 
 /**
- * Resolve which power source actually runs for the front-end widget.
+ * Resolve which AI backend actually runs for the front-end widget.
  *
  * Precedence is "prefer Runtype": with `auto`, a Runtype token wins over WP AI.
  * An explicit `runtype`/`wordpress_ai` choice only runs if that source is
@@ -1397,7 +1397,7 @@ function persona_assistant_demo_retired() {
  * @return string One of: runtype | wordpress_ai | demo | disabled.
  */
 function persona_assistant_resolve_mode() {
-	$preference = persona_assistant_get_setting( 'power_source', 'auto' );
+	$preference = persona_assistant_get_setting( 'ai_backend', 'auto' );
 	$has_runtype = persona_assistant_runtype_available();
 	$has_wp_ai   = persona_assistant_wp_ai_available();
 

@@ -8,16 +8,16 @@ Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Add a customizable AI assistant to your site, powered by your Runtype account or WordPress built-in AI.
+Add a customizable AI assistant to your site, powered by WordPress built-in AI or your Runtype account.
 
 == Description ==
 
-Persona Assistant embeds the open-source Persona chat widget on your WordPress site. It has two independent power sources:
+Persona Assistant embeds the open-source Persona chat widget on your WordPress site. It has two independent AI sources:
 
-* **Runtype**: connect your Runtype account and the widget talks directly to the Runtype API using a browser-safe, domain-scoped client token that the plugin mints for you.
 * **WordPress built-in AI**: if your site already has AI configured (WordPress 7.0's AI Client / the "AI" feature plugin with a connected Connector, or the AI Services plugin), the widget can be powered by your own AI through a small REST endpoint. WordPress AI Client mode preserves structured conversation history and supported image/document attachments, can display provider-returned reasoning, and can run an explicit allowlist of read-only WordPress Abilities. No Runtype account needed. If Connector Approval is enabled, approve this plugin under Settings → AI first.
+* **Runtype**: connect your Runtype account and the widget talks directly to the Runtype API using a browser-safe, domain-scoped client token that the plugin mints for you.
 
-Choose Runtype or WordPress built-in AI as the power source; the plugin embeds whichever you select once it is ready.
+Choose WordPress built-in AI or Runtype as the AI source; the plugin embeds whichever you select once it is ready.
 
 Publish the chat as a site-wide floating launcher, place it manually with the `[persona_assistant]` shortcode or included "Persona Assistant" block, and optionally assign a native WordPress Page as a full-screen assistant. The full-screen Page is an independent surface, so it can coexist with either launcher or embed placement.
 
@@ -33,7 +33,7 @@ On the front end the chat also matches your theme's body font automatically (opt
 
 = Open source and community =
 
-Persona Assistant uses [Persona](https://github.com/runtypelabs/persona), the MIT-licensed open-source interface that renders the chat experience. This plugin adapts Persona to WordPress by mapping WordPress settings to Persona configuration, serving the runtime locally, connecting Runtype or WordPress AI, and integrating Pages, blocks, attachments, Abilities, and WebMCP.
+Persona Assistant uses [Persona](https://github.com/runtypelabs/persona), the MIT-licensed open-source interface that renders the chat experience. This plugin adapts Persona to WordPress by mapping WordPress settings to Persona configuration, serving the runtime locally, connecting WordPress AI or Runtype, and integrating Pages, blocks, attachments, Abilities, and WebMCP.
 
 Feedback and contributions are welcome. For the Persona interface and runtime, open an issue or pull request in the Persona repository. For WordPress-specific feedback and contributions, visit the [Persona Assistant plugin repository](https://github.com/runtypelabs/persona-wordpress-plugin). If Persona is useful to your work, consider starring its repository to help other developers discover it.
 
@@ -74,7 +74,7 @@ WordPress AI account history is included in WordPress's Tools → Export Persona
 1. Upload the plugin folder to `/wp-content/plugins/` (or install the zip).
 2. Activate it through the **Plugins** screen.
 3. Follow the activation prompt or go to **Settings → Persona Assistant**.
-4. Connect Runtype (click **Connect with Runtype**, or paste a client token) or configure your WordPress AI provider.
+4. Configure your WordPress AI provider, or connect Runtype (click **Connect with Runtype**, or paste a client token).
 5. Complete the setup checklist by connecting an AI and choosing the launcher, assistant Page, or manual embeds.
 6. Use the focused workspaces to customize each surface independently.
 

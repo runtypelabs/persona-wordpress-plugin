@@ -104,7 +104,7 @@
 	function syncProviderVisibility() {
 		// With no radio checked (e.g. a legacy 'auto' value that has no card),
 		// show both sections so nothing is hidden until the user picks one.
-		var checked = document.querySelector('input[name$="[power_source]"]:checked');
+		var checked = document.querySelector('input[name$="[ai_backend]"]:checked');
 		var provider = checked ? checked.value : '';
 		var sections = document.querySelectorAll('.persona-assistant-provider-section');
 		for (var i = 0; i < sections.length; i++) {
@@ -1156,7 +1156,7 @@
 	}
 
 	function onReady() {
-		var providerRadios = document.querySelectorAll('input[name$="[power_source]"]');
+		var providerRadios = document.querySelectorAll('input[name$="[ai_backend]"]');
 		for (var p = 0; p < providerRadios.length; p++) {
 			providerRadios[p].addEventListener('change', syncProviderVisibility);
 		}

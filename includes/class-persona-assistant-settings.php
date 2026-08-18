@@ -412,10 +412,10 @@ class Persona_Assistant_Settings {
 		}
 
 		if ( in_array( $scope, array( 'all', 'connection' ), true ) ) {
-			$out['power_source'] = $this->whitelist(
-				isset( $input['power_source'] ) ? $input['power_source'] : (string) $existing['power_source'],
+			$out['ai_backend'] = $this->whitelist(
+				isset( $input['ai_backend'] ) ? $input['ai_backend'] : (string) $existing['ai_backend'],
 				array( 'auto', 'runtype', 'wordpress_ai' ),
-				$defaults['power_source']
+				$defaults['ai_backend']
 			);
 			$out['client_token'] = isset( $input['client_token'] ) ? sanitize_text_field( trim( (string) $input['client_token'] ) ) : $existing['client_token'];
 			$out['agent_id'] = isset( $input['agent_id'] ) ? sanitize_text_field( trim( (string) $input['agent_id'] ) ) : (string) $existing['agent_id'];
@@ -655,7 +655,7 @@ class Persona_Assistant_Settings {
 	 */
 	public function reconcile_runtype() {
 		$settings = persona_assistant_get_settings();
-		if ( 'wordpress_ai' === $settings['power_source'] ) {
+		if ( 'wordpress_ai' === $settings['ai_backend'] ) {
 			return;
 		}
 
@@ -663,7 +663,7 @@ class Persona_Assistant_Settings {
 
 		// Pasted-token source mints nothing.
 		if ( Persona_Assistant_Credential::SOURCE_CLIENT_TOKEN === $source ) {
-			if ( 'runtype' === $settings['power_source'] && '' === persona_assistant_effective_client_token() ) {
+			if ( 'runtype' === $settings['ai_backend'] && '' === persona_assistant_effective_client_token() ) {
 				$this->add_notice( 'persona_assistant_client_token', __( 'Enter a Runtype client token to finish connecting.', 'persona-assistant' ), 'warning' );
 			}
 			return;
@@ -674,7 +674,7 @@ class Persona_Assistant_Settings {
 
 		// In automatic mode, an untouched Runtype setup is an optional fallback,
 		// not an error that should interrupt saving WordPress AI settings.
-		if ( 'auto' === $settings['power_source'] && '' === persona_assistant_get_api_key() ) {
+		if ( 'auto' === $settings['ai_backend'] && '' === persona_assistant_get_api_key() ) {
 			return;
 		}
 
@@ -828,7 +828,7 @@ class Persona_Assistant_Settings {
 			$settings['agent_id']          = '';
 			// Require an explicit provider change before Runtype can reconnect,
 			// including sites whose management key is defined in wp-config.php.
-			$settings['power_source']      = 'wordpress_ai';
+			$settings['ai_backend']      = 'wordpress_ai';
 			$settings['placement_mode']    = 'off';
 			$settings['enabled']           = false;
 			$this->suppress_reconcile      = true;
@@ -1152,7 +1152,7 @@ class Persona_Assistant_Settings {
 		// Make Runtype the active provider and reconcile a client token now. The
 		// stored OAuth tokens make Persona_Assistant_Credential::source() derive OAuth.
 		$settings                 = persona_assistant_get_settings();
-		$settings['power_source'] = 'runtype';
+		$settings['ai_backend'] = 'runtype';
 		$this->suppress_reconcile = true;
 		update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings );
 		$this->suppress_reconcile      = false;
@@ -1280,7 +1280,7 @@ class Persona_Assistant_Settings {
 			printf(
 				'<div class="notice notice-info"><p><strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a></p></div>',
 				esc_html__( 'Persona Assistant is in demo mode.', 'persona-assistant' ),
-				esc_html__( 'Responses are simulated, and the assistant is only visible to administrators. Connect Runtype or configure WordPress AI to go live.', 'persona-assistant' ),
+				esc_html__( 'Responses are simulated, and the assistant is only visible to administrators. Configure WordPress AI or connect Runtype to go live.', 'persona-assistant' ),
 				esc_url( $url ),
 				esc_html__( 'Configure Persona Assistant', 'persona-assistant' )
 			);
@@ -1293,7 +1293,7 @@ class Persona_Assistant_Settings {
 
 		printf(
 			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
-			esc_html__( 'Persona Assistant is configured to appear on the site, but no AI connection is ready. Connect Runtype or configure WordPress AI.', 'persona-assistant' ),
+			esc_html__( 'Persona Assistant is configured to appear on the site, but no AI connection is ready. Configure WordPress AI or connect Runtype.', 'persona-assistant' ),
 			esc_url( $url ),
 			esc_html__( 'Configure Persona Assistant', 'persona-assistant' )
 		);
@@ -1468,7 +1468,7 @@ class Persona_Assistant_Settings {
 					<span class="persona-assistant-task-state" aria-hidden="true"><?php echo $connected ? '✓' : '1'; ?></span>
 					<div>
 						<h3><?php esc_html_e( 'Connect an AI', 'persona-assistant' ); ?></h3>
-						<p><?php echo esc_html( $connected ? __( 'Your assistant is connected and ready to answer.', 'persona-assistant' ) : __( 'Choose Runtype or your WordPress AI provider, then select an assistant.', 'persona-assistant' ) ); ?></p>
+						<p><?php echo esc_html( $connected ? __( 'Your assistant is connected and ready to answer.', 'persona-assistant' ) : __( 'Choose your WordPress AI provider or Runtype, then select an assistant.', 'persona-assistant' ) ); ?></p>
 					</div>
 					<a class="button <?php echo $connected ? '' : 'button-primary'; ?>" href="<?php echo esc_url( $this->view_url( 'connection', array( 'setup' => '1' ) ) ); ?>"><?php echo esc_html( $connected ? __( 'Review connection', 'persona-assistant' ) : __( 'Connect AI', 'persona-assistant' ) ); ?></a>
 				</article>
@@ -1637,19 +1637,19 @@ class Persona_Assistant_Settings {
 			'disabled'     => __( 'Disabled', 'persona-assistant' ),
 		);
 		if ( 'disabled' === $mode ) {
-			$power_summary = __( 'No AI connection is ready.', 'persona-assistant' );
+			$backend_summary = __( 'No AI connection is ready.', 'persona-assistant' );
 		} elseif ( 'demo' === $mode ) {
-			$power_summary = __( 'Trying the built-in demo. Connect Runtype or WordPress AI to go live.', 'persona-assistant' );
+			$backend_summary = __( 'Trying the built-in demo. Configure WordPress AI or connect Runtype to go live.', 'persona-assistant' );
 		} else {
 			/* translators: %s: resolved AI provider name. */
-			$power_summary = sprintf( __( 'Powered by %s.', 'persona-assistant' ), $mode_labels[ $mode ] );
+			$backend_summary = sprintf( __( 'Powered by %s.', 'persona-assistant' ), $mode_labels[ $mode ] );
 		}
 		?>
 		<div class="persona-assistant-status persona-assistant-status--<?php echo esc_attr( $tone ); ?>">
 			<div class="persona-assistant-status-summary">
 				<div>
 					<h2><?php echo esc_html( $headline ); ?></h2>
-					<p><?php echo esc_html( $power_summary ); ?></p>
+					<p><?php echo esc_html( $backend_summary ); ?></p>
 				</div>
 				<div class="persona-assistant-status-actions">
 					<a class="button" href="<?php echo esc_url( $this->view_url( 'assistant' ) ); ?>"><?php esc_html_e( 'Preview assistant', 'persona-assistant' ); ?></a>
@@ -1835,7 +1835,7 @@ class Persona_Assistant_Settings {
 	 * @return void
 	 */
 	private function render_provider_choice( $settings ) {
-		$power       = (string) $settings['power_source'];
+		$ai_backend = (string) $settings['ai_backend'];
 		$wp_ai_ready = Persona_Assistant_AI::is_available();
 
 		$runtype = array( 'runtype', __( 'Runtype', 'persona-assistant' ), __( 'Use an agent on Runtype, with over 200 built-in models and tools.', 'persona-assistant' ) );
@@ -1851,7 +1851,7 @@ class Persona_Assistant_Settings {
 		?>
 		<div class="persona-assistant-choice-grid">
 			<?php foreach ( $cards as $card ) : ?>
-				<?php $this->choice_radio( 'power_source', $card[0], $card[1], $card[2], $power ); ?>
+				<?php $this->choice_radio( 'ai_backend', $card[0], $card[1], $card[2], $ai_backend ); ?>
 			<?php endforeach; ?>
 		</div>
 		<?php
@@ -2264,7 +2264,7 @@ class Persona_Assistant_Settings {
 					<?php endif; ?>
 				</li>
 			</ul>
-			<p><?php esc_html_e( 'Or choose Runtype above, which needs no local AI.', 'persona-assistant' ); ?></p>
+			<p><?php esc_html_e( 'Alternatively, connect Runtype, which needs no local AI.', 'persona-assistant' ); ?></p>
 		</div>
 		<?php
 	}
