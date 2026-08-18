@@ -3,7 +3,7 @@
  * Plugin Name:       Persona Assistant
  * Plugin URI:        https://github.com/runtypelabs/persona-wordpress-plugin
  * Description:       Add a customizable AI assistant to your site.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Runtype
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PERSONA_ASSISTANT_VERSION', '1.0.0' );
+define( 'PERSONA_ASSISTANT_VERSION', '1.1.0' );
 define( 'PERSONA_ASSISTANT_PERSONA_VERSION', '4.18.0-dev' );
 define( 'PERSONA_ASSISTANT_FILE', __FILE__ );
 define( 'PERSONA_ASSISTANT_DIR', plugin_dir_path( __FILE__ ) );
@@ -75,6 +75,17 @@ if ( ! defined( 'PERSONA_ASSISTANT_INSTALL_URL' ) ) {
  */
 if ( ! defined( 'PERSONA_ASSISTANT_DEFAULT_API_BASE' ) ) {
 	define( 'PERSONA_ASSISTANT_DEFAULT_API_BASE', 'https://api.runtype.com' );
+}
+
+/**
+ * Default base URL of the Runtype demo client plane (a public, deterministic
+ * mock of the client wire; see runtype-core apps/mock-api src/demo-client).
+ * The widget appends /v1/client/* itself, so this is the `/demo` contract base.
+ * Override per-site with the PERSONA_ASSISTANT_DEMO_API_BASE constant
+ * (wp-config.php), e.g. to point at a self-hosted or pre-release demo plane.
+ */
+if ( ! defined( 'PERSONA_ASSISTANT_DEFAULT_DEMO_API_BASE' ) ) {
+	define( 'PERSONA_ASSISTANT_DEFAULT_DEMO_API_BASE', 'https://mock.runtype.com/demo' );
 }
 
 /**

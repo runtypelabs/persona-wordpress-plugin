@@ -12,4 +12,4 @@
 
 - [Developers](developers.md) — constants, filters, and asset delivery
 - [Architecture](architecture.md) — file layout
-- [Local testing](local-testing.md)
+- [Local testing](local-testing.md) — wp-env, and a Playground sample site

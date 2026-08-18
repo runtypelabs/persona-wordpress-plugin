@@ -29,6 +29,7 @@ rsync -a \
 	--exclude=artifacts \
 	--exclude=docs \
 	--exclude=wordpress-org-assets \
+	--exclude=playground \
 	--exclude=tools \
 	--exclude='*.zip' \
 	--exclude=.DS_Store \

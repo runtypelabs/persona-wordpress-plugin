@@ -1,6 +1,6 @@
 {
 	"name": "persona-wordpress-plugin",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"private": true,
 	"description": "Local development environment for the Persona Assistant WordPress plugin.",
 	"scripts": {
@@ -8,7 +8,8 @@
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
 		"env:clean": "wp-env clean all",
-		"env:destroy": "wp-env destroy"
+		"env:destroy": "wp-env destroy",
+		"playground": "npx --yes @wp-playground/cli@latest server --blueprint=./playground/local.json --blueprint-may-read-adjacent-files --mount=.:/wordpress/wp-content/plugins/persona-assistant"
 	},
 	"devDependencies": {
 		"@wordpress/env": "^11.11.0"

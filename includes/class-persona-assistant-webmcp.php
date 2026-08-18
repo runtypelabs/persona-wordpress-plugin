@@ -232,6 +232,22 @@ class Persona_Assistant_WebMCP {
 	public static function build_manifest() {
 		$tools = self::builtin_tools();
 
+		// Demo mode advertises ONLY browser-answered tools (get_current_page):
+		// the demo plane's page scenario needs a client tool to round-trip, but
+		// a scripted demo must never be able to reach the server execute route
+		// (whose permission gate is closed in demo mode anyway) — so server
+		// built-ins and Abilities are excluded from the manifest outright.
+		if ( 'demo' === persona_assistant_resolve_mode() ) {
+			$demo_tools = array();
+			foreach ( $tools as $tool ) {
+				if ( ! empty( $tool['clientSide'] ) ) {
+					$demo_tools[] = $tool;
+				}
+			}
+			$demo_tools = apply_filters( 'persona_assistant_webmcp_tools', $demo_tools );
+			return is_array( $demo_tools ) ? array_values( $demo_tools ) : array();
+		}
+
 		if ( persona_assistant_webmcp_abilities_enabled() ) {
 			$used = array();
 			foreach ( $tools as $tool ) {

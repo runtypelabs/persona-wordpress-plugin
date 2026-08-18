@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Persona Assistant 1.0.0\n"
+"Project-Id-Version: Persona Assistant 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/persona-assistant\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -621,7 +621,7 @@ msgid "Start setup"
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:1282
-msgid "Persona Assistant is configured to appear on the site, but no AI connection is ready. Connect Runtype or configure WordPress AI."
+msgid "Persona Assistant is configured to appear on the site, but no AI connection is ready. Configure WordPress AI or connect Runtype."
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:1284
@@ -740,7 +740,7 @@ msgid "Your assistant is connected and ready to answer."
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:1455
-msgid "Choose Runtype or your WordPress AI provider, then select an assistant."
+msgid "Choose your WordPress AI provider or Runtype, then select an assistant."
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:1457
@@ -1293,7 +1293,7 @@ msgid "Find the plugin"
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:2243
-msgid "Or choose Runtype above, which needs no local AI."
+msgid "Alternatively, connect Runtype, which needs no local AI."
 msgstr ""
 
 #: includes/class-persona-assistant-settings.php:2270

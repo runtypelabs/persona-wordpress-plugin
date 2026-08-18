@@ -1,0 +1,42 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Persona Assistant sample site",
+		"description": "An interactive product tour with setup waypoints, screenshots, a site-wide launcher, and a full-screen Assistant Page.",
+		"author": "Runtype",
+		"categories": ["preview", "ai"]
+	},
+	"landingPage": "/",
+	"login": true,
+	"preferredVersions": {
+		"php": "8.2",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "git:directory",
+				"url": "https://github.com/runtypelabs/persona-wordpress-plugin",
+				"ref": "HEAD",
+				"refType": "refname"
+			},
+			"options": {
+				"activate": true
+			},
+			"progress": {
+				"caption": "Installing Persona Assistant"
+			}
+		},
+		{
+			"step": "resetData"
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require '/wordpress/wp-load.php'; $setup = glob( WP_PLUGIN_DIR . '/*/playground/setup-sample-site.php' ); if ( $setup ) { require $setup[0]; }"
+		}
+	]
+}

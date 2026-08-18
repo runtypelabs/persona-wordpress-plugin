@@ -1,5 +1,6 @@
 node_modules/
 .wp-env.override.json
+playground/local-staging.json
 dist/
 artifacts/
 .DS_Store

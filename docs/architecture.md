@@ -26,4 +26,9 @@ assets/vendor/persona/            # locally bundled Persona library + MIT licens
 blocks/persona-assistant/{block.json,index.js}  # build-free dynamic block
 templates/fullscreen-assistant.php # standalone Page document preserving WP hooks
 languages/persona-assistant.pot
+playground/                               # WordPress Playground sample site
+  blueprint.json                          # shareable: installs this repo from GitHub
+  local.json                              # npm run playground (mounts the working tree)
+  setup-sample-site.php                   # seeds product tour + plugin settings
+wordpress-org-assets/blueprints/          # WordPress.org Live Preview (SVN /assets/blueprints/)
 ```

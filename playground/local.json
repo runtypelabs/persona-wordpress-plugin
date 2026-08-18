@@ -1,0 +1,32 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Persona Assistant sample site (local plugin)",
+		"description": "The Persona Assistant product tour, using plugin files mounted from this working tree.",
+		"author": "Runtype",
+		"categories": ["preview", "ai"]
+	},
+	"landingPage": "/",
+	"login": true,
+	"preferredVersions": {
+		"php": "8.2",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "activatePlugin",
+			"pluginName": "Persona Assistant",
+			"pluginPath": "persona-assistant/persona-assistant.php"
+		},
+		{
+			"step": "resetData"
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require '/wordpress/wp-load.php'; require WP_PLUGIN_DIR . '/persona-assistant/playground/setup-sample-site.php';"
+		}
+	]
+}
