@@ -1,8 +1,8 @@
 Persona Assistant changelog
 ======================
 
-Unreleased
-----------
+1.1.0
+-----
 * Added demo mode: before any AI is connected, administrators see a working assistant powered by Runtype's public demo plane (deterministic scripted responses, nothing typed is stored) instead of nothing. A persistent "Demo mode — responses are simulated" badge marks it, logged-out visitors never see it, and connecting Runtype or WordPress AI replaces it automatically.
 * The demo showcases streaming markdown, a guided multi-turn conversation, tool-call activity, and a live WebMCP round trip: the browser-only "read the current page" tool runs for real behind the standard approval prompt. Only client-side tools are exposed in demo; server tool execution stays disabled.
 * Demo mode is admin-gated, disableable via the `persona_assistant_demo_enabled` filter, and points at `https://mock.runtype.com/demo` by default (overridable with the `PERSONA_ASSISTANT_DEMO_API_BASE` constant). If the demo service retires this plugin version's contract (HTTP 410), the plugin falls back to the previous disabled state.

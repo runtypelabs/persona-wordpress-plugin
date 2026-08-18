@@ -4,7 +4,7 @@ Tags: ai, assistant, chat, agent, support
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,12 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 4. Full-screen Assistant Example
 
 == Changelog ==
+
+= 1.1.0 =
+* Added an administrator-only demo mode with simulated streaming responses, guided tool activity, and a live browser-only WebMCP round trip before an AI is connected.
+* Added privacy-first on-device demo conversation history and Persona's conversation-history rail across demo, Runtype, and WordPress AI modes.
+* Updated the bundled Persona runtime to a 4.18.0 pre-release and mounted it directly on full-screen Assistant Pages.
+* Simplified Assistant Page style presets to Branded and ChatGPT-like while automatically migrating saved Classic and Minimal selections.
 
 = 1.0.0 =
 * Bundled Persona 4.16.0 locally for WordPress.org-compatible asset delivery.
