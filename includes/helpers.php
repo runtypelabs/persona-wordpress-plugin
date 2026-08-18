@@ -590,7 +590,11 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 		'subtitle' => '' !== trim( (string) $settings['welcome_subtitle'] ) ? (string) $settings['welcome_subtitle'] : $default_welcome_subtitle,
 		'variant'  => $welcome_variant,
 		'dismiss'  => $welcome_dismiss,
-		'message'  => (string) $settings['welcome_message'],
+		// In demo mode the demo plane injects its own preamble message (the
+		// scripted/nothing-stored disclosure), so the site's greeting bubble
+		// stands down rather than stacking two assistant messages. The welcome
+		// screen (title/subtitle/starters) still renders as configured.
+		'message'  => 'demo' === persona_assistant_resolve_mode() ? '' : (string) $settings['welcome_message'],
 	);
 	$welcome_icon = persona_assistant_welcome_icon( $settings );
 	if ( is_array( $welcome_icon ) ) {
