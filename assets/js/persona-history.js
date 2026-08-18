@@ -8,8 +8,11 @@
  * conversation-history UX (`features.history`, rail presentation):
  *   - runtype mode uses Persona's Runtype-backed provider (client-token mode);
  *   - wordpress_ai account mode supplies a custom HistoryProvider backed by
- *     this plugin's REST routes (features.history.provider).
- * Rename/star stay hidden: the WordPress provider has no `update` capability.
+ *     this plugin's REST routes (features.history.provider);
+ *   - demo mode supplies a fully on-device HistoryProvider (browser scope):
+ *     the stateless demo plane stores nothing, so conversations live in the
+ *     visitor-selected browser storage and never leave the device.
+ * Rename/star stay hidden: neither custom provider has an `update` capability.
  */
 (function () {
 	'use strict';
@@ -356,6 +359,271 @@
 	}
 
 	/**
+	 * Device-local conversation store for demo mode.
+	 *
+	 * The demo plane is stateless by design (it stores no transcripts), so the
+	 * browser is the only place demo conversations can live. Everything stays
+	 * in the visitor-selected storage (session/device) under a demo-scoped key;
+	 * nothing ever leaves the device, which keeps the demo's "nothing you type
+	 * is stored" promise true server-side.
+	 */
+	function demoConversationStore(history) {
+		var storage = storageFor(history.browserMode);
+		var key = history.storageKey + '-conversations';
+		var MAX_CONVERSATIONS = 30;
+
+		function read() {
+			if (!storage) {
+				return {};
+			}
+			try {
+				var parsed = JSON.parse(storage.getItem(key) || '{}');
+				return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+			} catch (e) {
+				try { storage.removeItem(key); } catch (e2) { /* best-effort */ }
+				return {};
+			}
+		}
+
+		function write(conversations) {
+			if (!storage) {
+				return;
+			}
+			// Newest-first cap so a long-lived demo tab cannot grow unbounded.
+			var ids = Object.keys(conversations).sort(function (a, b) {
+				return (conversations[b].updatedAt || '').localeCompare(conversations[a].updatedAt || '');
+			});
+			ids.slice(MAX_CONVERSATIONS).forEach(function (id) {
+				delete conversations[id];
+			});
+			try {
+				storage.setItem(key, JSON.stringify(conversations));
+			} catch (e) {
+				// Storage can be blocked or full; the live chat keeps working.
+			}
+		}
+
+		return {
+			all: read,
+			get: function (id) {
+				return read()[id] || null;
+			},
+			put: function (conversation) {
+				var conversations = read();
+				conversations[conversation.id] = conversation;
+				write(conversations);
+			},
+			remove: function (id) {
+				var conversations = read();
+				delete conversations[id];
+				write(conversations);
+			},
+			removeAll: function () {
+				var count = Object.keys(read()).length;
+				if (storage) {
+					try { storage.removeItem(key); } catch (e) { /* best-effort */ }
+				}
+				return count;
+			}
+		};
+	}
+
+	/**
+	 * Tracks the active demo conversation, mirroring the id into the
+	 * `persona_conversation` URL argument exactly like the account manager so
+	 * reloads reopen the same on-device conversation.
+	 */
+	function demoManager(history) {
+		var activeId = '';
+		try {
+			activeId = new URL(window.location.href).searchParams.get(history.conversationArg || 'persona_conversation') || '';
+		} catch (e) {
+			// URL selection is progressive enhancement.
+		}
+
+		function setActive(id) {
+			activeId = id || '';
+			try {
+				var url = new URL(window.location.href);
+				if (activeId) {
+					url.searchParams.set(history.conversationArg || 'persona_conversation', activeId);
+				} else {
+					url.searchParams.delete(history.conversationArg || 'persona_conversation');
+				}
+				window.history.replaceState({}, '', url.toString());
+			} catch (e) {
+				// URL synchronization is progressive enhancement.
+			}
+		}
+
+		return {
+			getActiveId: function () { return activeId; },
+			setActive: setActive
+		};
+	}
+
+	/**
+	 * Persona HistoryProvider over the device-local demo store. Browser scope
+	 * only — the scope banner reads as on-this-device history, and rename/star
+	 * stay hidden because there is no `update` capability. Turn capture happens
+	 * in the demo storage adapter (see decorateConfig), not here: the provider
+	 * is the read/manage side of the same store.
+	 */
+	function demoHistoryProvider(history, manager, store) {
+		var availabilitySubscribers = [];
+
+		function firstUserText(messages) {
+			for (var i = 0; i < messages.length; i++) {
+				if (messages[i].role === 'user' && messages[i].content) {
+					return messages[i].content;
+				}
+			}
+			return '';
+		}
+
+		function summarize(conversation) {
+			var messages = conversation.messages || [];
+			var last = messages.length ? messages[messages.length - 1].content : '';
+			return {
+				id: conversation.id,
+				title: conversation.title || (history.strings && history.strings.newConversation) || 'New conversation',
+				targetId: null,
+				preview: last ? String(last).slice(0, 300) : null,
+				messageCount: messages.length,
+				createdAt: conversation.createdAt || '',
+				updatedAt: conversation.updatedAt || ''
+			};
+		}
+
+		function activation(id, revision, onCommit, onDiscard) {
+			var settled = false;
+			return {
+				conversationId: id,
+				conversationRevision: revision || '',
+				commit: function () {
+					if (settled) {
+						return;
+					}
+					settled = true;
+					onCommit();
+				},
+				discard: function () {
+					if (settled) {
+						return;
+					}
+					settled = true;
+					if (onDiscard) {
+						onDiscard();
+					}
+				}
+			};
+		}
+
+		return {
+			capabilities: { scopes: ['browser'] },
+
+			getIdentityStatus: function () {
+				return { state: 'browser_only', reason: 'configured_browser_scope' };
+			},
+
+			subscribeIdentityStatus: function () {
+				return function () {};
+			},
+
+			subscribeAvailability: function (callback) {
+				availabilitySubscribers.push(callback);
+				return function () {
+					availabilitySubscribers = availabilitySubscribers.filter(function (subscriber) {
+						return subscriber !== callback;
+					});
+				};
+			},
+
+			notifyChanged: function () {
+				availabilitySubscribers.forEach(function (callback) {
+					try {
+						callback(true);
+					} catch (e) {
+						// One broken subscriber must not block the rest.
+					}
+				});
+			},
+
+			list: function () {
+				var conversations = store.all();
+				var items = Object.keys(conversations).map(function (id) {
+					return summarize(conversations[id]);
+				}).filter(function (summary) {
+					// A conversation without a stored transcript is invisible,
+					// mirroring the account provider's semantics.
+					return summary.messageCount > 0;
+				}).sort(function (a, b) {
+					return (b.updatedAt || '').localeCompare(a.updatedAt || '');
+				});
+				return Promise.resolve({ items: items, nextCursor: null });
+			},
+
+			getPage: function (id) {
+				var conversation = store.get(id);
+				if (!conversation) {
+					return Promise.reject(historyError('not_found', (history.strings && history.strings.unavailable) || 'Conversation not found.'));
+				}
+				var summary = summarize(conversation);
+				return Promise.resolve({
+					summary: summary,
+					messages: conversation.messages || [],
+					conversationRevision: summary.updatedAt,
+					nextCursor: null
+				});
+			},
+
+			prepareOpen: function (id) {
+				var conversation = store.get(id);
+				if (!conversation) {
+					return Promise.reject(historyError('not_found', (history.strings && history.strings.unavailable) || 'Conversation not found.'));
+				}
+				return Promise.resolve(activation(id, conversation.updatedAt, function () {
+					manager.setActive(id);
+				}));
+			},
+
+			prepareStartNew: function () {
+				var now = new Date().toISOString();
+				var conversation = {
+					id: 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+					title: '',
+					createdAt: now,
+					updatedAt: now,
+					messages: []
+				};
+				store.put(conversation);
+				return Promise.resolve(activation(
+					conversation.id,
+					now,
+					function () { manager.setActive(conversation.id); },
+					function () { store.remove(conversation.id); }
+				));
+			},
+
+			'delete': function (id) {
+				store.remove(id);
+				if (id === manager.getActiveId()) {
+					manager.setActive('');
+				}
+				return Promise.resolve();
+			},
+
+			deleteAll: function () {
+				var deleted = store.removeAll();
+				manager.setActive('');
+				return Promise.resolve({ deleted: deleted });
+			},
+
+			firstUserText: firstUserText
+		};
+	}
+
+	/**
 	 * Enable Persona's conversation-history UX. The rail presentation only
 	 * renders on the full-screen assistant (direct inline mount, wide shell);
 	 * everywhere else the Messages panel presentation applies.
@@ -401,7 +669,90 @@
 				// Storage cleanup is best-effort.
 			}
 		}
-		if (history.accountEnabled && mode === 'wordpress_ai') {
+		if (mode === 'demo' && history.browserMode !== 'off') {
+			// Demo mode: the demo plane stores nothing server-side, so the rail
+			// is powered by an entirely on-device conversation store in the
+			// visitor-selected browser lifetime. Clean the other lifetime's keys.
+			remove(history.browserMode === 'device' ? sessionStore : deviceStore, history.storageKey);
+			remove(history.browserMode === 'device' ? sessionStore : deviceStore, history.sessionKey);
+
+			var demoStore = demoConversationStore(history);
+			var demoMgr = demoManager(history);
+			var demoProvider = demoHistoryProvider(history, demoMgr, demoStore);
+			config = enableHistoryFeature(config, context, function () { return demoProvider; });
+			historyFeatureEnabled = true;
+
+			// The widget persists its live transcript through this adapter after
+			// every change; that seam IS the capture path. Reads stay empty so
+			// boot restore flows through openConversation below and is never
+			// doubled by a session-restore of the same messages.
+			config.persistState = true;
+			var notifyTimer = null;
+			config.storageAdapter = {
+				load: function () {
+					return { messages: [], metadata: {} };
+				},
+				save: function (state) {
+					var clean = safeState(state);
+					// The demo plane injects a scripted welcome before any input;
+					// a conversation only becomes real (and rail-worthy) once the
+					// visitor has actually said something.
+					var hasUserMessage = clean.messages.some(function (message) {
+						return message.role === 'user';
+					});
+					if (!hasUserMessage) {
+						return;
+					}
+					var now = new Date().toISOString();
+					var id = demoMgr.getActiveId();
+					var conversation = id ? demoStore.get(id) : null;
+					if (!conversation) {
+						conversation = {
+							id: 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+							title: '',
+							createdAt: now,
+							messages: []
+						};
+						demoMgr.setActive(conversation.id);
+					}
+					conversation.messages = clean.messages;
+					if (!conversation.title) {
+						conversation.title = String(demoProvider.firstUserText(clean.messages)).slice(0, 80);
+					}
+					conversation.updatedAt = now;
+					demoStore.put(conversation);
+					// Nudge the rail once the burst of stream-time saves settles.
+					window.clearTimeout(notifyTimer);
+					notifyTimer = window.setTimeout(function () {
+						demoProvider.notifyChanged();
+					}, 400);
+				},
+				clear: function () {
+					// A cleared transcript means a fresh chat: detach the active
+					// conversation so the next save opens a new one instead of
+					// overwriting the old.
+					demoMgr.setActive('');
+				}
+			};
+
+			// Boot resume: reopen the URL-selected on-device conversation.
+			var demoSelected = demoMgr.getActiveId();
+			if (demoSelected && !demoStore.get(demoSelected)) {
+				demoMgr.setActive('');
+				demoSelected = '';
+			}
+			if (demoSelected) {
+				window.addEventListener('persona:chat-ready', function (event) {
+					var handle = event.detail;
+					if (handle && typeof handle.openConversation === 'function') {
+						Promise.resolve(handle.openConversation(demoSelected)).catch(function () {
+							// Pruned or cleared selection: stay on the fresh chat.
+							demoMgr.setActive('');
+						});
+					}
+				}, { once: true });
+			}
+		} else if (history.accountEnabled && mode === 'wordpress_ai') {
 			remove(sessionStore, history.storageKey);
 			remove(deviceStore, history.storageKey);
 
