@@ -78,6 +78,17 @@ if ( ! defined( 'PERSONA_ASSISTANT_DEFAULT_API_BASE' ) ) {
 }
 
 /**
+ * Default base URL of the Runtype demo client plane (a public, deterministic
+ * mock of the client wire; see runtype-core apps/mock-api src/demo-client).
+ * The widget appends /v1/client/* itself, so this is the `/demo` contract base.
+ * Override per-site with the PERSONA_ASSISTANT_DEMO_API_BASE constant
+ * (wp-config.php), e.g. to point at a self-hosted or pre-release demo plane.
+ */
+if ( ! defined( 'PERSONA_ASSISTANT_DEFAULT_DEMO_API_BASE' ) ) {
+	define( 'PERSONA_ASSISTANT_DEFAULT_DEMO_API_BASE', 'https://mock.runtype.com/demo' );
+}
+
+/**
  * Public OAuth client id for "Login with Runtype" (Authorization Code + PKCE).
  *
  * Operator-seeded, first-party, no client secret. The plugin is a public

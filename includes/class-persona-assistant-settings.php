@@ -1272,11 +1272,25 @@ class Persona_Assistant_Settings {
 		if ( 'off' === persona_assistant_get_setting( 'placement_mode', 'off' ) && ! persona_assistant_page_exists() ) {
 			return;
 		}
-		if ( 'disabled' !== persona_assistant_resolve_mode() ) {
+
+		$mode = persona_assistant_resolve_mode();
+		$url  = admin_url( 'options-general.php?page=' . self::PAGE_SLUG );
+
+		if ( 'demo' === $mode ) {
+			printf(
+				'<div class="notice notice-info"><p><strong>%1$s</strong> %2$s <a href="%3$s">%4$s</a></p></div>',
+				esc_html__( 'Persona Assistant is in demo mode.', 'persona-assistant' ),
+				esc_html__( 'Responses are simulated, and the assistant is only visible to administrators. Connect Runtype or configure WordPress AI to go live.', 'persona-assistant' ),
+				esc_url( $url ),
+				esc_html__( 'Configure Persona Assistant', 'persona-assistant' )
+			);
 			return;
 		}
 
-		$url = admin_url( 'options-general.php?page=' . self::PAGE_SLUG );
+		if ( 'disabled' !== $mode ) {
+			return;
+		}
+
 		printf(
 			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
 			esc_html__( 'Persona Assistant is configured to appear on the site, but no AI connection is ready. Connect Runtype or configure WordPress AI.', 'persona-assistant' ),
@@ -1429,7 +1443,9 @@ class Persona_Assistant_Settings {
 	 * @return void
 	 */
 	private function render_setup_checklist( $settings ) {
-		$connected   = 'disabled' !== persona_assistant_resolve_mode();
+		// Demo mode does not count as connected: the checklist tracks real
+		// AI connections, and demo is exactly the state before one exists.
+		$connected   = ! in_array( persona_assistant_resolve_mode(), array( 'disabled', 'demo' ), true );
 		$has_page    = persona_assistant_page_exists();
 		$has_surface = 'off' !== (string) $settings['placement_mode'] || $has_page;
 		$completed   = $this->setup_complete();
@@ -1507,7 +1523,7 @@ class Persona_Assistant_Settings {
 		$page_id    = absint( $settings['assistant_page_id'] );
 		$page       = $page_id ? get_post( $page_id ) : null;
 		$valid_page = $page instanceof WP_Post && 'page' === $page->post_type && 'trash' !== $page->post_status;
-		$mode_label = 'runtype' === $mode ? __( 'Runtype', 'persona-assistant' ) : ( 'wordpress_ai' === $mode ? __( 'WordPress AI', 'persona-assistant' ) : __( 'Not connected', 'persona-assistant' ) );
+		$mode_label = 'runtype' === $mode ? __( 'Runtype', 'persona-assistant' ) : ( 'wordpress_ai' === $mode ? __( 'WordPress AI', 'persona-assistant' ) : ( 'demo' === $mode ? __( 'Demo mode', 'persona-assistant' ) : __( 'Not connected', 'persona-assistant' ) ) );
 		?>
 		<?php if ( isset( $_GET['setup-complete'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Setup complete. You can return to these workspaces whenever you need to make a change.', 'persona-assistant' ); ?></p></div>
@@ -1586,7 +1602,10 @@ class Persona_Assistant_Settings {
 			&& 'trash' !== $assistant_page->post_status;
 		$assistant_page_live = $has_assistant_page && 'publish' === $assistant_page->post_status;
 
-		if ( ! $is_ready ) {
+		if ( 'demo' === $mode ) {
+			$headline = __( 'Demo mode is active: responses are simulated and only administrators see the assistant.', 'persona-assistant' );
+			$tone     = 'info';
+		} elseif ( ! $is_ready ) {
 			$headline = __( 'Finish connecting an AI to preview or publish chat.', 'persona-assistant' );
 			$tone     = 'warn';
 		} elseif ( 'sitewide' === $placement && $has_assistant_page ) {
@@ -1614,12 +1633,17 @@ class Persona_Assistant_Settings {
 		$mode_labels = array(
 			'runtype'      => __( 'Runtype', 'persona-assistant' ),
 			'wordpress_ai' => __( 'WordPress built-in AI', 'persona-assistant' ),
+			'demo'         => __( 'Demo (simulated responses)', 'persona-assistant' ),
 			'disabled'     => __( 'Disabled', 'persona-assistant' ),
 		);
-		$power_summary = 'disabled' === $mode
-			? __( 'No AI connection is ready.', 'persona-assistant' )
+		if ( 'disabled' === $mode ) {
+			$power_summary = __( 'No AI connection is ready.', 'persona-assistant' );
+		} elseif ( 'demo' === $mode ) {
+			$power_summary = __( 'Trying the built-in demo. Connect Runtype or WordPress AI to go live.', 'persona-assistant' );
+		} else {
 			/* translators: %s: resolved AI provider name. */
-			: sprintf( __( 'Powered by %s.', 'persona-assistant' ), $mode_labels[ $mode ] );
+			$power_summary = sprintf( __( 'Powered by %s.', 'persona-assistant' ), $mode_labels[ $mode ] );
+		}
 		?>
 		<div class="persona-assistant-status persona-assistant-status--<?php echo esc_attr( $tone ); ?>">
 			<div class="persona-assistant-status-summary">

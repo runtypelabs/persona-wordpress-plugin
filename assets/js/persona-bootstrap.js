@@ -18,8 +18,10 @@
  * through untouched apart from optional site-font matching and the per-instance
  * data-launcher / data-agent overrides.
  *
- * Two modes:
+ * Three modes:
  *   - runtype:      embed the browser-safe client token; the widget talks to the Runtype API.
+ *   - demo:         same client-token transport, pointed at the public scripted
+ *                   demo plane (any token admits); a fixed badge marks it.
  *   - wordpress_ai: point the widget's custom backend (`apiUrl`) at our REST route,
  *                   which streams persona-wire SSE the widget parses natively.
  */
@@ -29,6 +31,28 @@
 	var data = window.PersonaAssistantData || {};
 	if (!data.mode || data.mode === 'disabled') {
 		return;
+	}
+
+	// Demo mode rides the client-token transport end to end; the only browser
+	// difference is the persistent badge below.
+	var clientTokenMode = data.mode === 'runtype' || data.mode === 'demo';
+
+	// A small always-visible pill so scripted responses can never be mistaken
+	// for a live AI. Demo renders only for plugin managers, but the badge keeps
+	// even them honest (screenshots, screen shares, previews).
+	function addDemoBadge() {
+		if (data.mode !== 'demo' || document.getElementById('persona-assistant-demo-badge')) {
+			return;
+		}
+		var badge = document.createElement('div');
+		badge.id = 'persona-assistant-demo-badge';
+		badge.setAttribute('role', 'status');
+		badge.textContent = data.demoBadge || 'Demo mode — responses are simulated';
+		badge.style.cssText = 'position:fixed;bottom:12px;left:12px;z-index:2147483000;' +
+			'background:#1d2327;color:#fff;padding:6px 12px;border-radius:999px;' +
+			'font:600 12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
+			'box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none;opacity:.92;';
+		document.body.appendChild(badge);
 	}
 
 	// Per-instance overrides set by the shortcode/block on the root element.
@@ -104,7 +128,7 @@
 			width: '100%',
 			height: '100%'
 		});
-		if (data.mode === 'runtype') {
+		if (clientTokenMode) {
 			widgetConfig.clientToken = data.clientToken;
 			if (data.apiUrl) {
 				widgetConfig.apiUrl = data.apiUrl;
@@ -116,6 +140,7 @@
 		} else if (data.mode === 'wordpress_ai') {
 			widgetConfig.apiUrl = data.restUrl;
 		}
+		addDemoBadge();
 		// Deferred one task on purpose: scripts that load AFTER this one (the
 		// admin preview-frame bridge, WebMCP registration) attach their
 		// persona:chat-ready listeners at evaluation time. A synchronous mount
@@ -157,13 +182,13 @@
 		install.version = data.version;
 	}
 
-	if (data.mode === 'runtype') {
+	if (clientTokenMode) {
 		install.clientToken = data.clientToken;
 
-		// Point the widget at the configured Runtype API; without this the
-		// installer falls back to production even when the plugin is pointed
-		// at a staging or self-hosted API base. Client-token mode appends
-		// /v1/client/* to this base itself.
+		// Point the widget at the configured Runtype API (or the demo plane);
+		// without this the installer falls back to production even when the
+		// plugin is pointed at a staging or self-hosted API base. Client-token
+		// mode appends /v1/client/* to this base itself.
 		if (data.apiUrl) {
 			install.apiUrl = data.apiUrl;
 		}
@@ -180,6 +205,8 @@
 		// audience and rate-limit policy selected in Persona Assistant settings.
 		install.apiUrl = data.restUrl;
 	}
+
+	addDemoBadge();
 
 	window.siteAgentConfig = install;
 })();

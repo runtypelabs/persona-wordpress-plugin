@@ -618,7 +618,11 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 			),
 			'followUps' => array(
 				'enabled'   => true,
-				'expose'    => (bool) $settings['followup_suggestions'] && 'runtype' === persona_assistant_resolve_mode(),
+				// Demo mode always exposes suggest_replies: the demo plane
+				// drives its chip navigation through that client tool and
+				// degrades to a markdown list when it is not advertised.
+				'expose'    => ( (bool) $settings['followup_suggestions'] && 'runtype' === persona_assistant_resolve_mode() )
+					|| 'demo' === persona_assistant_resolve_mode(),
 				'variant'   => 'chip',
 				'placement' => 'auto',
 				'overflow'  => 'wrap',
@@ -626,8 +630,12 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 			),
 		),
 		'features'        => array(
-			'showReasoning' => (bool) $settings['show_ai_activity'],
-			'showToolCalls' => (bool) $settings['show_ai_activity'],
+			// Demo mode forces AI-activity display on: the demo plane's
+			// tool-call scenarios exist to show exactly this chrome (their
+			// copy says "watch the tool row below"), so hiding it would make
+			// the demo read as broken rather than as configured-minimal.
+			'showReasoning' => (bool) $settings['show_ai_activity'] || 'demo' === persona_assistant_resolve_mode(),
+			'showToolCalls' => (bool) $settings['show_ai_activity'] || 'demo' === persona_assistant_resolve_mode(),
 			'scrollBehavior' => array(
 				'scrollbar' => in_array( (string) $settings['scrollbar_policy'], array( 'on-scroll', 'auto', 'hidden' ), true ) ? (string) $settings['scrollbar_policy'] : 'on-scroll',
 			),
@@ -660,7 +668,7 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 	// at the start of every chat turn. Only the front end wires the registration
 	// script, so the admin preview (which runs in wp-admin, where the tools are
 	// neither present nor relevant) never advertises the capability.
-	if ( ! $is_preview && 'preview' !== $context && persona_assistant_webmcp_active() ) {
+	if ( ! $is_preview && 'preview' !== $context && persona_assistant_webmcp_client_active() ) {
 		$config['webmcp'] = array( 'enabled' => true );
 	}
 
@@ -1268,14 +1276,121 @@ function persona_assistant_wp_ai_available() {
 }
 
 /**
+ * Base URL of the Runtype demo client plane, no trailing slash.
+ *
+ * This is the `/demo` CONTRACT base (consumer-owned segment); the widget
+ * appends the `/v1/client/*` wire segment itself. Constant override wins so a
+ * dev site can point at a pre-release or self-hosted demo plane.
+ *
+ * @return string
+ */
+function persona_assistant_demo_api_base() {
+	$base = defined( 'PERSONA_ASSISTANT_DEMO_API_BASE' ) && PERSONA_ASSISTANT_DEMO_API_BASE
+		? (string) PERSONA_ASSISTANT_DEMO_API_BASE
+		: PERSONA_ASSISTANT_DEFAULT_DEMO_API_BASE;
+
+	/**
+	 * Filter the demo client-plane base URL.
+	 *
+	 * @param string $base Demo contract base, e.g. https://mock.runtype.com/demo.
+	 */
+	return untrailingslashit( (string) apply_filters( 'persona_assistant_demo_api_base', $base ) );
+}
+
+/**
+ * May THIS request run the widget in demo mode?
+ *
+ * Demo mode is the try-before-connecting state: the widget runs in ordinary
+ * client-token mode against the public demo plane with scripted responses.
+ * It is intentionally limited to users who can manage the plugin so a canned
+ * bot is never shown to real site visitors, and it stands down when the demo
+ * contract has been retired server-side (HTTP 410, see
+ * persona_assistant_demo_retired()).
+ *
+ * @return bool
+ */
+function persona_assistant_demo_available() {
+	/**
+	 * Kill-switch for demo mode (default on). Return false to restore the old
+	 * behavior where an unconfigured site resolves to 'disabled'.
+	 *
+	 * @param bool $enabled Whether demo mode may run at all.
+	 */
+	if ( ! apply_filters( 'persona_assistant_demo_enabled', true ) ) {
+		return false;
+	}
+	if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+		return false;
+	}
+	return ! persona_assistant_demo_retired();
+}
+
+/**
+ * Has the pinned demo contract been retired server-side?
+ *
+ * Branches on the HTTP 410 STATUS only (never on error-body strings — the
+ * plane's documented consumer contract): 410 means this plugin build's demo
+ * pin is dead and the fix is a plugin update, so demo resolves to disabled.
+ * Every other outcome — including a network failure — treats the demo as
+ * alive: PHP being unable to reach the plane does not mean the visitor's
+ * browser cannot (WordPress Playground is exactly that case), and the widget
+ * surfaces its own error if the browser truly cannot connect.
+ *
+ * The probe is cached in a transient (keyed content includes the base URL so
+ * a base change re-probes) to keep admin page renders free of a per-request
+ * HTTP round trip.
+ *
+ * @return bool
+ */
+function persona_assistant_demo_retired() {
+	$base   = persona_assistant_demo_api_base();
+	$cached = get_transient( 'persona_assistant_demo_probe' );
+	if ( is_array( $cached ) && isset( $cached['base'], $cached['retired'] ) && $cached['base'] === $base ) {
+		return (bool) $cached['retired'];
+	}
+
+	$response = wp_remote_post(
+		$base . '/v1/client/init',
+		array(
+			'timeout' => 5,
+			'headers' => array(
+				'Content-Type' => 'application/json',
+				'User-Agent'   => 'WordPress-Persona/' . PERSONA_ASSISTANT_VERSION . '; ' . home_url( '/' ),
+			),
+			'body'    => '{}',
+		)
+	);
+
+	$retired = ! is_wp_error( $response ) && 410 === (int) wp_remote_retrieve_response_code( $response );
+	// A definitive answer (including a healthy 2xx) holds for 6 hours; a
+	// network error re-probes sooner in case connectivity comes back.
+	$ttl = is_wp_error( $response ) ? HOUR_IN_SECONDS : 6 * HOUR_IN_SECONDS;
+	set_transient(
+		'persona_assistant_demo_probe',
+		array(
+			'base'    => $base,
+			'retired' => $retired,
+		),
+		$ttl
+	);
+
+	return $retired;
+}
+
+/**
  * Resolve which power source actually runs for the front-end widget.
  *
  * Precedence is "prefer Runtype": with `auto`, a Runtype token wins over WP AI.
  * An explicit `runtype`/`wordpress_ai` choice only runs if that source is
- * actually available, otherwise the widget is `disabled` (and the admin notice
- * names what is missing).
+ * actually available.
  *
- * @return string One of: runtype | wordpress_ai | disabled.
+ * When NO real source is ready, plugin managers get `demo` — the widget in
+ * ordinary client-token mode against the public scripted demo plane — instead
+ * of nothing, regardless of which source they intended to configure. Everyone
+ * else still gets `disabled`, so a canned bot is never shown to visitors (see
+ * persona_assistant_demo_available()).
+ *
+ * @return string One of: runtype | wordpress_ai | demo | disabled.
  */
 function persona_assistant_resolve_mode() {
 	$preference = persona_assistant_get_setting( 'power_source', 'auto' );
@@ -1284,10 +1399,16 @@ function persona_assistant_resolve_mode() {
 
 	switch ( $preference ) {
 		case 'runtype':
-			return $has_runtype ? 'runtype' : 'disabled';
+			if ( $has_runtype ) {
+				return 'runtype';
+			}
+			break;
 
 		case 'wordpress_ai':
-			return $has_wp_ai ? 'wordpress_ai' : 'disabled';
+			if ( $has_wp_ai ) {
+				return 'wordpress_ai';
+			}
+			break;
 
 		case 'auto':
 		default:
@@ -1297,8 +1418,10 @@ function persona_assistant_resolve_mode() {
 			if ( $has_wp_ai ) {
 				return 'wordpress_ai';
 			}
-			return 'disabled';
+			break;
 	}
+
+	return persona_assistant_demo_available() ? 'demo' : 'disabled';
 }
 
 /**
@@ -1324,6 +1447,25 @@ function persona_assistant_webmcp_enabled() {
  */
 function persona_assistant_webmcp_active() {
 	return persona_assistant_webmcp_enabled() && 'runtype' === persona_assistant_resolve_mode();
+}
+
+/**
+ * Should the BROWSER side of page tools be wired for this request (the
+ * registration script and the widget's `webmcp` config key)?
+ *
+ * True whenever the full feature is active, and also in demo mode — where the
+ * demo plane's flagship scenario round-trips the browser-only
+ * `get_current_page` tool through the real pause/approve/resume machinery.
+ * Demo does not require the master toggle: the demo manifest is limited to
+ * read-only client-side tools (see Persona_Assistant_WebMCP::build_manifest())
+ * and demo itself is limited to plugin managers. The server execute route
+ * stays gated on persona_assistant_webmcp_active(), so demo mode never opens
+ * a server-side tool path.
+ *
+ * @return bool
+ */
+function persona_assistant_webmcp_client_active() {
+	return persona_assistant_webmcp_active() || 'demo' === persona_assistant_resolve_mode();
 }
 
 /**

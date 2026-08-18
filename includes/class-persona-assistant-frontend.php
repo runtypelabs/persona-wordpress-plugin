@@ -180,17 +180,19 @@ class Persona_Assistant_Frontend {
 	}
 
 	/**
-	 * Enqueue the WebMCP page-tools registration script (Runtype mode only).
+	 * Enqueue the WebMCP page-tools registration script (Runtype and demo modes).
 	 *
 	 * The script registers each manifest tool on `document.modelContext` once the
 	 * widget has installed its polyfill; it depends on the bootstrap so it loads
 	 * alongside the installer. Nothing is enqueued when the feature is inactive,
-	 * so a WP-AI or unconfigured site never ships the script or the manifest.
+	 * so a WP-AI or fully unconfigured site never ships the script or the
+	 * manifest. In demo mode the manifest is limited to browser-answered tools
+	 * (see Persona_Assistant_WebMCP::build_manifest()).
 	 *
 	 * @return void
 	 */
 	private function maybe_enqueue_webmcp() {
-		if ( ! persona_assistant_webmcp_active() ) {
+		if ( ! persona_assistant_webmcp_client_active() ) {
 			return;
 		}
 		if ( wp_script_is( 'persona-assistant-webmcp', 'enqueued' ) ) {
@@ -251,6 +253,13 @@ class Persona_Assistant_Frontend {
 			if ( '' !== persona_assistant_effective_agent_id() ) {
 				$data['agentId'] = persona_assistant_effective_agent_id();
 			}
+		} elseif ( 'demo' === $mode ) {
+			// Ordinary client-token mode against the public demo plane. The
+			// plane authenticates nothing — any token value admits — so the
+			// placeholder is fine to localize.
+			$data['clientToken'] = 'ct_demo';
+			$data['apiUrl']      = esc_url_raw( persona_assistant_demo_api_base() );
+			$data['demoBadge']   = __( 'Demo mode — responses are simulated', 'persona-assistant' );
 		} elseif ( 'wordpress_ai' === $mode ) {
 			// Same-origin endpoint. Audience and rate-limit policy are enforced by
 			// Persona_Assistant_REST before generation begins.
