@@ -12,6 +12,11 @@
 		"playground": "npx --yes @wp-playground/cli@latest server --blueprint=./playground/local.json --blueprint-may-read-adjacent-files --mount=.:/wordpress/wp-content/plugins/persona-assistant"
 	},
 	"devDependencies": {
-		"@wordpress/env": "^11.11.0"
+		"@wordpress/env": "^11.13.0"
+	},
+	"overrides": {
+		"adm-zip": "^0.6.0",
+		"fast-uri": "^3.1.5",
+		"js-yaml": "^3.15.1"
 	}
 }
