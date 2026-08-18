@@ -478,6 +478,31 @@ function persona_assistant_welcome_icon( $settings ) {
 }
 
 /**
+ * Resolve the brand mark for the history rail's identity spots (serializable
+ * subset of Persona's `features.history.rail.brand`).
+ *
+ * The rail is where identity lives in the app-frame layout, so this reuses the
+ * site's chat icon: a `icon:<name>` value maps to the widget's Lucide registry,
+ * an image URL is passed through, and anything else (emoji/short text, which
+ * the serializable brand slot cannot carry) falls back to the Site Icon. Null
+ * when nothing image- or glyph-shaped is available.
+ *
+ * @param array<string,mixed> $settings Plugin settings.
+ * @return array<string,string>|null { icon: <lucide> } or { iconUrl: <url> }.
+ */
+function persona_assistant_rail_brand( $settings ) {
+	$icon = trim( (string) $settings['chat_icon'] );
+	if ( preg_match( '/^icon:([a-z0-9-]+)$/', $icon, $match ) ) {
+		return array( 'icon' => $match[1] );
+	}
+	if ( '' !== $icon && ( 0 === strpos( $icon, 'http://' ) || 0 === strpos( $icon, 'https://' ) || 0 === strpos( $icon, '/' ) ) ) {
+		return array( 'iconUrl' => esc_url_raw( $icon ) );
+	}
+	$site_icon = (string) get_site_icon_url();
+	return '' !== $site_icon ? array( 'iconUrl' => esc_url_raw( $site_icon ) ) : null;
+}
+
+/**
  * Build the nested widget-config array (installer `config`) from settings.
  *
  * Single source of truth shared by the front end and the admin live preview.
@@ -499,9 +524,12 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 	$default_placeholder      = __( 'How can I help...', 'persona-assistant' );
 	$default_launcher_sub     = __( 'Here to help you get answers fast', 'persona-assistant' );
 
+	// The widget writes the title via textContent, not innerHTML, so the value
+	// must be plain text: get_bloginfo() returns the display-filtered (entity
+	// encoded) site name, which would render literally as "&amp;".
 	$header_title = '' !== trim( (string) $settings['header_title'] )
 		? (string) $settings['header_title']
-		: (string) get_bloginfo( 'name' );
+		: wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES );
 	$header_subtitle = '' !== trim( (string) $settings['header_subtitle'] )
 		? (string) $settings['header_subtitle']
 		: $default_launcher_sub;
@@ -781,12 +809,18 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 				'borderRadius' => '0',
 			),
 			'header' => array(
-				'background'   => $surface,
-				'foreground'   => $text,
-				'border'       => $border,
-				'borderBottom' => '1px solid ' . $border,
-				'borderRadius' => '0',
-				'shadow'       => 'none',
+				'background'           => $surface,
+				'border'               => $border,
+				'borderRadius'         => '0',
+				'shadow'               => 'none',
+				// The widget's header defaults are designed for the solid
+				// primary banner (title in primary-50, i.e. near-white); a
+				// neutral bar needs the text tokens re-pointed explicitly.
+				// These are the mapped token names (utils/tokens.ts) — a plain
+				// `foreground` key is not part of the header contract.
+				'titleForeground'      => $text,
+				'subtitleForeground'   => $muted,
+				'actionIconForeground' => $muted,
 			),
 			'input'  => array(
 				'background'   => $input,
@@ -857,15 +891,27 @@ function persona_assistant_apply_assistant_appearance( $config, $settings ) {
 	$config['welcome']['variant']      = $appearance['showWelcome'] ? (string) $config['welcome']['variant'] : 'none';
 	$config['launcher']['enabled']     = false;
 	$config['launcher']['fullHeight']  = true;
+	// App-frame header recipe: the widget's default header (avatar plate,
+	// subtitle, solid primary fill) exists to establish identity on someone
+	// else's page. On the assistant Page the assistant owns the whole surface,
+	// and the genre convention (ChatGPT/Claude/Gemini) is near-invisible column
+	// chrome showing the conversation title, with identity living in the rail.
+	// "Branded" therefore no longer paints a banner — it places the brand mark
+	// in the rail's identity spots instead (see the rail.brand seed below),
+	// while "Minimal" is the same slim header without the mark.
 	$config['layout'] = array(
 		'showHeader' => 'hidden' !== $header,
 		'header'     => array(
-			'layout'          => 'minimal' === $header ? 'minimal' : 'default',
-			'showIcon'        => 'branded' === $header,
+			'layout'          => 'minimal',
+			'showIcon'        => false,
 			'showTitle'       => true,
-			'showSubtitle'    => 'branded' === $header,
+			'showSubtitle'    => false,
 			'showCloseButton' => false,
 			'showClearChat'   => (bool) $appearance['showClearChat'],
+			// Active conversation's title; falls back to launcher.title on a
+			// fresh chat. (persona-history.js defaults this too, but only when
+			// the history feature activates; the recipe wants it regardless.)
+			'titleSource'     => 'conversation',
 		),
 		'messages'   => array(
 			'layout'           => in_array( $messages, array( 'bubble', 'flat', 'minimal' ), true ) ? $messages : 'bubble',
@@ -928,6 +974,31 @@ function persona_assistant_apply_assistant_appearance( $config, $settings ) {
 	if ( 'chatgpt' === persona_assistant_normalize_assistant_preset( (string) $appearance['preset'] ) ) {
 		$config['theme'] = array_replace_recursive( $config['theme'], persona_assistant_neutral_assistant_theme( false ) );
 		$config['darkTheme'] = array_replace_recursive( $config['darkTheme'], persona_assistant_neutral_assistant_theme( true ) );
+	} else {
+		// Branded preset: the brand color belongs on accents (send button,
+		// links, focus rings — all driven by the primary palette), not on a
+		// full-width bar over the transcript. Neutralize ONLY the header
+		// tokens; everything else keeps the branded theme. Set on BOTH themes:
+		// dark mode resolves its own component tokens.
+		$neutral_light = persona_assistant_neutral_assistant_theme( false );
+		$neutral_dark  = persona_assistant_neutral_assistant_theme( true );
+		$config['theme']['components']['header']     = $neutral_light['components']['header'];
+		$config['darkTheme']['components']['header'] = $neutral_dark['components']['header'];
+	}
+
+	// "Branded" header style: identity moves into the history rail. Seed the
+	// serializable brand mark here; persona-history.js's enableHistoryFeature
+	// merges pre-existing `features.history` keys, so the mark rides along
+	// whenever a rail-capable mode activates the history feature (and the
+	// widget itself ignores rail.brand in panel presentation).
+	if ( 'branded' === $header ) {
+		$brand = persona_assistant_rail_brand( $settings );
+		if ( null !== $brand ) {
+			$config['features']['history'] = isset( $config['features']['history'] ) && is_array( $config['features']['history'] )
+				? $config['features']['history']
+				: array();
+			$config['features']['history']['rail'] = array( 'brand' => $brand );
+		}
 	}
 
 	return $config;
