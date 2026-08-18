@@ -1,5 +1,35 @@
 # Local testing
 
+## Sample site (WordPress Playground)
+
+The sample site is a [Playground blueprint](https://wordpress.github.io/wordpress-playground/blueprints/) that boots a temporary WordPress in the browser, installs this plugin, and creates a visual product-tour homepage plus a full-screen Assistant Page at `/assistant/`. The homepage puts the Connection workspace first, defines the available surfaces and capabilities, reuses the four WordPress.org screenshots, and links directly into the relevant settings workspaces.
+
+Before any AI is connected, the plugin's built-in **demo mode** takes over for administrators (Playground logs you in as admin): the launcher renders with a "Demo mode — responses are simulated" badge and chats against the public scripted demo plane, so the widget UX is walkable immediately — see step 7 under [wp-env](#wp-env) below. Logged-out visitors see nothing until a real AI is connected. To go live, follow the **Connect an AI** waypoint on the homepage: paste a Runtype `ct_...` client token scoped to the Playground origin or configure WordPress built-in AI. Login with Runtype usually cannot verify Playground origins, so the paste-token path is the one that works here.
+
+### Run it from this repo
+
+```bash
+npm run playground
+```
+
+That mounts the current working tree into Playground and applies `playground/local.json`. Open the URL the CLI prints (typically `http://127.0.0.1:9400/`).
+
+### Share a browser URL
+
+After this branch is on GitHub, open:
+
+```text
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/runtypelabs/persona-wordpress-plugin/main/playground/blueprint.json
+```
+
+`playground/blueprint.json` installs the plugin from GitHub (`git:directory` on `HEAD`) and then runs `playground/setup-sample-site.php`. Change the `ref` in that file to preview a different branch. You can also paste the JSON into the [Blueprint builder](https://playground.wordpress.net/builder/builder.html) without pushing.
+
+### WordPress.org Live Preview
+
+Commit `wordpress-org-assets/blueprints/blueprint.json` to the plugin’s SVN `assets/blueprints/blueprint.json`. A committer then sets Live Preview to public on the plugin’s Advanced screen. WordPress.org injects the reviewed plugin zip; the blueprint only seeds sample content and settings. The inlined PHP in that file is a copy of `playground/setup-sample-site.php` — if you change the seeder, update both.
+
+## wp-env
+
 1. Run a local WordPress (`wp-env` or Local) and symlink/copy this folder into `wp-content/plugins`. From this repo, `npm run env:start` starts `@wordpress/env`.
 2. **API-key path:** define `PERSONA_ASSISTANT_API_KEY` in `wp-config.php` (or connect via **Login with Runtype**) → the agent list auto-loads → pick one → **Save**. The status panel should show a minted token scoped to your origin; the front-end launcher chats via `api.runtype.com`. Change the site URL and save to confirm a re-mint.
 3. **Paste-token path:** open "Connect manually with a client token", paste a `ct_...`, save, and confirm it embeds.

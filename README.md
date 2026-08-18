@@ -44,7 +44,7 @@ Rendering utilizes [Persona.js](https://github.com/runtypelabs/persona) (MIT) to
 3. Open **Settings → Persona Assistant** and follow the setup checklist: connect an AI, then choose a launcher, an assistant Page, or a manual embed.
 4. Use the workspaces (Connection, Brand & Copy, Launcher, Assistant Page, Advanced) to customize each surface.
 
-The repo root **is** the plugin. For a local WordPress, run `npm run env:start` from this folder. More in [Local testing](docs/local-testing.md).
+The repo root **is** the plugin. For a local WordPress, run `npm run env:start` from this folder. For a one-click sample site in the browser, see [Sample site (Playground)](docs/local-testing.md#sample-site-wordpress-playground).
 
 # Documentation
 
@@ -55,7 +55,7 @@ The repo root **is** the plugin. For a local WordPress, run `npm run env:start` 
 - [Security](docs/security.md)
 - [Developers](docs/developers.md) — constants, filters, and asset delivery
 - [Architecture](docs/architecture.md) — file layout
-- [Local testing](docs/local-testing.md)
+- [Local testing](docs/local-testing.md) — wp-env, and a Playground sample site
 
 The full index is in [`docs/`](docs/README.md).
 
