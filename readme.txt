@@ -135,6 +135,7 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 * Added privacy-first on-device demo conversation history and Persona's conversation-history rail across demo, Runtype, and WordPress AI modes.
 * Updated the bundled Persona runtime to a 4.18.0 pre-release and mounted it directly on full-screen Assistant Pages.
 * Simplified Assistant Page style presets to Branded and ChatGPT-like while automatically migrating saved Classic and Minimal selections.
+* Added a live block-editor preview, full-width inline embeds, and mode-aware block controls for Demo, WordPress AI, and Runtype.
 
 = 1.0.0 =
 * Bundled Persona 4.16.0 locally for WordPress.org-compatible asset delivery.

@@ -22,14 +22,68 @@ update_option( 'show_on_front', 'page' );
 
 if ( function_exists( 'wp_update_custom_css_post' ) ) {
 	wp_update_custom_css_post(
-		'body.home header.wp-block-template-part,'
+		'@font-face{font-family:"Chakra Petch";font-style:normal;font-weight:300;font-display:swap;src:url("https://fonts.gstatic.com/s/chakrapetch/v13/cIflMapbsEk7TDLdtEz1BwkeNIh1R5_F_gUk0w.woff2") format("woff2");}'
+		. 'body.home header.wp-block-template-part,'
 		. 'body.home footer.wp-block-template-part,'
 		. 'body.home .wp-block-post-title{display:none;}'
 		. 'body.home main{margin-block-start:0!important;}'
 		. 'body.home main .wp-block-group.alignfull.has-global-padding:first-child{padding-top:0!important;padding-bottom:0!important;}'
 		. 'body.home .entry-content{margin-block-start:0;}'
 		. 'body.home .persona-demo-header+.wp-block-group{margin-block-start:0!important;}'
+		. 'body.home .persona-demo-wp-logo{height:0.9em;width:0.9em;max-width:none;max-height:none;display:inline-block;vertical-align:-0.05em;margin-left:0.1em;transform:scale(1.66);transform-origin:center;}'
+		. 'body.home .persona-demo-brand a{display:inline-flex;align-items:center;gap:0.32em;color:#111;text-decoration:none;}'
+		. 'body.home .persona-demo-wordmark{height:1.35em;width:auto;display:block;}'
+		. 'body.home .persona-demo-brand-word{font-family:"Chakra Petch",ui-sans-serif,sans-serif;font-weight:300;font-size:1.05em;letter-spacing:0;line-height:1;color:#111;text-transform:lowercase;margin-top: 2px;}'
+		. 'body.home .persona-demo-github-link{display:inline-flex;align-items:center;line-height:1;text-decoration:none;}'
+		. 'body.home .persona-demo-github-icon{height:1.35rem;width:1.35rem;display:block;}'
+		. 'body.home .persona-demo-connect-options{gap:clamp(1.25rem,3vw,2.25rem);margin-block:1.75rem 1.5rem;}'
+		. 'body.home .persona-demo-connect-option{border-top:3px solid #111827;padding-top:1.15rem;}'
+		. 'body.home .persona-demo-connect-option-header{align-items:center;gap:0.75rem;margin-bottom:0.85rem;}'
+		. 'body.home .persona-demo-connect-option-header h4{margin:0;font-size:1.2rem;letter-spacing:-0.02em;}'
+		. 'body.home .persona-demo-connect-mark{display:block;width:2rem;height:2rem;object-fit:contain;}'
+		. 'body.home .persona-demo-connect-option p{font-size:0.96rem;line-height:1.55;margin-block:0;}'
+		. 'body.home .persona-demo-connect-option-note{display:block;margin-top:0.65rem;color:#6b7280;font-size:0.83rem;line-height:1.45;}'
+		. 'body.home .wp-block-image figcaption{padding-inline:2rem;}'
 	);
+}
+
+$demo_config_plugin = <<<'PHP'
+<?php
+/**
+ * Persona Assistant Playground demo configuration.
+ *
+ * @package Persona_Assistant
+ */
+
+add_filter(
+	'persona_assistant_widget_config',
+	static function ( $config, $context ) {
+		if ( 'frontend' !== $context ) {
+			return $config;
+		}
+
+		$config['theme']['components']['launcher'] = array_merge(
+			isset( $config['theme']['components']['launcher'] ) && is_array( $config['theme']['components']['launcher'] )
+				? $config['theme']['components']['launcher']
+				: array(),
+			array(
+				'background' => '#111827',
+				'foreground' => '#f9fafb',
+				'border'     => '#374151',
+			)
+		);
+		$config['launcher']['shadow'] = '0 10px 25px rgba(15, 23, 42, 0.28)';
+
+		return $config;
+	},
+	10,
+	2
+);
+PHP;
+
+if ( defined( 'WPMU_PLUGIN_DIR' ) && wp_mkdir_p( WPMU_PLUGIN_DIR ) ) {
+	// Playground-only fixture: persist the config filter across page requests.
+	file_put_contents( WPMU_PLUGIN_DIR . '/persona-assistant-demo.php', $demo_config_plugin ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 }
 
 $screenshots_base = 'https://raw.githubusercontent.com/runtypelabs/persona-wordpress-plugin/main/wordpress-org-assets/';
@@ -39,12 +93,31 @@ $launcher_url     = '/wp-admin/options-general.php?page=persona-assistant&amp;vi
 $assistant_url    = '/wp-admin/options-general.php?page=persona-assistant&amp;view=assistant';
 $advanced_url     = '/wp-admin/options-general.php?page=persona-assistant&amp;view=advanced';
 $settings_url     = '/wp-admin/options-general.php?page=persona-assistant';
+$github_url       = 'https://github.com/runtypelabs/persona-wordpress-plugin';
+
+// Official white W mark. Use https — post-content KSES strips the data: protocol from img src.
+$wp_logo = '<img class="persona-demo-wp-logo" src="https://s.w.org/style/images/about/WordPress-logotype-wmark-white.png" alt="WordPress" width="64" height="64" />';
+
+// Persona wordmark (persona + .js bubble). Prefer the bundled copy so Playground
+// does not depend on persona-chat.dev; fall back to the public SVG if needed.
+$persona_logo_src = defined( 'PERSONA_ASSISTANT_URL' )
+	? PERSONA_ASSISTANT_URL . 'assets/images/persona-wordmark.svg'
+	: 'https://www.persona-chat.dev/persona-js.svg';
+$persona_logo     = '<img class="persona-demo-wordmark" src="' . esc_url( $persona_logo_src ) . '" alt="" width="124" height="39" />';
+
+$github_logo_src = defined( 'PERSONA_ASSISTANT_URL' )
+	? PERSONA_ASSISTANT_URL . 'assets/images/github-mark.svg'
+	: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
+$github_logo     = '<img class="persona-demo-github-icon" src="' . esc_url( $github_logo_src ) . '" alt="" width="32" height="32" />';
+
+$wordpress_ai_logo = '<img class="persona-demo-connect-mark" src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png" alt="" width="64" height="64" />';
+$runtype_logo      = '<img class="persona-demo-connect-mark" src="https://www.runtype.com/runtype-icon-only.svg" alt="" width="64" height="64" />';
 
 $home_content = <<<HTML
 <!-- wp:group {"align":"full","className":"persona-demo-header","style":{"color":{"background":"#ffffff","text":"#111827"},"border":{"bottom":{"color":"#e5e7eb","width":"1px"}},"spacing":{"padding":{"top":"1rem","right":"clamp(1.25rem,5vw,4rem)","bottom":"1rem","left":"clamp(1.25rem,5vw,4rem)"}}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
 <div class="wp-block-group alignfull persona-demo-header has-text-color has-background is-content-justification-space-between is-layout-flex wp-block-group-is-layout-flex" style="border-bottom-color:#e5e7eb;border-bottom-width:1px;color:#111827;background-color:#ffffff;padding-top:1rem;padding-right:clamp(1.25rem,5vw,4rem);padding-bottom:1rem;padding-left:clamp(1.25rem,5vw,4rem)">
-<!-- wp:paragraph {"style":{"typography":{"fontSize":"1.05rem","fontWeight":"700","letterSpacing":"-0.02em"}}} -->
-<p style="font-size:1.05rem;font-weight:700;letter-spacing:-0.02em"><a href="/" style="text-decoration:none">Persona Assistant</a></p>
+<!-- wp:paragraph {"className":"persona-demo-brand"} -->
+<p class="persona-demo-brand"><a href="/" style="text-decoration:none" aria-label="Persona Assistant">{$persona_logo} <span class="persona-demo-brand-word">assistant</span></a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"1.25rem"}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
@@ -53,6 +126,7 @@ $home_content = <<<HTML
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem"}}} --><p style="font-size:0.9rem"><a href="{$connection_url}"><strong>Connect AI</strong></a></p><!-- /wp:paragraph -->
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem"}}} --><p style="font-size:0.9rem"><a href="/assistant/">Assistant Page</a></p><!-- /wp:paragraph -->
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem"}}} --><p style="font-size:0.9rem"><a href="{$settings_url}">Plugin Settings</a></p><!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"persona-demo-github"} --><p class="persona-demo-github"><a class="persona-demo-github-link" href="{$github_url}" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">{$github_logo}</a></p><!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
 </div>
@@ -64,12 +138,12 @@ $home_content = <<<HTML
 <p class="has-text-color" style="color:#a5b4fc;font-size:0.78rem;font-style:normal;font-weight:700;letter-spacing:0.12em">WORDPRESS PLAYGROUND PREVIEW</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(3rem,8vw,6.5rem)","lineHeight":"0.95","letterSpacing":"-0.055em"},"spacing":{"margin":{"top":"1.25rem","bottom":"1.5rem"}}}} -->
-<h1 class="wp-block-heading" style="margin-top:1.25rem;margin-bottom:1.5rem;font-size:clamp(3rem,8vw,6.5rem);letter-spacing:-0.055em;line-height:0.95">Put an AI assistant<br>on WordPress.</h1>
+<!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(3rem,8vw,6.5rem)","lineHeight":"1.08","letterSpacing":"-0.055em"},"spacing":{"margin":{"top":"1.25rem","bottom":"1.5rem"}}}} -->
+<h1 class="wp-block-heading" style="margin-top:1.25rem;margin-bottom:1.5rem;font-size:clamp(3rem,8vw,6.5rem);letter-spacing:-0.055em;line-height:1.08">The open AI assistant<br> for {$wp_logo}</h1>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"clamp(1.1rem,2vw,1.4rem)","lineHeight":"1.55"},"color":{"text":"#d1d5db"},"spacing":{"margin":{"bottom":"2rem"}}}} -->
-<p class="has-text-color" style="color:#d1d5db;margin-bottom:2rem;font-size:clamp(1.1rem,2vw,1.4rem);line-height:1.55">Persona Assistant adds a customizable floating launcher and a full-screen assistant Page to any WordPress site. The assistant is already running here in demo mode — open the launcher in the corner, then connect an AI to make it answer for real.</p>
+<p class="has-text-color" style="color:#d1d5db;margin-bottom:2rem;font-size:clamp(1.1rem,2vw,1.4rem);line-height:1.55">Ship a custom-branded AI assistant for your WordPress plugin or client site, built on Persona.js, the open-source agent UI library that works on any website.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons -->
@@ -110,7 +184,27 @@ $home_content = <<<HTML
 <!-- wp:group {"style":{"border":{"top":{"color":"#d1d5db","width":"1px"}},"spacing":{"padding":{"top":"1.5rem","bottom":"1.5rem"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="border-top-color:#d1d5db;border-top-width:1px;padding-top:1.5rem;padding-bottom:1.5rem">
 <!-- wp:heading {"level":3} --><h3 class="wp-block-heading">01 — Connect</h3><!-- /wp:heading -->
-<!-- wp:paragraph --><p>Connecting replaces the simulated demo with real answers. Choose WordPress built-in AI or Runtype — in Playground, a manually pasted, origin-scoped Runtype client token is the most direct path.</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>Connecting replaces the simulated demo with real replies. Choose the path that fits what you want to build.</p><!-- /wp:paragraph -->
+<!-- wp:columns {"className":"persona-demo-connect-options"} -->
+<div class="wp-block-columns persona-demo-connect-options">
+<!-- wp:column {"className":"persona-demo-connect-option"} -->
+<div class="wp-block-column persona-demo-connect-option">
+<!-- wp:group {"className":"persona-demo-connect-option-header","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group persona-demo-connect-option-header is-nowrap is-layout-flex wp-block-group-is-layout-flex">{$wordpress_ai_logo}<!-- wp:heading {"level":4} --><h4 class="wp-block-heading">WordPress AI</h4><!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph --><p>The out-of-the-box choice. Use the built-in WordPress AI Client already configured on your site—no separate assistant platform required.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+<!-- wp:column {"className":"persona-demo-connect-option"} -->
+<div class="wp-block-column persona-demo-connect-option">
+<!-- wp:group {"className":"persona-demo-connect-option-header","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+<div class="wp-block-group persona-demo-connect-option-header is-nowrap is-layout-flex wp-block-group-is-layout-flex">{$runtype_logo}<!-- wp:heading {"level":4} --><h4 class="wp-block-heading">Runtype</h4><!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph --><p>Build and optimize advanced multi-agent, multi-surface assistants, then connect them here with a client token.<span class="persona-demo-connect-option-note">Built by the team behind Persona.js and this plugin.</span></p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
 <!-- wp:paragraph --><p><a href="{$connection_url}"><strong>Open Connection settings →</strong></a></p><!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
@@ -143,7 +237,7 @@ $home_content = <<<HTML
 <h2 class="wp-block-heading" style="margin-bottom:0.75rem;font-size:clamp(2.25rem,5vw,4rem);letter-spacing:-0.045em">What you can build</h2>
 <!-- /wp:heading -->
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"1.15rem"},"spacing":{"margin":{"bottom":"3rem"}}}} -->
-<p style="margin-bottom:3rem;font-size:1.15rem">One connection, two primary surfaces, and a shared visual system.</p>
+<p style="margin-bottom:3rem;font-size:1.15rem">Use the admin to go live quickly. Easily extend Persona via hooks and config when you need a truly custom experience.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"2rem","top":"2rem"}}}} -->
@@ -151,14 +245,14 @@ $home_content = <<<HTML
 <!-- wp:column -->
 <div class="wp-block-column">
 <!-- wp:image {"sizeSlug":"large","linkDestination":"none","style":{"border":{"radius":"16px"}}} -->
-<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-1.png" alt="Persona Assistant Connection workspace" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Connect either way.</strong> Use WordPress AI already configured on the site, or connect a Runtype assistant.</figcaption></figure>
+<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-1.png" alt="Persona Assistant Connection workspace" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Connect your provider.</strong> Use WordPress AI already configured on the site, or connect a Runtype assistant.</figcaption></figure>
 <!-- /wp:image -->
 </div>
 <!-- /wp:column -->
 <!-- wp:column -->
 <div class="wp-block-column">
 <!-- wp:image {"sizeSlug":"large","linkDestination":"none","style":{"border":{"radius":"16px"}}} -->
-<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-2.png" alt="Persona Assistant Brand and Copy workspace" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Design without code.</strong> Edit shared branding, welcome content, suggestions, and behavior with a live preview.</figcaption></figure>
+<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-2.png" alt="Persona Assistant Brand and Copy workspace" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Match the site.</strong> Edit shared branding, welcome content, suggestions, and behavior with a live preview.</figcaption></figure>
 <!-- /wp:image -->
 </div>
 <!-- /wp:column -->
@@ -189,7 +283,7 @@ $home_content = <<<HTML
 <!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"5rem","bottom":"5rem"}}},"layout":{"type":"constrained","contentSize":"1120px"}} -->
 <div class="wp-block-group alignwide" style="padding-top:5rem;padding-bottom:5rem">
 <!-- wp:heading {"style":{"typography":{"fontSize":"clamp(2.25rem,5vw,4rem)","letterSpacing":"-0.045em"}}} -->
-<h2 class="wp-block-heading" style="font-size:clamp(2.25rem,5vw,4rem);letter-spacing:-0.045em">More than a chat bubble</h2>
+<h2 class="wp-block-heading" style="font-size:clamp(2.25rem,5vw,4rem);letter-spacing:-0.045em">Way more under the hood</h2>
 <!-- /wp:heading -->
 <!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"2rem","top":"2rem"}}}} -->
 <div class="wp-block-columns">
@@ -240,7 +334,7 @@ if ( ! is_wp_error( $assistant_id ) ) {
 	$settings['placement_mode']       = 'sitewide';
 	$settings['enabled']              = true;
 	$settings['assistant_page_id']    = (int) $assistant_id;
-	$settings['header_title']         = 'Persona Assistant';
+	$settings['header_title']         = 'Demo Assistant';
 	$settings['header_subtitle']      = 'AI chat for WordPress';
 	$settings['welcome_title']        = 'How can I help?';
 	$settings['welcome_subtitle']     = 'Ask a question about this site or choose a place to start.';
@@ -248,6 +342,7 @@ if ( ! is_wp_error( $assistant_id ) ) {
 	$settings['suggested_prompts']    = "What can you help me with?\nSummarize this page.\nHow do I get started?";
 	$settings['launcher_teaser_text'] = 'Questions? Ask the assistant.';
 	$settings['theme_color']          = '#4f46e5';
+	$settings['chat_icon']            = 'icon:bot';
 	$settings['ai_backend']           = 'auto';
 	update_option( $option, $settings );
 	// Demo mode activates the moment an administrator loads the site (no AI is

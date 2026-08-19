@@ -834,6 +834,17 @@
 		// page instead of waiting for the header's Messages toggle. (The widget
 		// itself remembers the visitor's collapse choice across reloads.)
 		if (historyFeatureEnabled && context === 'fullscreen') {
+			// The clear-chat restart icon is floating-widget vocabulary. With
+			// history, "start over" is the rail's own New conversation (the old
+			// thread stays in the list), and no app-frame product keeps a reset
+			// control in the header. Only here, where the history feature is
+			// known to be active: without a rail the header control remains the
+			// page's one start-over affordance and the setting keeps governing it.
+			config.launcher = config.launcher || {};
+			config.launcher.clearChat = { enabled: false };
+			config.layout = config.layout || {};
+			config.layout.header = config.layout.header || {};
+			config.layout.header.showClearChat = false;
 			window.addEventListener('persona:chat-ready', function (event) {
 				var handle = event.detail;
 				if (handle && typeof handle.showHistory === 'function') {

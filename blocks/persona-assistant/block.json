@@ -6,11 +6,17 @@
 	"category": "widgets",
 	"icon": "format-chat",
 	"description": "Embed the Persona assistant at this location.",
+	"keywords": [ "persona", "assistant", "chat", "ai" ],
 	"textdomain": "persona-assistant",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
+	"editorStyle": [
+		"persona-assistant-block-widget-style",
+		"file:./editor.css"
+	],
+	"style": "file:./style.css",
 	"attributes": {
 		"agentId": { "type": "string", "default": "" },
+		"wpAiSystemPrompt": { "type": "string", "default": "" },
 		"launcher": { "type": "boolean", "default": false }
 	},
 	"supports": {

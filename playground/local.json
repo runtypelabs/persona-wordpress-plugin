@@ -25,6 +25,12 @@
 			"step": "resetData"
 		},
 		{
+			"step": "setSiteOptions",
+			"options": {
+				"permalink_structure": "/%postname%/"
+			}
+		},
+		{
 			"step": "runPHP",
 			"code": "<?php require '/wordpress/wp-load.php'; require WP_PLUGIN_DIR . '/persona-assistant/playground/setup-sample-site.php';"
 		}
