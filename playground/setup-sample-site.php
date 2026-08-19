@@ -134,16 +134,13 @@ $home_content = <<<HTML
 
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"clamp(3rem,8vw,7rem)","right":"clamp(1.5rem,6vw,6rem)","bottom":"clamp(3rem,8vw,7rem)","left":"clamp(1.5rem,6vw,6rem)"}},"color":{"background":"#111827","text":"#f9fafb"}},"layout":{"type":"constrained","contentSize":"1120px"}} -->
 <div class="wp-block-group alignfull has-text-color has-background" style="color:#f9fafb;background-color:#111827;padding-top:clamp(3rem,8vw,7rem);padding-right:clamp(1.5rem,6vw,6rem);padding-bottom:clamp(3rem,8vw,7rem);padding-left:clamp(1.5rem,6vw,6rem)">
-<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.78rem","fontStyle":"normal","fontWeight":"700","letterSpacing":"0.12em"},"color":{"text":"#a5b4fc"}}} -->
-<p class="has-text-color" style="color:#a5b4fc;font-size:0.78rem;font-style:normal;font-weight:700;letter-spacing:0.12em">WORDPRESS PLAYGROUND PREVIEW</p>
-<!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"clamp(3rem,8vw,6.5rem)","lineHeight":"1.08","letterSpacing":"-0.055em"},"spacing":{"margin":{"top":"1.25rem","bottom":"1.5rem"}}}} -->
 <h1 class="wp-block-heading" style="margin-top:1.25rem;margin-bottom:1.5rem;font-size:clamp(3rem,8vw,6.5rem);letter-spacing:-0.055em;line-height:1.08">The open AI assistant<br> for {$wp_logo}</h1>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"clamp(1.1rem,2vw,1.4rem)","lineHeight":"1.55"},"color":{"text":"#d1d5db"},"spacing":{"margin":{"bottom":"2rem"}}}} -->
-<p class="has-text-color" style="color:#d1d5db;margin-bottom:2rem;font-size:clamp(1.1rem,2vw,1.4rem);line-height:1.55">Ship a custom-branded AI assistant for your WordPress plugin or client site, built on Persona.js, the open-source agent UI library that works on any website.</p>
+<p class="has-text-color" style="color:#d1d5db;margin-bottom:2rem;font-size:clamp(1.1rem,2vw,1.4rem);line-height:1.55">Ship a custom-branded AI assistant for your WordPress plugin or client site, <br>built on Persona.js, the open-source agent UI library that works on any website.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons -->
@@ -153,13 +150,13 @@ $home_content = <<<HTML
 <!-- /wp:button -->
 
 <!-- wp:button {"className":"is-style-outline","style":{"border":{"radius":"999px"},"spacing":{"padding":{"left":"1.5rem","right":"1.5rem","top":"0.85rem","bottom":"0.85rem"}}}} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="{$connection_url}" style="border-radius:999px;padding-top:0.85rem;padding-right:1.5rem;padding-bottom:0.85rem;padding-left:1.5rem">Connect an AI</a></div>
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="{$connection_url}" style="border-radius:999px;padding-top:0.85rem;padding-right:1.5rem;padding-bottom:0.85rem;padding-left:1.5rem">Connect an AI provider</a></div>
 <!-- /wp:button -->
 </div>
 <!-- /wp:buttons -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontSize":"0.9rem"},"color":{"text":"#9ca3af"},"spacing":{"margin":{"top":"1.25rem"}}}} -->
-<p class="has-text-color" style="color:#9ca3af;margin-top:1.25rem;font-size:0.9rem">You are signed in as a Playground administrator, so chat is live right now with simulated demo responses. Say "hi" for a tour, or ask "What page am I looking at?" to watch a real page tool run behind an approval prompt.</p>
+<p class="has-text-color" style="color:#9ca3af;margin-top:1.25rem;margin-bottom:1.5rem;font-size:0.9rem">You are signed in as a Playground administrator, so chat is live right now with simulated responses.</p>
 <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
