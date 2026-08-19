@@ -8,10 +8,16 @@
  *
  * Wire contract (verified against core/apps/api/src/routes):
  *   POST /v1/client-tokens
- *     body: { name, allowedOrigins[≥1], agentIds[≥1], environment: 'test'|'live', ... }
+ *     body: { name, allowedOrigins[≥1], productSurfaceId, agentIds/flowIds (≥1 combined),
+ *             environment: 'test'|'live', ... }
  *     auth: API key with CLIENT_TOKENS:WRITE (or *)
  *     201 -> { token: 'ct_...' (plaintext, once), clientToken: { id, allowedOrigins, ... }, warnings[] }
- *   GET /v1/agents   -> { data: [ { id, name, ... } ], pagination }   (AGENTS:READ)
+ *   GET /v1/surfaces?type=chat
+ *     -> { data: [ { id, productId, productName, name, type, status, ... } ], pagination }
+ *        (PRODUCTS:SURFACES:READ)
+ *   GET /v1/products/{id}/surfaces/{surfaceId}
+ *     -> { id, productId, items: [ { agentId, flowId, enabled, ... } ], ... }
+ *        (PRODUCTS:SURFACES:READ)
  *
  * @package Persona_Assistant
  */
@@ -262,10 +268,15 @@ class Persona_Assistant_Runtype {
 	}
 
 	/**
-	 * Mint a domain-scoped client token.
+	 * Mint a domain-scoped, surface-bound client token.
+	 *
+	 * The surface id carries the policy plane (loggingPolicy, piiRedaction,
+	 * webmcp, conversationTitles); the agent/flow ids are what the token
+	 * authenticates against and the API requires at least one of them. Both
+	 * come from the chosen chat surface (see describe_chat_surface()).
 	 *
 	 * @param string              $credential Bearer credential (rt_... key or access token).
-	 * @param array<string,mixed> $opts       name, allowedOrigins[], agentIds[], environment.
+	 * @param array<string,mixed> $opts       name, allowedOrigins[], productSurfaceId, agentIds[], flowIds[], defaultFlowId, environment.
 	 * @return array<string,mixed>|WP_Error  { token, id, allowedOrigins[], warnings[] } or error.
 	 */
 	public function mint_client_token( $credential, array $opts ) {
@@ -274,17 +285,30 @@ class Persona_Assistant_Runtype {
 			return new WP_Error( 'persona_assistant_mint_no_origin', __( 'No allowed origin to scope the token to.', 'persona-assistant' ) );
 		}
 
+		$surface_id = isset( $opts['productSurfaceId'] ) ? trim( (string) $opts['productSurfaceId'] ) : '';
+		if ( '' === $surface_id ) {
+			return new WP_Error( 'persona_assistant_mint_no_target', __( 'Choose a chat surface before connecting.', 'persona-assistant' ) );
+		}
+
 		$agent_ids = isset( $opts['agentIds'] ) ? array_values( array_filter( (array) $opts['agentIds'] ) ) : array();
-		if ( empty( $agent_ids ) ) {
-			return new WP_Error( 'persona_assistant_mint_no_target', __( 'Choose an agent before connecting.', 'persona-assistant' ) );
+		$flow_ids  = isset( $opts['flowIds'] ) ? array_values( array_filter( (array) $opts['flowIds'] ) ) : array();
+		if ( empty( $agent_ids ) && empty( $flow_ids ) ) {
+			return new WP_Error( 'persona_assistant_mint_no_capability', __( 'That chat surface has no enabled agent or flow to chat with. Add one to it in Runtype, then try again.', 'persona-assistant' ) );
 		}
 
 		$body = array(
-			'name'           => isset( $opts['name'] ) ? (string) $opts['name'] : 'WordPress',
-			'allowedOrigins' => $origins,
-			'environment'    => ( isset( $opts['environment'] ) && 'test' === $opts['environment'] ) ? 'test' : 'live',
-			'agentIds'       => $agent_ids,
+			'name'             => isset( $opts['name'] ) ? (string) $opts['name'] : 'WordPress',
+			'allowedOrigins'   => $origins,
+			'environment'      => ( isset( $opts['environment'] ) && 'test' === $opts['environment'] ) ? 'test' : 'live',
+			'productSurfaceId' => $surface_id,
 		);
+		if ( ! empty( $agent_ids ) ) {
+			$body['agentIds'] = $agent_ids;
+		}
+		if ( ! empty( $flow_ids ) ) {
+			$body['flowIds']       = $flow_ids;
+			$body['defaultFlowId'] = isset( $opts['defaultFlowId'] ) && '' !== (string) $opts['defaultFlowId'] ? (string) $opts['defaultFlowId'] : $flow_ids[0];
+		}
 
 		$data = $this->request( 'POST', '/v1/client-tokens', $credential, $body );
 		if ( is_wp_error( $data ) ) {
@@ -332,17 +356,112 @@ class Persona_Assistant_Runtype {
 	}
 
 	/**
-	 * List agents for the credential (for the admin picker).
+	 * List the credential's chat surfaces (for the admin assistant picker).
+	 *
+	 * Returns the raw rows (id, productId, productName, name, ...); callers
+	 * shape them for their UI.
 	 *
 	 * @param string $credential Bearer credential.
-	 * @return array<int,array{id:string,name:string}>|WP_Error
+	 * @return array<int,array<string,mixed>>|WP_Error
 	 */
-	public function list_agents( $credential ) {
-		$data = $this->request( 'GET', '/v1/agents', $credential, null, array( 'limit' => 100 ) );
+	public function list_chat_surfaces( $credential ) {
+		$data = $this->request(
+			'GET',
+			'/v1/surfaces',
+			$credential,
+			null,
+			array(
+				'type'  => 'chat',
+				'limit' => 100,
+			)
+		);
 		if ( is_wp_error( $data ) ) {
 			return $data;
 		}
-		return self::pluck_id_name( $data );
+		if ( isset( $data['data'] ) && is_array( $data['data'] ) ) {
+			return array_values( array_filter( $data['data'], 'is_array' ) );
+		}
+		return array();
+	}
+
+	/**
+	 * Resolve a chat surface into what a mint needs: its product, and the
+	 * enabled agent/flow capabilities the token must carry to authenticate
+	 * against it (chat auth requires the token's agents/flows to overlap the
+	 * surface's enabled capabilities; the surface id alone is only policy).
+	 *
+	 * `agents` pairs each agent id with its surface-facing label (the item's
+	 * exposedName/capabilityName) for UIs that let a block pick among the
+	 * surface's agents — the only agents a token minted from this surface can
+	 * authenticate as.
+	 *
+	 * @param string $credential Bearer credential.
+	 * @param string $surface_id Chat surface id.
+	 * @return array{product_id:string,agent_ids:array<int,string>,flow_ids:array<int,string>,agents:array<int,array{id:string,name:string}>}|WP_Error
+	 */
+	public function describe_chat_surface( $credential, $surface_id ) {
+		$surface_id = trim( (string) $surface_id );
+		if ( '' === $surface_id ) {
+			return new WP_Error( 'persona_assistant_surface_no_id', __( 'Choose a chat surface before connecting.', 'persona-assistant' ) );
+		}
+
+		$surfaces = $this->list_chat_surfaces( $credential );
+		if ( is_wp_error( $surfaces ) ) {
+			return $surfaces;
+		}
+
+		$product_id = '';
+		foreach ( $surfaces as $surface ) {
+			if ( isset( $surface['id'] ) && (string) $surface['id'] === $surface_id ) {
+				$product_id = isset( $surface['productId'] ) ? (string) $surface['productId'] : '';
+				break;
+			}
+		}
+		if ( '' === $product_id ) {
+			return new WP_Error( 'persona_assistant_surface_gone', __( 'The selected chat surface no longer exists on Runtype. Refresh the list and choose another.', 'persona-assistant' ) );
+		}
+
+		$detail = $this->request(
+			'GET',
+			'/v1/products/' . rawurlencode( $product_id ) . '/surfaces/' . rawurlencode( $surface_id ),
+			$credential
+		);
+		if ( is_wp_error( $detail ) ) {
+			return $detail;
+		}
+
+		$agents   = array();
+		$flow_ids = array();
+		$items    = isset( $detail['items'] ) && is_array( $detail['items'] ) ? $detail['items'] : array();
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) || empty( $item['enabled'] ) ) {
+				continue;
+			}
+			if ( ! empty( $item['agentId'] ) ) {
+				$agent_id = (string) $item['agentId'];
+				if ( ! isset( $agents[ $agent_id ] ) ) {
+					$name = '';
+					if ( ! empty( $item['exposedName'] ) ) {
+						$name = (string) $item['exposedName'];
+					} elseif ( ! empty( $item['capabilityName'] ) ) {
+						$name = (string) $item['capabilityName'];
+					}
+					$agents[ $agent_id ] = array(
+						'id'   => $agent_id,
+						'name' => '' !== $name ? $name : $agent_id,
+					);
+				}
+			} elseif ( ! empty( $item['flowId'] ) ) {
+				$flow_ids[] = (string) $item['flowId'];
+			}
+		}
+
+		return array(
+			'product_id' => $product_id,
+			'agent_ids'  => array_keys( $agents ),
+			'flow_ids'   => array_values( array_unique( $flow_ids ) ),
+			'agents'     => array_values( $agents ),
+		);
 	}
 
 	/**
@@ -359,49 +478,4 @@ class Persona_Assistant_Runtype {
 		return $this->request( 'DELETE', '/v1/client-tokens/' . rawurlencode( $id ), $credential );
 	}
 
-	/**
-	 * Reduce a `{ data: [ { id, name } ] }` (or bare array) response to id/name pairs.
-	 *
-	 * @param array<string,mixed> $data Decoded response.
-	 * @return array<int,array{id:string,name:string}>
-	 */
-	private static function pluck_id_name( $data ) {
-		if ( isset( $data['data'] ) && is_array( $data['data'] ) ) {
-			$items = $data['data'];
-		} elseif ( self::is_list( $data ) ) {
-			$items = $data;
-		} else {
-			$items = array();
-		}
-
-		$out = array();
-		foreach ( $items as $item ) {
-			if ( is_array( $item ) && isset( $item['id'] ) ) {
-				$out[] = array(
-					'id'   => (string) $item['id'],
-					'name' => isset( $item['name'] ) && '' !== (string) $item['name'] ? (string) $item['name'] : (string) $item['id'],
-				);
-			}
-		}
-		return $out;
-	}
-
-	/**
-	 * Is the array a sequential list (vs. an associative map)?
-	 *
-	 * @param array<mixed> $arr Array.
-	 * @return bool
-	 */
-	private static function is_list( $arr ) {
-		if ( ! is_array( $arr ) ) {
-			return false;
-		}
-		$i = 0;
-		foreach ( $arr as $k => $unused ) {
-			if ( $k !== $i++ ) {
-				return false;
-			}
-		}
-		return true;
-	}
 }

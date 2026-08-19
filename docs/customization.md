@@ -7,7 +7,7 @@ Persona Assistant separates one-time onboarding from ongoing configuration. A fr
 The permanent administration uses focused query-based workspaces instead of a long wizard:
 
 * **Overview**: connection and surface status cards with direct actions.
-* **Connection**: Runtype or WordPress AI provider and agent configuration.
+* **Connection**: Runtype or WordPress AI provider and assistant configuration.
 * **Brand & Copy**: shared accent, theme mode, corner style, titles, welcome layout/copy, rich starter suggestions, scrollbar policy, and an isolated live preview.
 * **Launcher**: publishing mode, icon, position, proactive teaser, and an isolated live preview.
 * **Assistant Page**: WordPress Page selection, Branded/ChatGPT-like style presets, shared welcome content, Page-specific welcome/prompt presentation, fine-tuning, and a full-screen live preview.

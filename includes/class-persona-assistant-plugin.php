@@ -157,31 +157,28 @@ final class Persona_Assistant_Plugin {
 	public function enqueue_block_editor_data() {
 		$settings = persona_assistant_get_settings();
 		$mode     = persona_assistant_resolve_mode();
-		$agents   = persona_assistant_get_cached_agents();
+
+		// A per-block override can only name an agent the minted token
+		// authenticates as, and the token carries exactly the bound surface's
+		// enabled agents — so those (stored at mint time) are the options.
+		// Any wider list (e.g. all the org's agents) would offer choices that
+		// fail chat auth at runtime.
+		$state    = persona_assistant_get_state();
+		$agents   = isset( $state['surface_agents'] ) && is_array( $state['surface_agents'] ) ? $state['surface_agents'] : array();
 		$options  = array(
 			array(
 				'label' => __( 'Use the default agent', 'persona-assistant' ),
 				'value' => '',
 			),
 		);
-		$known = array();
 		foreach ( $agents as $agent ) {
-			if ( empty( $agent['id'] ) ) {
+			if ( ! is_array( $agent ) || empty( $agent['id'] ) ) {
 				continue;
 			}
-			$id      = (string) $agent['id'];
-			$name    = ! empty( $agent['name'] ) ? (string) $agent['name'] : $id;
-			$known[] = $id;
+			$id        = (string) $agent['id'];
 			$options[] = array(
-				'label' => $name,
+				'label' => ! empty( $agent['name'] ) ? (string) $agent['name'] : $id,
 				'value' => $id,
-			);
-		}
-		if ( '' !== (string) $settings['agent_id'] && ! in_array( (string) $settings['agent_id'], $known, true ) ) {
-			$options[] = array(
-				/* translators: %s: configured Runtype agent identifier. */
-				'label' => sprintf( __( 'Configured agent (%s)', 'persona-assistant' ), (string) $settings['agent_id'] ),
-				'value' => (string) $settings['agent_id'],
 			);
 		}
 
@@ -202,7 +199,6 @@ final class Persona_Assistant_Plugin {
 		if ( 'runtype' === $mode ) {
 			$preview['clientToken'] = persona_assistant_effective_client_token();
 			$preview['apiUrl']      = esc_url_raw( persona_assistant_get_api_base() );
-			$preview['agentId']     = persona_assistant_effective_agent_id();
 		} elseif ( 'demo' === $mode ) {
 			$preview['clientToken'] = 'ct_demo';
 			$preview['apiUrl']      = esc_url_raw( persona_assistant_demo_api_base() );
@@ -231,7 +227,6 @@ final class Persona_Assistant_Plugin {
 				'isReady'      => 'disabled' !== $mode,
 				'isSitewide'   => persona_assistant_sitewide_enabled(),
 				'placementMode' => (string) $settings['placement_mode'],
-				'hasConstAgent' => defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID,
 				'siteWpAiSystemPrompt' => (string) $settings['wp_ai_system_prompt'],
 				'settingsUrl'  => admin_url( 'options-general.php?page=' . Persona_Assistant_Settings::PAGE_SLUG ),
 			)

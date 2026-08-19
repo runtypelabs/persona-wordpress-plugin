@@ -269,9 +269,6 @@ class Persona_Assistant_Settings {
 			if ( 'runtype' === $mode ) {
 				$preview['config']['clientToken'] = persona_assistant_effective_client_token();
 				$preview['config']['apiUrl']      = esc_url_raw( persona_assistant_get_api_base() );
-				if ( '' !== persona_assistant_effective_agent_id() ) {
-					$preview['config']['agentId'] = persona_assistant_effective_agent_id();
-				}
 			} elseif ( 'wordpress_ai' === $mode ) {
 				$preview['config']['apiUrl'] = esc_url_raw( rest_url( Persona_Assistant_REST::NAMESPACE . Persona_Assistant_REST::ROUTE ) );
 			} else {
@@ -279,17 +276,17 @@ class Persona_Assistant_Settings {
 			}
 		}
 
-		// Auto-load agents when a mint credential (API key or OAuth token) exists.
-		$can_list_agents = ! is_wp_error( Persona_Assistant_Credential::resolve_mint_credential() );
+		// Auto-load chat surfaces when a mint credential (API key or OAuth token) exists.
+		$can_list_surfaces = ! is_wp_error( Persona_Assistant_Credential::resolve_mint_credential() );
 
 		wp_localize_script(
 			'persona-assistant-admin',
 			'PersonaAssistantAdmin',
 			array(
-				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
-				'nonce'         => wp_create_nonce( 'persona_assistant_admin' ),
-				'preview'       => $preview,
-				'canListAgents' => $can_list_agents,
+				'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+				'nonce'           => wp_create_nonce( 'persona_assistant_admin' ),
+				'preview'         => $preview,
+				'canListSurfaces' => $can_list_surfaces,
 				// Fallback icon when the chat-icon field is blank: the Site Icon,
 				// matching persona_assistant_widget_config()'s server-side fallback.
 				'siteIconUrl'   => (string) get_site_icon_url(),
@@ -298,11 +295,10 @@ class Persona_Assistant_Settings {
 				'strings' => array(
 					'loading'   => __( 'Loading…', 'persona-assistant' ),
 					'refresh'   => __( 'Refresh', 'persona-assistant' ),
-					'noResults' => __( 'No agents were returned.', 'persona-assistant' ),
-					'copied'    => __( 'Copied', 'persona-assistant' ),
+					'noResults' => __( 'No chat surfaces were returned.', 'persona-assistant' ),
 					'error'     => __( 'Could not reach Runtype. Check the connection and try again.', 'persona-assistant' ),
 					'choose'    => __( '— Select —', 'persona-assistant' ),
-					'loaded'    => __( 'Agents loaded. Choose one below, then save.', 'persona-assistant' ),
+					'loaded'    => __( 'Chat surfaces loaded. Choose one below, then save.', 'persona-assistant' ),
 					'clearChat' => __( 'Clear chat', 'persona-assistant' ),
 					'dismissMessage' => __( 'Dismiss message', 'persona-assistant' ),
 					'iconModalTitle'   => __( 'Choose a chat icon', 'persona-assistant' ),
@@ -418,7 +414,7 @@ class Persona_Assistant_Settings {
 				$defaults['ai_backend']
 			);
 			$out['client_token'] = isset( $input['client_token'] ) ? sanitize_text_field( trim( (string) $input['client_token'] ) ) : $existing['client_token'];
-			$out['agent_id'] = isset( $input['agent_id'] ) ? sanitize_text_field( trim( (string) $input['agent_id'] ) ) : (string) $existing['agent_id'];
+			$out['product_surface_id'] = isset( $input['product_surface_id'] ) ? sanitize_text_field( trim( (string) $input['product_surface_id'] ) ) : (string) $existing['product_surface_id'];
 			$out['wp_ai_system_prompt'] = isset( $input['wp_ai_system_prompt'] ) ? sanitize_textarea_field( (string) $input['wp_ai_system_prompt'] ) : (string) $existing['wp_ai_system_prompt'];
 			$out['wp_ai_model'] = isset( $input['wp_ai_model'] ) ? sanitize_text_field( (string) $input['wp_ai_model'] ) : (string) $existing['wp_ai_model'];
 			$out['wp_ai_access'] = $this->whitelist(
@@ -684,9 +680,13 @@ class Persona_Assistant_Settings {
 			return;
 		}
 
-		$agent = persona_assistant_effective_agent_id();
-		if ( '' === $agent ) {
-			$this->add_notice( 'persona_assistant_target', __( 'Choose an agent to connect Runtype.', 'persona-assistant' ), 'warning' );
+		// No surface picked yet (including an account with zero chat surfaces):
+		// fall through to the picker's empty-state panel rather than attempting
+		// a mint that cannot succeed. A warning, not an error, for the same
+		// reason as the automatic-mode early return above.
+		$surface_id = persona_assistant_selected_surface_id();
+		if ( '' === $surface_id ) {
+			$this->add_notice( 'persona_assistant_target', __( 'Choose a chat surface to connect Runtype.', 'persona-assistant' ), 'warning' );
 			return;
 		}
 
@@ -696,7 +696,7 @@ class Persona_Assistant_Settings {
 
 		$needs_mint = empty( $state['client_token'] )
 			|| ! isset( $state['origin'] ) || $state['origin'] !== $origin
-			|| ! isset( $state['agent_id'] ) || $state['agent_id'] !== $agent
+			|| ! isset( $state['product_surface_id'] ) || $state['product_surface_id'] !== $surface_id
 			|| ! isset( $state['environment'] ) || $state['environment'] !== $env;
 
 		if ( ! $needs_mint ) {
@@ -716,18 +716,33 @@ class Persona_Assistant_Settings {
 	 * @return void
 	 */
 	private function mint_and_store( $credential, $settings, $origin, $env ) {
-		$host = wp_parse_url( home_url(), PHP_URL_HOST );
-		$opts = array(
-			'name'           => 'WordPress: ' . ( $host ? $host : 'site' ),
-			'allowedOrigins' => array( $origin ),
-			'environment'    => $env,
-		);
-		if ( '' !== persona_assistant_effective_agent_id() ) {
-			$opts['agentIds'] = array( persona_assistant_effective_agent_id() );
+		$runtype    = new Persona_Assistant_Runtype();
+		$surface_id = persona_assistant_selected_surface_id();
+
+		// The surface id alone is only the policy plane; the token still needs
+		// the surface's enabled agent/flow capabilities to authenticate.
+		$target = $runtype->describe_chat_surface( $credential, $surface_id );
+		if ( is_wp_error( $target ) ) {
+			$this->add_notice(
+				'persona_assistant_mint',
+				/* translators: %s: error detail. */
+				sprintf( __( 'Could not connect to Runtype: %s', 'persona-assistant' ), $target->get_error_message() ),
+				'error'
+			);
+			return;
 		}
 
-		$runtype = new Persona_Assistant_Runtype();
-		$result  = $runtype->mint_client_token( $credential, $opts );
+		$host = wp_parse_url( home_url(), PHP_URL_HOST );
+		$opts = array(
+			'name'             => 'WordPress: ' . ( $host ? $host : 'site' ),
+			'allowedOrigins'   => array( $origin ),
+			'environment'      => $env,
+			'productSurfaceId' => $surface_id,
+			'agentIds'         => $target['agent_ids'],
+			'flowIds'          => $target['flow_ids'],
+		);
+
+		$result = $runtype->mint_client_token( $credential, $opts );
 
 		if ( is_wp_error( $result ) ) {
 			$this->add_notice(
@@ -743,15 +758,34 @@ class Persona_Assistant_Settings {
 		// stored OAuth token pair and orphan the Login with Runtype session.
 		persona_assistant_merge_state(
 			array(
-				'client_token'    => $result['token'],
-				'client_token_id' => $result['id'],
-				'origin'          => $origin,
-				'agent_id'        => persona_assistant_effective_agent_id(),
-				'environment'     => $env,
-				'allowed_origins' => $result['allowedOrigins'],
-				'minted_at'       => time(),
+				'client_token'       => $result['token'],
+				'client_token_id'    => $result['id'],
+				'origin'             => $origin,
+				'product_surface_id' => $surface_id,
+				// The surface's enabled agents ({id, name} pairs): the only
+				// agents this token authenticates as, so the per-block agent
+				// picker offers exactly these.
+				'surface_agents'     => $target['agents'],
+				'environment'        => $env,
+				'allowed_origins'    => $result['allowedOrigins'],
+				'minted_at'          => time(),
 			)
 		);
+
+		// Runtype attaches advisory warnings to a successful mint (e.g. an
+		// over-broad origin); dropping them here is how misconfigurations went
+		// silent before. Show each one.
+		foreach ( (array) $result['warnings'] as $warning ) {
+			$warning = is_scalar( $warning ) ? trim( (string) $warning ) : '';
+			if ( '' !== $warning ) {
+				$this->add_notice(
+					'persona_assistant_mint_warning_' . substr( md5( $warning ), 0, 8 ),
+					/* translators: %s: warning detail from Runtype. */
+					sprintf( __( 'Runtype warning: %s', 'persona-assistant' ), $warning ),
+					'warning'
+				);
+			}
+		}
 
 		$this->add_notice(
 			'persona_assistant_connected',
@@ -762,7 +796,7 @@ class Persona_Assistant_Settings {
 	}
 
 	/**
-	 * AJAX: list agents for the supplied (or stored) API key.
+	 * AJAX: list chat surfaces for the stored credential (the assistant picker).
 	 *
 	 * @return void
 	 */
@@ -782,15 +816,30 @@ class Persona_Assistant_Settings {
 		}
 
 		$runtype = new Persona_Assistant_Runtype();
-		$agents  = $runtype->list_agents( $credential );
+		$rows    = $runtype->list_chat_surfaces( $credential );
 
-		if ( is_wp_error( $agents ) ) {
-			wp_send_json_error( array( 'message' => $agents->get_error_message() ) );
+		if ( is_wp_error( $rows ) ) {
+			wp_send_json_error( array( 'message' => $rows->get_error_message() ) );
 		}
 
-		persona_assistant_cache_agents( $agents );
+		// Two products can each own a "Chat" surface, so the product name is
+		// part of the picker row, not just decoration.
+		$surfaces = array();
+		foreach ( $rows as $row ) {
+			if ( empty( $row['id'] ) ) {
+				continue;
+			}
+			$surfaces[] = array(
+				'id'          => (string) $row['id'],
+				'name'        => isset( $row['name'] ) && '' !== (string) $row['name'] ? (string) $row['name'] : (string) $row['id'],
+				'productId'   => isset( $row['productId'] ) ? (string) $row['productId'] : '',
+				'productName' => isset( $row['productName'] ) ? (string) $row['productName'] : '',
+			);
+		}
 
-		wp_send_json_success( array( 'agents' => $agents ) );
+		persona_assistant_cache_surfaces( $surfaces );
+
+		wp_send_json_success( array( 'surfaces' => $surfaces ) );
 	}
 
 	/**
@@ -825,7 +874,7 @@ class Persona_Assistant_Settings {
 			$settings                      = persona_assistant_get_settings();
 			$settings['api_key']           = '';
 			$settings['client_token']      = '';
-			$settings['agent_id']          = '';
+			$settings['product_surface_id'] = '';
 			// Require an explicit provider change before Runtype can reconnect,
 			// including sites whose management key is defined in wp-config.php.
 			$settings['ai_backend']      = 'wordpress_ai';
@@ -834,7 +883,7 @@ class Persona_Assistant_Settings {
 			$this->suppress_reconcile      = true;
 			update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings );
 			$this->suppress_reconcile      = false;
-			delete_transient( 'persona_assistant_agents' );
+			delete_transient( 'persona_assistant_surfaces' );
 			$this->add_notice( 'persona_assistant_disconnected', __( 'Disconnected from Runtype.', 'persona-assistant' ), 'success' );
 		} else {
 			// Force a fresh mint.
@@ -1822,32 +1871,24 @@ class Persona_Assistant_Settings {
 	}
 
 	/**
-	 * Primary provider choice: two cards (Runtype / WordPress AI).
-	 *
-	 * The cards are ordered by readiness, not by a fixed preference: when the
-	 * site's built-in AI can already generate text, it leads: it is zero-setup
-	 * and what a WordPress user expects to see first. Otherwise leading with it
-	 * would open the screen on a "not configured" warning, so the one-click
-	 * Runtype connect leads instead. A saved choice is a radio value, so
-	 * reordering never changes what is selected.
+	 * Primary provider choice: two cards (WordPress AI / Runtype).
 	 *
 	 * @param array<string,mixed> $settings Settings.
 	 * @return void
 	 */
 	private function render_provider_choice( $settings ) {
 		$ai_backend = (string) $settings['ai_backend'];
-		$wp_ai_ready = Persona_Assistant_AI::is_available();
 
 		$runtype = array( 'runtype', __( 'Runtype', 'persona-assistant' ), __( 'Use an agent on Runtype, with over 200 built-in models and tools.', 'persona-assistant' ) );
 		$wp_ai   = array(
 			'wordpress_ai',
 			__( 'WordPress AI', 'persona-assistant' ),
-			$wp_ai_ready
+			Persona_Assistant_AI::is_available()
 				? __( 'Use your site\'s connected AI. Already set up, no extra account needed.', 'persona-assistant' )
 				: __( 'Use a provider already connected to WordPress.', 'persona-assistant' ),
 		);
 
-		$cards = $wp_ai_ready ? array( $wp_ai, $runtype ) : array( $runtype, $wp_ai );
+		$cards = array( $wp_ai, $runtype );
 		?>
 		<div class="persona-assistant-choice-grid">
 			<?php foreach ( $cards as $card ) : ?>
@@ -1858,43 +1899,35 @@ class Persona_Assistant_Settings {
 	}
 
 	/**
-	 * Runtype connection section: OAuth connect (primary), agent picker, and a
-	 * manual client-token fallback.
+	 * Runtype connection section: OAuth connect (primary), the assistant
+	 * (chat surface) picker, and a manual client-token fallback.
 	 *
 	 * @param array<string,mixed> $settings Settings.
 	 * @return void
 	 */
 	private function render_runtype_section( $settings ) {
-		$source        = Persona_Assistant_Credential::source();
-		$has_constant  = defined( 'PERSONA_ASSISTANT_API_KEY' ) && PERSONA_ASSISTANT_API_KEY;
+		$source          = Persona_Assistant_Credential::source();
+		$has_constant    = defined( 'PERSONA_ASSISTANT_API_KEY' ) && PERSONA_ASSISTANT_API_KEY;
 		// A legacy key stored before the API-key UI was removed still mints; it
 		// just can't be entered anymore. Treat it like the constant in the UI.
-		$uses_api_key  = Persona_Assistant_Credential::SOURCE_API_KEY === $source;
-		$opt           = esc_attr( PERSONA_ASSISTANT_SETTINGS_OPTION );
-		$cached_agents = persona_assistant_get_cached_agents();
-		$can_mint      = ! is_wp_error( Persona_Assistant_Credential::resolve_mint_credential() );
-		$oauth_ok      = $this->oauth_can_work();
+		$uses_api_key    = Persona_Assistant_Credential::SOURCE_API_KEY === $source;
+		$opt             = esc_attr( PERSONA_ASSISTANT_SETTINGS_OPTION );
+		$cached_surfaces = persona_assistant_get_cached_surfaces();
+		$can_mint        = ! is_wp_error( Persona_Assistant_Credential::resolve_mint_credential() );
+		$oauth_ok        = $this->oauth_can_work();
 
 		$has_const_token = defined( 'PERSONA_ASSISTANT_CLIENT_TOKEN' ) && PERSONA_ASSISTANT_CLIENT_TOKEN;
-		$has_const_agent = defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID;
-		$opt_name        = PERSONA_ASSISTANT_SETTINGS_OPTION;
 
 		// A developer who defines PERSONA_ASSISTANT_CLIENT_TOKEN has configured the
 		// connection for this site: it outranks every other source, so none of
-		// the connection UI (Login with Runtype, agent picker, manual token)
+		// the connection UI (Login with Runtype, assistant picker, manual token)
 		// applies. Show a single confirmation instead of machinery the site
 		// owner cannot use; anything more just creates support questions for
-		// the developer. The hidden field preserves the stored agent on save.
+		// the developer.
 		if ( $has_const_token ) {
 			?>
 			<h3><?php esc_html_e( 'Connect Runtype', 'persona-assistant' ); ?></h3>
-			<p>
-				<?php esc_html_e( 'Runtype is connected in code for this site (via wp-config.php), so there is nothing to configure here.', 'persona-assistant' ); ?>
-				<?php if ( $has_const_agent ) : ?>
-					<?php esc_html_e( 'The agent is also set in code.', 'persona-assistant' ); ?>
-				<?php endif; ?>
-			</p>
-			<input type="hidden" name="<?php echo esc_attr( $opt_name ); ?>[agent_id]" id="persona-assistant-agent-id" value="<?php echo esc_attr( (string) $settings['agent_id'] ); ?>" />
+			<p><?php esc_html_e( 'Runtype is connected in code for this site (via wp-config.php), so there is nothing to configure here.', 'persona-assistant' ); ?></p>
 			<?php
 			return;
 		}
@@ -1904,14 +1937,19 @@ class Persona_Assistant_Settings {
 		// is genuinely the path in use: OAuth cannot work on this site, a
 		// connect attempt failed site verification (the error notice points
 		// here), or a pasted token is already connected. Everyone else sees
-		// only Login + Agent (developers use the wp-config.php constants).
+		// only Login + Assistant (developers use the wp-config.php constants).
 		$state_flags = persona_assistant_get_state();
 		$show_manual = ( ! $oauth_ok || $has_pasted_token || ! empty( $state_flags['oauth_verify_failed'] ) );
-		// The visible agent-ID field exists only for the manual path, where no
-		// credential can list agents; with a working mint credential the select
-		// (syncing into a hidden field) is the only agent input.
-		$manual_agent_field = $show_manual && ! $can_mint && ! $has_const_agent;
-		$origin             = persona_assistant_site_origin();
+		$origin      = persona_assistant_site_origin();
+		// Deep link into the Runtype dashboard's first-party example flow with
+		// this site's identity prefilled (the template's two required
+		// variables). The site owner creates the assistant there, then returns
+		// here to pick it. The blogname option is stored HTML-escaped
+		// (sanitize_option runs esc_html on save), so decode entities before
+		// URL-encoding or "Flour & Stone" prefills as "Flour &amp; Stone".
+		$create_url = persona_assistant_dashboard_base() . '/now?example=wordpress-assistant'
+			. '&templateParam:siteName=' . rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) )
+			. '&templateParam:siteUrl=' . rawurlencode( home_url( '/' ) );
 		?>
 		<h3><?php esc_html_e( 'Connect Runtype', 'persona-assistant' ); ?></h3>
 		<table class="form-table" role="presentation">
@@ -1923,8 +1961,8 @@ class Persona_Assistant_Settings {
 							<?php
 							echo esc_html(
 								$has_constant
-									? __( 'Using the Runtype API key defined in wp-config.php. Agents are loaded with that key below.', 'persona-assistant' )
-									: __( 'Using the Runtype API key saved by an earlier version of this plugin. Agents are loaded with that key below. Disconnecting removes it.', 'persona-assistant' )
+									? __( 'Using the Runtype API key defined in wp-config.php. Chat surfaces are loaded with that key below.', 'persona-assistant' )
+									: __( 'Using the Runtype API key saved by an earlier version of this plugin. Chat surfaces are loaded with that key below. Disconnecting removes it.', 'persona-assistant' )
 							);
 							?>
 						</em></p>
@@ -1940,45 +1978,50 @@ class Persona_Assistant_Settings {
 
 			<?php if ( $can_mint ) : ?>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Agent', 'persona-assistant' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Chat surface', 'persona-assistant' ); ?></th>
 					<td>
-						<?php if ( $has_const_agent ) : ?>
-							<p><em><?php esc_html_e( 'The agent is set in code via the PERSONA_ASSISTANT_AGENT_ID constant in wp-config.php, which overrides any selection here.', 'persona-assistant' ); ?></em></p>
-						<?php else : ?>
-							<p>
-								<button type="button" class="button" id="persona-assistant-load-targets"><?php esc_html_e( 'Refresh', 'persona-assistant' ); ?></button>
-								<span id="persona-assistant-load-status" class="persona-assistant-inline-status" role="status" aria-live="polite"></span>
-							</p>
-							<p id="persona-assistant-agent-select-row">
-								<label for="persona-assistant-agent-select" class="screen-reader-text"><?php esc_html_e( 'Agent', 'persona-assistant' ); ?></label>
-								<select id="persona-assistant-agent-select" class="persona-assistant-target-select" data-target="agent" data-current="<?php echo esc_attr( (string) $settings['agent_id'] ); ?>">
-									<option value=""><?php esc_html_e( '— None —', 'persona-assistant' ); ?></option>
-									<?php foreach ( $cached_agents as $agent ) : ?>
-										<?php if ( ! empty( $agent['id'] ) ) : ?>
-											<option value="<?php echo esc_attr( (string) $agent['id'] ); ?>" <?php selected( (string) $settings['agent_id'], (string) $agent['id'] ); ?>><?php echo esc_html( ! empty( $agent['name'] ) ? (string) $agent['name'] : (string) $agent['id'] ); ?></option>
-										<?php endif; ?>
-									<?php endforeach; ?>
-								</select>
-							</p>
+						<p>
+							<button type="button" class="button" id="persona-assistant-load-targets"><?php esc_html_e( 'Refresh', 'persona-assistant' ); ?></button>
+							<span id="persona-assistant-load-status" class="persona-assistant-inline-status" role="status" aria-live="polite"></span>
+						</p>
+						<p id="persona-assistant-surface-select-row">
+							<label for="persona-assistant-surface-select" class="screen-reader-text"><?php esc_html_e( 'Chat surface', 'persona-assistant' ); ?></label>
+							<select id="persona-assistant-surface-select" class="persona-assistant-target-select" data-target="surface" data-current="<?php echo esc_attr( (string) $settings['product_surface_id'] ); ?>">
+								<option value=""><?php esc_html_e( '— None —', 'persona-assistant' ); ?></option>
+								<?php foreach ( $cached_surfaces as $surface ) : ?>
+									<?php if ( ! empty( $surface['id'] ) ) : ?>
+										<?php
+										$surface_label = ! empty( $surface['name'] ) ? (string) $surface['name'] : (string) $surface['id'];
+										if ( ! empty( $surface['productName'] ) ) {
+											$surface_label .= ' — ' . (string) $surface['productName'];
+										}
+										?>
+										<option value="<?php echo esc_attr( (string) $surface['id'] ); ?>" <?php selected( (string) $settings['product_surface_id'], (string) $surface['id'] ); ?>><?php echo esc_html( $surface_label ); ?></option>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							</select>
+						</p>
+						<p class="description">
 							<?php
-							// First-run onboarding: revealed by admin.js only when the
-							// agent fetch succeeds with zero agents, so a cold cache or
-							// a failed request never shows it. The prompt is a literal
-							// pasted into an AI assistant, so it is not translated.
+							printf(
+								/* translators: %s: link to the Runtype WordPress Assistant template with this site prefilled. */
+								esc_html__( 'Need a new one for this site? %s. When it is ready, click Refresh to load it here.', 'persona-assistant' ),
+								'<a href="' . esc_url( $create_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Create a site assistant on Runtype', 'persona-assistant' ) . '</a>'
+							);
 							?>
-							<div id="persona-assistant-agent-empty" class="persona-assistant-agent-empty" hidden>
-								<p><?php esc_html_e( 'Your Runtype workspace has no agents yet. Create your first one and it will appear here.', 'persona-assistant' ); ?></p>
-								<p class="persona-assistant-agent-empty-action">
-									<a href="<?php echo esc_url( persona_assistant_dashboard_base() . '/agents/create' ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary"><?php esc_html_e( 'Create your first agent on Runtype', 'persona-assistant' ); ?></a>
-								</p>
-								<p class="description"><?php esc_html_e( 'Prefer to build it with AI? Paste this prompt into your assistant:', 'persona-assistant' ); ?></p>
-								<p class="persona-assistant-agent-empty-prompt">
-									<code id="persona-assistant-agent-prompt">fetch https://runtype.ai and help me build my first agent on Runtype</code>
-									<button type="button" class="button" id="persona-assistant-agent-prompt-copy"><?php esc_html_e( 'Copy', 'persona-assistant' ); ?></button>
-								</p>
-								<p class="description"><?php esc_html_e( 'When your agent is ready, click Refresh above and it is selected automatically.', 'persona-assistant' ); ?></p>
-							</div>
-						<?php endif; ?>
+						</p>
+						<?php
+						// First-run onboarding: revealed by admin.js only when the
+						// surface fetch succeeds with zero rows, so a cold cache or
+						// a failed request never shows it.
+						?>
+						<div id="persona-assistant-surface-empty" class="persona-assistant-surface-empty" hidden>
+							<p><?php esc_html_e( 'Your Runtype workspace has no chat surface for this site yet. Create your site assistant on Runtype — it takes a minute and comes preconfigured for WordPress — then come back here and pick its chat surface.', 'persona-assistant' ); ?></p>
+							<p class="persona-assistant-surface-empty-action">
+								<a href="<?php echo esc_url( $create_url ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary"><?php esc_html_e( 'Create your site assistant on Runtype', 'persona-assistant' ); ?></a>
+							</p>
+							<p class="description"><?php esc_html_e( 'When it is ready, click Refresh above and it is selected automatically.', 'persona-assistant' ); ?></p>
+						</div>
 					</td>
 				</tr>
 			<?php endif; ?>
@@ -1991,7 +2034,7 @@ class Persona_Assistant_Settings {
 							<?php
 							printf(
 								/* translators: %s: the site's browser origin. */
-								esc_html__( 'Create a client token in the Runtype dashboard, scoped to this site\'s origin (%s) and your agent, then paste it here. It is used as-is (no minting).', 'persona-assistant' ),
+								esc_html__( 'Create a client token in the Runtype dashboard, scoped to this site\'s origin (%s) and bound to your assistant\'s chat surface, then paste it here. It is used as-is (no minting).', 'persona-assistant' ),
 								'<code>' . esc_html( $origin ) . '</code>'
 							);
 							?>
@@ -2000,21 +2043,12 @@ class Persona_Assistant_Settings {
 							<label for="persona-assistant-client-token" class="screen-reader-text"><?php esc_html_e( 'Client token', 'persona-assistant' ); ?></label>
 							<input type="text" id="persona-assistant-client-token" class="regular-text" name="<?php echo $opt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>[client_token]" value="<?php echo esc_attr( (string) $settings['client_token'] ); ?>" placeholder="ct_live_..." />
 						</p>
-						<?php if ( $manual_agent_field ) : ?>
-							<p><label for="persona-assistant-agent-id"><?php esc_html_e( 'Agent ID', 'persona-assistant' ); ?></label><br />
-							<input type="text" class="regular-text" name="<?php echo $opt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>[agent_id]" id="persona-assistant-agent-id" value="<?php echo esc_attr( (string) $settings['agent_id'] ); ?>" placeholder="agent_..." /></p>
-						<?php elseif ( $has_const_agent && ! $can_mint ) : ?>
-							<?php // Without a mint credential the Agent row above is absent, so surface the pin here. ?>
-							<p><em><?php esc_html_e( 'The agent is set in code via the PERSONA_ASSISTANT_AGENT_ID constant in wp-config.php.', 'persona-assistant' ); ?></em></p>
-						<?php endif; ?>
 					</td>
 				</tr>
 			<?php endif; ?>
 		</table>
-		<?php if ( ! $manual_agent_field ) : ?>
-			<?php // Always submit agent_id (the sanitizer treats an absent field as cleared): the agent select syncs into this, and it preserves the saved value everywhere else. ?>
-			<input type="hidden" name="<?php echo $opt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>[agent_id]" id="persona-assistant-agent-id" value="<?php echo esc_attr( (string) $settings['agent_id'] ); ?>" />
-		<?php endif; ?>
+		<?php // Always submit product_surface_id: the assistant select syncs into this, and it preserves the saved value everywhere else. ?>
+		<input type="hidden" name="<?php echo $opt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>[product_surface_id]" id="persona-assistant-surface-id" value="<?php echo esc_attr( (string) $settings['product_surface_id'] ); ?>" />
 		<?php
 	}
 

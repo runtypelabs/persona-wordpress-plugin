@@ -690,25 +690,14 @@
 	margin: 14px 0 2px;
 }
 
-/* First-run onboarding shown in place of the agent select when the workspace
-   has zero agents. */
-.persona-assistant-agent-empty {
+/* First-run onboarding shown in place of the assistant select when the
+   workspace has zero chat surfaces. */
+.persona-assistant-surface-empty {
 	max-width: 560px;
 }
 
-.form-table td p.persona-assistant-agent-empty-action {
+.form-table td p.persona-assistant-surface-empty-action {
 	margin: 12px 0;
-}
-
-.persona-assistant-agent-empty-prompt {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.persona-assistant-agent-empty-prompt code {
-	padding: 6px 8px;
-	user-select: all;
 }
 
 .persona-assistant-inline-status {

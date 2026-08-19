@@ -1015,7 +1015,9 @@
 		(items || []).forEach(function (item) {
 			var option = document.createElement('option');
 			option.value = item.id;
-			option.textContent = item.name + ' (' + item.id + ')';
+			// Two products can each own a "Chat" surface, so the product name is
+			// the disambiguator, not the raw id.
+			option.textContent = item.name + (item.productName ? ' — ' + item.productName : '');
 			if (item.id === current) {
 				option.selected = true;
 			}
@@ -1023,12 +1025,12 @@
 		});
 	}
 
-	// First-run onboarding: with zero agents the select is meaningless, so swap
-	// it for the create-your-first-agent panel. Only a successful fetch decides;
-	// errors leave the default UI in place.
-	function syncAgentEmptyState(isEmpty) {
-		var emptyEl = document.getElementById('persona-assistant-agent-empty');
-		var selectRow = document.getElementById('persona-assistant-agent-select-row');
+	// First-run onboarding: with zero chat surfaces the select is meaningless,
+	// so swap it for the create-your-site-assistant panel. Only a successful
+	// fetch decides; errors leave the default UI in place.
+	function syncSurfaceEmptyState(isEmpty) {
+		var emptyEl = document.getElementById('persona-assistant-surface-empty');
+		var selectRow = document.getElementById('persona-assistant-surface-select-row');
 		if (!emptyEl) {
 			return;
 		}
@@ -1036,38 +1038,6 @@
 		if (selectRow) {
 			selectRow.hidden = isEmpty;
 		}
-	}
-
-	function wireAgentPromptCopy() {
-		var button = document.getElementById('persona-assistant-agent-prompt-copy');
-		var code = document.getElementById('persona-assistant-agent-prompt');
-		if (!button || !code) {
-			return;
-		}
-		var label = button.textContent;
-		button.addEventListener('click', function () {
-			var text = code.textContent;
-			var selectText = function () {
-				var range = document.createRange();
-				range.selectNodeContents(code);
-				var selection = window.getSelection();
-				selection.removeAllRanges();
-				selection.addRange(range);
-			};
-			var done = function () {
-				button.textContent = strings.copied || 'Copied';
-				window.setTimeout(function () {
-					button.textContent = label;
-				}, 2000);
-			};
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				navigator.clipboard.writeText(text).then(done, selectText);
-			} else {
-				// No async clipboard (e.g. non-HTTPS admin): select the prompt so
-				// a manual copy is one keystroke away.
-				selectText();
-			}
-		});
 	}
 
 	function loadTargets() {
@@ -1101,20 +1071,20 @@
 					setStatus(statusEl, message, true);
 					return;
 				}
-				populate('persona-assistant-agent-select', json.data.agents);
-				var total = json.data.agents ? json.data.agents.length : 0;
+				populate('persona-assistant-surface-select', json.data.surfaces);
+				var total = json.data.surfaces ? json.data.surfaces.length : 0;
 				if (total === 1) {
-					var select = document.getElementById('persona-assistant-agent-select');
-					var ownInput = document.getElementById('persona-assistant-agent-id');
-					select.value = json.data.agents[0].id;
-					select.setAttribute('data-current', json.data.agents[0].id);
-					ownInput.value = json.data.agents[0].id;
+					var select = document.getElementById('persona-assistant-surface-select');
+					var ownInput = document.getElementById('persona-assistant-surface-id');
+					select.value = json.data.surfaces[0].id;
+					select.setAttribute('data-current', json.data.surfaces[0].id);
+					ownInput.value = json.data.surfaces[0].id;
 				}
-				syncAgentEmptyState(total === 0);
+				syncSurfaceEmptyState(total === 0);
 				// With the onboarding panel visible, a "no results" status line
 				// would just restate it negatively.
-				var emptyShown = total === 0 && document.getElementById('persona-assistant-agent-empty');
-				setStatus(statusEl, total ? (strings.loaded || 'Agents loaded.') : (emptyShown ? '' : (strings.noResults || '')));
+				var emptyShown = total === 0 && document.getElementById('persona-assistant-surface-empty');
+				setStatus(statusEl, total ? (strings.loaded || 'Assistants loaded.') : (emptyShown ? '' : (strings.noResults || '')));
 			})
 			.catch(function () {
 				setStatus(statusEl, strings.error || 'Error', true);
@@ -1174,14 +1144,13 @@
 		}
 		syncAccessVisibility();
 
-		wireTargetSelect('persona-assistant-agent-select', 'persona-assistant-agent-id');
-		wireAgentPromptCopy();
+		wireTargetSelect('persona-assistant-surface-select', 'persona-assistant-surface-id');
 
 		var loadButton = document.getElementById('persona-assistant-load-targets');
 		if (loadButton) {
 			loadButton.addEventListener('click', loadTargets);
-			// Auto-fire the agent list on load when a mint credential is present.
-			if (cfg.canListAgents) {
+			// Auto-fire the surface list on load when a mint credential is present.
+			if (cfg.canListSurfaces) {
 				loadTargets();
 			}
 		}
