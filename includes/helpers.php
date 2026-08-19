@@ -1333,6 +1333,38 @@ function persona_assistant_effective_agent_id() {
 }
 
 /**
+ * Sanitize and cap a block-level WordPress AI system prompt.
+ *
+ * System prompts are editor-authored configuration, not secrets: block
+ * attributes are stored in post content and sent to the browser.
+ *
+ * @param mixed $prompt Raw prompt.
+ * @return string
+ */
+function persona_assistant_sanitize_system_prompt( $prompt ) {
+	$prompt = sanitize_textarea_field( (string) $prompt );
+	if ( strlen( $prompt ) > 8000 ) {
+		$prompt = substr( $prompt, 0, 8000 );
+		$prompt = wp_check_invalid_utf8( $prompt, true );
+	}
+	return trim( $prompt );
+}
+
+/**
+ * Resolve the block prompt, falling back to the site-wide WordPress AI prompt.
+ *
+ * @param mixed $instance_prompt Optional block-level prompt.
+ * @return string
+ */
+function persona_assistant_resolve_system_prompt( $instance_prompt = '' ) {
+	$instance_prompt = persona_assistant_sanitize_system_prompt( $instance_prompt );
+	if ( '' !== $instance_prompt ) {
+		return $instance_prompt;
+	}
+	return persona_assistant_sanitize_system_prompt( persona_assistant_get_setting( 'wp_ai_system_prompt', '' ) );
+}
+
+/**
  * Is a usable Runtype client token available (pasted or minted)?
  *
  * @return bool

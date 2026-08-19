@@ -110,6 +110,19 @@ final class Persona_Assistant_Plugin {
 		if ( ! file_exists( PERSONA_ASSISTANT_DIR . 'blocks/persona-assistant/block.json' ) ) {
 			return;
 		}
+		wp_register_script(
+			'persona-assistant-block-widget',
+			persona_assistant_vendor_asset_url( 'index.global.js' ),
+			array(),
+			PERSONA_ASSISTANT_PERSONA_VERSION,
+			true
+		);
+		wp_register_style(
+			'persona-assistant-block-widget-style',
+			persona_assistant_vendor_asset_url( 'widget.css' ),
+			array(),
+			PERSONA_ASSISTANT_PERSONA_VERSION
+		);
 		register_block_type(
 			PERSONA_ASSISTANT_DIR . 'blocks/persona-assistant',
 			array(
@@ -143,6 +156,7 @@ final class Persona_Assistant_Plugin {
 	 */
 	public function enqueue_block_editor_data() {
 		$settings = persona_assistant_get_settings();
+		$mode     = persona_assistant_resolve_mode();
 		$agents   = persona_assistant_get_cached_agents();
 		$options  = array(
 			array(
@@ -171,19 +185,54 @@ final class Persona_Assistant_Plugin {
 			);
 		}
 
+		$preview_config = persona_assistant_widget_config( 'preview', null, true );
+		$preview_config['autoFocusInput'] = false;
+		$preview_config['launcher'] = array_merge(
+			isset( $preview_config['launcher'] ) && is_array( $preview_config['launcher'] ) ? $preview_config['launcher'] : array(),
+			array(
+				'enabled'    => false,
+				'fullHeight' => true,
+				'width'      => '100%',
+				'height'     => '100%',
+			)
+		);
+		$preview = array(
+			'config' => $preview_config,
+		);
+		if ( 'runtype' === $mode ) {
+			$preview['clientToken'] = persona_assistant_effective_client_token();
+			$preview['apiUrl']      = esc_url_raw( persona_assistant_get_api_base() );
+			$preview['agentId']     = persona_assistant_effective_agent_id();
+		} elseif ( 'demo' === $mode ) {
+			$preview['clientToken'] = 'ct_demo';
+			$preview['apiUrl']      = esc_url_raw( persona_assistant_demo_api_base() );
+		} elseif ( 'wordpress_ai' === $mode ) {
+			$preview['apiUrl'] = esc_url_raw( rest_url( Persona_Assistant_REST::NAMESPACE . Persona_Assistant_REST::ROUTE ) );
+		}
+
 		wp_localize_script(
 			'persona-assistant-widget-editor-script',
 			'PersonaAssistantBlockData',
 			array(
 				'agentOptions' => $options,
+				'mode'         => $mode,
+				'modeLabel'    => array(
+					'runtype'      => __( 'Runtype', 'persona-assistant' ),
+					'wordpress_ai' => __( 'WordPress AI', 'persona-assistant' ),
+					'demo'         => __( 'Demo mode', 'persona-assistant' ),
+					'disabled'     => __( 'Not connected', 'persona-assistant' ),
+				),
+				'preview'      => $preview,
 				'accent'       => (string) $settings['theme_color'],
 				// Mirror the widget's real defaults so the editor preview matches
 				// what a blank field actually renders.
 				'welcomeTitle' => '' !== (string) $settings['welcome_title'] ? (string) $settings['welcome_title'] : __( 'Hello 👋', 'persona-assistant' ),
 				'placeholder'  => '' !== (string) $settings['input_placeholder'] ? (string) $settings['input_placeholder'] : __( 'How can I help...', 'persona-assistant' ),
-				'isReady'      => 'disabled' !== persona_assistant_resolve_mode(),
+				'isReady'      => 'disabled' !== $mode,
 				'isSitewide'   => persona_assistant_sitewide_enabled(),
 				'placementMode' => (string) $settings['placement_mode'],
+				'hasConstAgent' => defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID,
+				'siteWpAiSystemPrompt' => (string) $settings['wp_ai_system_prompt'],
 				'settingsUrl'  => admin_url( 'options-general.php?page=' . Persona_Assistant_Settings::PAGE_SLUG ),
 			)
 		);

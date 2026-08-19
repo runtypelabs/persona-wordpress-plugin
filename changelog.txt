@@ -13,6 +13,8 @@ Persona Assistant changelog
 * Runtype mode uses Persona's Runtype-backed visitor history; WordPress AI account history is served to the rail through a custom Persona history provider backed by the plugin's existing REST routes
 * Conversation list responses now include preview text and message counts, and conversations without stored messages are hidden from the list.
 * Collapsed the four Assistant Page style presets into two (Branded and ChatGPT-like): each removed preset differed from its sibling only by the default conversation width, which remains a fine-tune control. Saved "Classic" and "Minimal" selections migrate automatically.
+* Reworked the Persona Assistant block with a live, interactive editor preview and full-width inline rendering.
+* Made block controls mode-aware: demo mode is identified clearly, WordPress AI supports a per-block system prompt, and Runtype exposes agent selection only when relevant.
 
 1.0.0
 -----

@@ -44,12 +44,46 @@ if ( function_exists( 'wp_update_custom_css_post' ) ) {
 		. 'body.home .persona-demo-connect-option p{font-size:0.96rem;line-height:1.55;margin-block:0;}'
 		. 'body.home .persona-demo-connect-option-note{display:block;margin-top:0.65rem;color:#6b7280;font-size:0.83rem;line-height:1.45;}'
 		. 'body.home .wp-block-image figcaption{padding-inline:2rem;}'
-		. '[data-persona-launcher-critical] .persona-launcher-surface>button{background:#111827!important;border-color:#374151!important;box-shadow:0 10px 25px rgba(15,23,42,.28)!important;}'
-		. '[data-persona-launcher-critical] [data-role="launcher-title"]{color:#f9fafb!important;}'
-		. '[data-persona-launcher-critical] [data-role="launcher-subtitle"]{color:#cbd5e1!important;}'
-		. '[data-persona-launcher-critical] .persona-launcher-teaser{background:#111827!important;border-color:#374151!important;color:#f9fafb!important;}'
-		. '[data-persona-launcher-critical] .persona-launcher-teaser-text,[data-persona-launcher-critical] .persona-launcher-teaser-dismiss{color:inherit!important;}'
 	);
+}
+
+$demo_config_plugin = <<<'PHP'
+<?php
+/**
+ * Persona Assistant Playground demo configuration.
+ *
+ * @package Persona_Assistant
+ */
+
+add_filter(
+	'persona_assistant_widget_config',
+	static function ( $config, $context ) {
+		if ( 'frontend' !== $context ) {
+			return $config;
+		}
+
+		$config['theme']['components']['launcher'] = array_merge(
+			isset( $config['theme']['components']['launcher'] ) && is_array( $config['theme']['components']['launcher'] )
+				? $config['theme']['components']['launcher']
+				: array(),
+			array(
+				'background' => '#111827',
+				'foreground' => '#f9fafb',
+				'border'     => '#374151',
+			)
+		);
+		$config['launcher']['shadow'] = '0 10px 25px rgba(15, 23, 42, 0.28)';
+
+		return $config;
+	},
+	10,
+	2
+);
+PHP;
+
+if ( defined( 'WPMU_PLUGIN_DIR' ) && wp_mkdir_p( WPMU_PLUGIN_DIR ) ) {
+	// Playground-only fixture: persist the config filter across page requests.
+	file_put_contents( WPMU_PLUGIN_DIR . '/persona-assistant-demo.php', $demo_config_plugin ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 }
 
 $screenshots_base = 'https://raw.githubusercontent.com/runtypelabs/persona-wordpress-plugin/main/wordpress-org-assets/';
@@ -308,7 +342,7 @@ if ( ! is_wp_error( $assistant_id ) ) {
 	$settings['suggested_prompts']    = "What can you help me with?\nSummarize this page.\nHow do I get started?";
 	$settings['launcher_teaser_text'] = 'Questions? Ask the assistant.';
 	$settings['theme_color']          = '#4f46e5';
-	$settings['chat_icon']            = 'icon:sparkles';
+	$settings['chat_icon']            = 'icon:bot';
 	$settings['ai_backend']           = 'auto';
 	update_option( $option, $settings );
 	// Demo mode activates the moment an administrator loads the site (no AI is

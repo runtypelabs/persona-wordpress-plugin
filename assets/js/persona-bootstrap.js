@@ -61,6 +61,13 @@
 
 	// The server-composed nested widget config, used as-is.
 	var config = data.config || {};
+	if (data.mode === 'wordpress_ai' && dataset.systemPrompt) {
+		config.requestMiddleware = function (context) {
+			return Object.assign({}, context.payload || {}, {
+				systemPrompt: dataset.systemPrompt
+			});
+		};
+	}
 
 	// Full-screen presets can include function-valued Persona plugins (for
 	// example the pill composer), which PHP cannot serialize into localized
@@ -108,6 +115,13 @@
 	if (dataset.launcher === 'true' || dataset.launcher === 'false') {
 		config.launcher = config.launcher || {};
 		config.launcher.enabled = dataset.launcher === 'true';
+	}
+
+	// Persona's inline panel still reads launcher.width when the launcher is
+	// disabled. Fill the block/shortcode container instead of falling back to
+	// the floating panel's 440px default.
+	if (config.launcher && config.launcher.enabled === false) {
+		config.launcher.width = '100%';
 	}
 
 	// Full-screen pages mount the widget bundle directly instead of using the

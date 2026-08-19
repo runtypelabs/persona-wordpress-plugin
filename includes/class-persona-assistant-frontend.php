@@ -309,7 +309,7 @@ class Persona_Assistant_Frontend {
 	/**
 	 * Render the widget mount point. Single instance per request (first call wins).
 	 *
-	 * @param array<string,mixed> $attrs Optional per-instance overrides (agent/launcher).
+	 * @param array<string,mixed> $attrs Optional per-instance overrides (agent/launcher/system prompt).
 	 * @return string
 	 */
 	public function render_root( $attrs = array() ) {
@@ -320,9 +320,19 @@ class Persona_Assistant_Frontend {
 
 		$data_attrs = '';
 
-		$agent = isset( $attrs['agent'] ) ? trim( (string) $attrs['agent'] ) : '';
+		$agent = isset( $attrs['agent'] ) ? sanitize_text_field( trim( (string) $attrs['agent'] ) ) : '';
+		if ( defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID ) {
+			$agent = '';
+		}
 		if ( '' !== $agent ) {
 			$data_attrs .= sprintf( ' data-agent="%s"', esc_attr( $agent ) );
+		}
+
+		$system_prompt = isset( $attrs['wp_ai_system_prompt'] )
+			? persona_assistant_sanitize_system_prompt( $attrs['wp_ai_system_prompt'] )
+			: '';
+		if ( '' !== $system_prompt && 'wordpress_ai' === persona_assistant_resolve_mode() ) {
+			$data_attrs .= sprintf( ' data-system-prompt="%s"', esc_attr( $system_prompt ) );
 		}
 
 		if ( isset( $attrs['launcher'] ) && '' !== (string) $attrs['launcher'] ) {
@@ -330,11 +340,19 @@ class Persona_Assistant_Frontend {
 			$data_attrs .= sprintf( ' data-launcher="%s"', esc_attr( $launcher ) );
 		}
 
-		return sprintf(
-			'<div id="%1$s" class="persona-assistant-root"%2$s></div>',
-			esc_attr( self::ROOT_ID ),
-			$data_attrs
-		);
+		$root_attributes = ! empty( $attrs['_block'] )
+			? get_block_wrapper_attributes(
+				array(
+					'id'    => self::ROOT_ID,
+					'class' => 'persona-assistant-root',
+				)
+			)
+			: sprintf(
+				'id="%1$s" class="persona-assistant-root"',
+				esc_attr( self::ROOT_ID )
+			);
+
+		return sprintf( '<div %1$s%2$s></div>', $root_attributes, $data_attrs );
 	}
 
 	/**
@@ -390,8 +408,10 @@ class Persona_Assistant_Frontend {
 		$this->ensure_enqueued();
 
 		$attrs = array(
-			'agent'    => isset( $attributes['agentId'] ) ? (string) $attributes['agentId'] : '',
-			'launcher' => isset( $attributes['launcher'] ) ? ( $attributes['launcher'] ? '1' : '0' ) : '',
+			'agent'               => isset( $attributes['agentId'] ) ? (string) $attributes['agentId'] : '',
+			'wp_ai_system_prompt' => isset( $attributes['wpAiSystemPrompt'] ) ? (string) $attributes['wpAiSystemPrompt'] : '',
+			'launcher'            => isset( $attributes['launcher'] ) ? ( $attributes['launcher'] ? '1' : '0' ) : '',
+			'_block'              => true,
 		);
 
 		return $this->render_root( $attrs );

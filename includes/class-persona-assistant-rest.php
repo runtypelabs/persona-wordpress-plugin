@@ -62,6 +62,11 @@ class Persona_Assistant_REST {
 						'required' => false,
 						'type'     => 'string',
 					),
+					'systemPrompt' => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'persona_assistant_sanitize_system_prompt',
+					),
 				),
 			)
 		);
@@ -197,7 +202,7 @@ class Persona_Assistant_REST {
 			}
 		}
 
-		$system = (string) persona_assistant_get_setting( 'wp_ai_system_prompt', '' );
+		$system = persona_assistant_resolve_system_prompt( $request->get_param( 'systemPrompt' ) );
 		$model  = (string) persona_assistant_get_setting( 'wp_ai_model', '' );
 
 		$stream = $this->open_stream();
