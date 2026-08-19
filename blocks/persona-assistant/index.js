@@ -37,7 +37,7 @@
 		if (data.mode === 'runtype') {
 			config.clientToken = preview.clientToken || '';
 			config.apiUrl = preview.apiUrl || '';
-			config.agentId = attributes.agentId || preview.agentId || '';
+			config.agentId = attributes.agentId || '';
 		} else if (data.mode === 'demo') {
 			config.clientToken = preview.clientToken || 'ct_demo';
 			config.apiUrl = preview.apiUrl || '';
@@ -110,19 +110,28 @@
 
 			var modeControl = null;
 			if (mode === 'runtype') {
-				modeControl = data.hasConstAgent
-					? el(
-						'p',
-						{ className: 'components-base-control__help' },
-						__('The agent is set by PERSONA_ASSISTANT_AGENT_ID in wp-config.php.', 'persona-assistant')
-					)
-					: el(SelectControl, {
-						label: __('Agent', 'persona-assistant'),
-						value: attributes.agentId || '',
-						options: data.agentOptions || [{ label: __('Use the default agent', 'persona-assistant'), value: '' }],
-						help: __('Choose a Runtype agent for this block, or use the default from Persona Assistant settings.', 'persona-assistant'),
-						onChange: setAttr('agentId')
+				// Options are the connected assistant's enabled agents — the only
+				// agents the minted token authenticates as. A stored value that is
+				// no longer among them (the site switched assistants) is kept
+				// visible as a labelled stale entry rather than silently reset.
+				var agentOptions = (data.agentOptions || [{ label: __('Use the default agent', 'persona-assistant'), value: '' }]).slice();
+				var current = attributes.agentId || '';
+				var known = agentOptions.some(function (option) {
+					return option.value === current;
+				});
+				if (current && !known) {
+					agentOptions.push({
+						label: __('Not on this assistant:', 'persona-assistant') + ' ' + current,
+						value: current
 					});
+				}
+				modeControl = el(SelectControl, {
+					label: __('Agent', 'persona-assistant'),
+					value: current,
+					options: agentOptions,
+					help: __('Route this block to one of the assistant\'s agents, or use its default.', 'persona-assistant'),
+					onChange: setAttr('agentId')
+				});
 			} else if (mode === 'wordpress_ai') {
 				modeControl = el(TextareaControl, {
 					label: __('System prompt', 'persona-assistant'),

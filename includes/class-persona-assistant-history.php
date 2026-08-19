@@ -164,7 +164,9 @@ class Persona_Assistant_History {
 		$browser_mode = in_array( (string) $settings['history_browser_mode'], array( 'off', 'session', 'device' ), true ) ? (string) $settings['history_browser_mode'] : 'session';
 		$account      = ! $preview && 'fullscreen' === $context && self::account_history_available();
 		$selected     = $account ? $this->selected_conversation_id() : '';
-		$scope        = substr( hash( 'sha256', home_url( '/' ) . '|' . persona_assistant_resolve_mode() . '|' . persona_assistant_effective_agent_id() ), 0, 16 );
+		// Scoped by the selected surface: switching assistants partitions local
+		// history the same way re-minting rotates the server-side namespace.
+		$scope        = substr( hash( 'sha256', home_url( '/' ) . '|' . persona_assistant_resolve_mode() . '|' . persona_assistant_selected_surface_id() ), 0, 16 );
 
 		if ( $preview ) {
 			$browser_mode = 'off';

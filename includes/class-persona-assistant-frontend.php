@@ -249,10 +249,9 @@ class Persona_Assistant_Frontend {
 			$data['clientToken'] = persona_assistant_effective_client_token();
 			// The widget defaults to the production API; without this it would
 			// ignore a staging/self-hosted PERSONA_ASSISTANT_API_BASE override.
+			// No agentId: the token is bound to a chat surface, and the surface
+			// determines the target.
 			$data['apiUrl'] = esc_url_raw( persona_assistant_get_api_base() );
-			if ( '' !== persona_assistant_effective_agent_id() ) {
-				$data['agentId'] = persona_assistant_effective_agent_id();
-			}
 		} elseif ( 'demo' === $mode ) {
 			// Ordinary client-token mode against the public demo plane. The
 			// plane authenticates nothing — any token value admits — so the
@@ -321,9 +320,6 @@ class Persona_Assistant_Frontend {
 		$data_attrs = '';
 
 		$agent = isset( $attrs['agent'] ) ? sanitize_text_field( trim( (string) $attrs['agent'] ) ) : '';
-		if ( defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID ) {
-			$agent = '';
-		}
 		if ( '' !== $agent ) {
 			$data_attrs .= sprintf( ' data-agent="%s"', esc_attr( $agent ) );
 		}

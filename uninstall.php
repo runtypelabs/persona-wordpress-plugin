@@ -17,7 +17,7 @@ delete_option( 'persona_assistant_settings' );
 delete_option( 'persona_assistant_runtype_state' );
 delete_option( 'persona_assistant_history_schema' );
 delete_option( 'persona_assistant_oauth_refresh_lock' );
-delete_transient( 'persona_assistant_agents' );
+delete_transient( 'persona_assistant_surfaces' );
 delete_transient( 'persona_assistant_just_activated' );
 delete_transient( 'persona_assistant_oauth_pkce' );
 delete_transient( 'persona_assistant_oauth_challenge' );

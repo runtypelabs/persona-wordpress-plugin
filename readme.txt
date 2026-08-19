@@ -43,8 +43,8 @@ In Runtype mode, the assistant can use the open **WebMCP** standard to search an
 
 = How the Runtype connection works =
 
-* **Login with Runtype** (recommended) uses OAuth 2.0 with PKCE and verifies site ownership before returning to wp-admin. It requires a publicly reachable HTTPS site and requests only `CLIENT_TOKENS:WRITE` and `AGENTS:READ`.
-* **Connect manually** accepts a browser-safe client token scoped to your site origin and agent. This is useful for local or private sites that Runtype cannot verify.
+* **Login with Runtype** (recommended) uses OAuth 2.0 with PKCE and verifies site ownership before returning to wp-admin. It requires a publicly reachable HTTPS site and requests only `CLIENT_TOKENS:WRITE`, `AGENTS:READ`, and `PRODUCTS:SURFACES:READ`.
+* **Connect manually** accepts a browser-safe client token scoped to your site origin and bound to your assistant's chat surface. This is useful for local or private sites that Runtype cannot verify.
 
 Advanced installations may define `PERSONA_ASSISTANT_API_KEY` in `wp-config.php`; the key stays server-side and mints an origin-scoped client token. Only the client token is sent to the browser.
 
@@ -86,7 +86,7 @@ No. It stays server-side and is used only to mint the browser-safe client token.
 
 `define( 'PERSONA_ASSISTANT_API_KEY', 'rt_live_...' );`
 
-The plugin repository documents constants for a pre-scoped client token, pinned agent, and environment.
+The plugin repository documents constants for a pre-scoped client token and environment.
 
 = Does the plugin load Persona from a CDN? =
 

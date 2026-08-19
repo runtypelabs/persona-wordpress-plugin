@@ -1,7 +1,7 @@
 # Security notes
 
-* The `rt_` API key is a **server-side secret**, never localized to the browser, used only in `wp_remote_*` calls. There is no API-key form field; supply it via the `PERSONA_ASSISTANT_API_KEY` wp-config constant (a legacy stored key is still honored), scoped to `CLIENT_TOKENS:WRITE` + `AGENTS:READ`.
-* The `ct_` client token **is** browser-safe (scoped to your origin + agent, rate-limited server-side).
+* The `rt_` API key is a **server-side secret**, never localized to the browser, used only in `wp_remote_*` calls. There is no API-key form field; supply it via the `PERSONA_ASSISTANT_API_KEY` wp-config constant (a legacy stored key is still honored), scoped to `CLIENT_TOKENS:WRITE` + `AGENTS:READ` + `PRODUCTS:SURFACES:READ`.
+* The `ct_` client token **is** browser-safe (scoped to your origin and bound to your assistant's chat surface, rate-limited server-side).
 * Provider API keys are never touched; built-in-AI calls stay server-side via `Persona_Assistant_AI`.
 * The WP-AI REST endpoint always has a `permission_callback`. A "require login to chat" setting gates access, and a per-visitor, per-minute rate limit (default 10, filterable via `persona_assistant_wp_ai_rate_limit`, hard-capped 1-60) throttles usage; the `persona_assistant_rest_permission` filter remains available for stricter site-specific policy.
 * The WordPress AI Client gates generation behind the `prompt_ai` capability (admins only by default). For a public widget, `Persona_Assistant_AI` grants `prompt_ai` only for the duration of the trusted server-side call, while the audience/rate-limit settings and `persona_assistant_rest_permission` filter remain the cost and abuse controls.

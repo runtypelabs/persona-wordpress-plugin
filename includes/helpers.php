@@ -59,7 +59,7 @@ function persona_assistant_default_settings() {
 		'ai_backend'          => 'runtype',    // auto (legacy) | runtype | wordpress_ai.
 		'api_key'             => '',           // rt_... management key: server-side secret, NEVER localized. No UI, constant/legacy only.
 		'client_token'        => '',           // ct_... pasted directly (fallback source).
-		'agent_id'            => '',           // Chosen agent to scope the minted/embedded token to.
+		'product_surface_id'  => '',           // Chosen chat surface (the "assistant") whose policy plane governs the minted token.
 		'api_base'            => PERSONA_ASSISTANT_DEFAULT_API_BASE, // Constant/legacy-driven; no UI (see persona_assistant_get_api_base()).
 		'environment'         => 'live',       // live | test. Constant/legacy-driven; no UI (see persona_assistant_get_environment()).
 		'theme_color'         => '#4f46e5',
@@ -1104,23 +1104,23 @@ function persona_assistant_is_fullscreen_preview() {
 }
 
 /**
- * Cache the most recently loaded Runtype agents for settings and block pickers.
+ * Cache the most recently loaded Runtype chat surfaces for the settings picker.
  *
- * @param array<int,array<string,mixed>> $agents Agents returned by Runtype.
+ * @param array<int,array<string,mixed>> $surfaces Picker-shaped surface rows.
  * @return void
  */
-function persona_assistant_cache_agents( array $agents ) {
-	set_transient( 'persona_assistant_agents', $agents, 15 * MINUTE_IN_SECONDS );
+function persona_assistant_cache_surfaces( array $surfaces ) {
+	set_transient( 'persona_assistant_surfaces', $surfaces, 15 * MINUTE_IN_SECONDS );
 }
 
 /**
- * Get the recently loaded Runtype agents.
+ * Get the recently loaded Runtype chat surfaces.
  *
  * @return array<int,array<string,mixed>>
  */
-function persona_assistant_get_cached_agents() {
-	$agents = get_transient( 'persona_assistant_agents' );
-	return is_array( $agents ) ? $agents : array();
+function persona_assistant_get_cached_surfaces() {
+	$surfaces = get_transient( 'persona_assistant_surfaces' );
+	return is_array( $surfaces ) ? $surfaces : array();
 }
 
 /**
@@ -1318,18 +1318,16 @@ function persona_assistant_effective_client_token() {
 }
 
 /**
- * The agent the widget routes to.
+ * The chat surface the minted token is bound to (the picked "assistant").
  *
- * The PERSONA_ASSISTANT_AGENT_ID constant (a developer pin set in wp-config.php)
- * wins over the setting saved from the agent picker.
+ * The surface carries the policy plane (loggingPolicy, piiRedaction, webmcp,
+ * conversationTitles); the widget itself no longer names an agent — the
+ * surface determines the target.
  *
  * @return string
  */
-function persona_assistant_effective_agent_id() {
-	if ( defined( 'PERSONA_ASSISTANT_AGENT_ID' ) && PERSONA_ASSISTANT_AGENT_ID ) {
-		return trim( (string) PERSONA_ASSISTANT_AGENT_ID );
-	}
-	return trim( (string) persona_assistant_get_setting( 'agent_id', '' ) );
+function persona_assistant_selected_surface_id() {
+	return trim( (string) persona_assistant_get_setting( 'product_surface_id', '' ) );
 }
 
 /**
