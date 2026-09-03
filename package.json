@@ -16,7 +16,7 @@
 	},
 	"overrides": {
 		"adm-zip": "^0.6.0",
-		"fast-uri": "^3.1.5",
+		"fast-uri": "^3.1.7",
 		"js-yaml": "^3.15.1"
 	}
 }
