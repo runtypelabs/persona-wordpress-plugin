@@ -1,6 +1,16 @@
 Persona Assistant changelog
 ======================
 
+1.2.0
+-----
+* Added opt-in verified WordPress account identity for Runtype chats and conversation history using short-lived RS256 tokens and public JWKS keys.
+* Email accompanies identity by default; administrators can opt out without losing stable user attribution.
+* Added a guided Runtype-only identity setup with a copyable MCP/CLI prompt, installation instructions fetched from runtype.ai, integration ID entry, and signed-proof verification. Registration credentials stay outside WordPress.
+* Added signing key rotation with overlap and HTTPS/OpenSSL checks.
+* Partitioned account-enabled browser history and visitor credentials by WordPress user, and added an explicit fresh browser-only chat fallback when verification fails.
+* Updated the bundled Persona runtime to 4.25.0 for per-message identity proofs, including chats with history disabled.
+* Added identity disclosures, developer filters, and local/remote uninstall cleanup.
+
 1.1.0
 -----
 * Added demo mode: before any AI is connected, administrators see a working assistant powered by Runtype's public demo plane (deterministic scripted responses, nothing typed is stored) instead of nothing. A persistent "Demo mode — responses are simulated" badge marks it, logged-out visitors never see it, and connecting Runtype or WordPress AI replaces it automatically.

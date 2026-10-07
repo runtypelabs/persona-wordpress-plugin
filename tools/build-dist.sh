@@ -33,6 +33,7 @@ rsync -a \
 	--exclude=tools \
 	--exclude='*.zip' \
 	--exclude=.DS_Store \
+	--exclude='/*-screenshot.*' \
 	--exclude='/assets/vendor/persona/index.js' \
 	--exclude='/assets/vendor/persona/theme-editor.js' \
 	--exclude='/assets/vendor/persona/theme-editor-preview.js' \
@@ -63,7 +64,9 @@ VENDOR="$STAGE/persona-assistant/assets/vendor/persona"
 MISSING=""
 for asset in install.global.js widget.css launcher.global.js index.global.js \
 	markdown-parsers.js context-mentions.js context-mentions-inline.js \
-	runtype-tts.js webmcp-polyfill.js history-view.js event-stream-view.js; do
+	runtype-tts.js webmcp-polyfill.js history-view.js event-stream-view.js \
+	approval-ui.js artifacts-ui.js animations-extra.js forms-ui.js icons-extra.js \
+	session-reconnect.js voice-runtime.js webmcp-runtime.js; do
 	[ -f "$VENDOR/$asset" ] || MISSING="$MISSING $asset"
 done
 if [ -n "$MISSING" ]; then

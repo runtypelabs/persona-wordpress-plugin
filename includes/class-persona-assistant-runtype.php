@@ -478,4 +478,44 @@ class Persona_Assistant_Runtype {
 		return $this->request( 'DELETE', '/v1/client-tokens/' . rawurlencode( $id ), $credential );
 	}
 
+	/** Create or update the site's public identity-verification descriptor. */
+	public function save_identity_integration( $credential, array $payload, $id = '' ) {
+		if ( '' !== $id ) {
+			$payload['status'] = 'active';
+		}
+		return $this->request( $id ? 'PATCH' : 'POST', '/v1/identity-integrations' . ( $id ? '/' . rawurlencode( $id ) : '' ), $credential, $payload );
+	}
+
+	public function list_identity_integrations( $credential ) {
+		$data = $this->request( 'GET', '/v1/identity-integrations', $credential );
+		if ( is_wp_error( $data ) ) {
+			return $data;
+		}
+		return isset( $data['identityIntegrations'] ) && is_array( $data['identityIntegrations'] ) ? $data['identityIntegrations'] : array();
+	}
+
+	public function delete_identity_integration( $credential, $id ) {
+		return $this->request( 'DELETE', '/v1/identity-integrations/' . rawurlencode( $id ), $credential );
+	}
+
+	/** Verify through the same origin-bound client init used by the widget. */
+	public function verify_identity_proof( $client_token, $proof ) {
+		$response = wp_remote_post( $this->api_base . '/v1/client/init', array(
+			'timeout' => 20,
+			'redirection' => 0,
+			'headers' => array( 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Origin' => persona_assistant_site_origin() ),
+			'body' => wp_json_encode( array( 'token' => $client_token, 'visitorHistory' => true, 'identityProof' => $proof ) ),
+		) );
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( 200 !== (int) wp_remote_retrieve_response_code( $response ) || ! is_array( $data )
+			|| ! isset( $data['visitor']['identityStatus'], $data['visitor']['endUserId'] ) || 'admitted' !== $data['visitor']['identityStatus']
+			|| ! is_string( $data['visitor']['endUserId'] ) || '' === $data['visitor']['endUserId'] ) {
+			return new WP_Error( 'persona_assistant_identity_not_admitted', __( 'Runtype did not accept the identity proof.', 'persona-assistant' ) );
+		}
+		return true;
+	}
+
 }

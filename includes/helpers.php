@@ -59,6 +59,8 @@ function persona_assistant_default_settings() {
 		'ai_backend'          => 'runtype',    // auto (legacy) | runtype | wordpress_ai.
 		'api_key'             => '',           // rt_... management key: server-side secret, NEVER localized. No UI, constant/legacy only.
 		'client_token'        => '',           // ct_... pasted directly (fallback source).
+		'identity_enabled'    => false,        // Opt-in verified WordPress identity in Runtype mode.
+		'identity_share_email' => true,        // Email accompanies identity unless the administrator opts out.
 		'product_surface_id'  => '',           // Chosen chat surface (the "assistant") whose policy plane governs the minted token.
 		'api_base'            => PERSONA_ASSISTANT_DEFAULT_API_BASE, // Constant/legacy-driven; no UI (see persona_assistant_get_api_base()).
 		'environment'         => 'live',       // live | test. Constant/legacy-driven; no UI (see persona_assistant_get_environment()).

@@ -90,7 +90,14 @@ class Persona_Assistant_Frontend {
 			true
 		);
 
-		$bootstrap_dependencies = array( 'persona-assistant-layouts', 'persona-assistant-history' );
+		wp_register_script(
+			'persona-assistant-identity',
+			PERSONA_ASSISTANT_URL . 'assets/js/persona-identity.js',
+			array(),
+			persona_assistant_asset_version( 'assets/js/persona-identity.js' ),
+			true
+		);
+		$bootstrap_dependencies = array( 'persona-assistant-layouts', 'persona-assistant-history', 'persona-assistant-identity' );
 
 		// The full-screen assistant mounts the widget bundle directly instead of
 		// going through the installer: the installer always wraps the widget in
@@ -252,6 +259,18 @@ class Persona_Assistant_Frontend {
 			// No agentId: the token is bound to a chat surface, and the surface
 			// determines the target.
 			$data['apiUrl'] = esc_url_raw( persona_assistant_get_api_base() );
+			if ( ! $preview && is_user_logged_in() && Persona_Assistant_Identity::enabled() ) {
+				$data['identity'] = array(
+					'enabled' => true,
+					'provider' => 'oidc',
+					'tokenUrl' => esc_url_raw( rest_url( 'persona-assistant/v1/identity/token' ) ),
+					'nonce' => wp_create_nonce( 'wp_rest' ),
+					'failureMessage' => __( 'Account identity could not be verified. You can start a fresh browser-only chat; your account conversations will stay protected.', 'persona-assistant' ),
+					'continueLabel' => __( 'Start a browser-only chat', 'persona-assistant' ),
+					'genericFailureMessage' => __( 'Chat could not complete. Please try again.', 'persona-assistant' ),
+					'retryMessage' => __( 'Could not start a new chat. Refresh the page and try again.', 'persona-assistant' ),
+				);
+			}
 		} elseif ( 'demo' === $mode ) {
 			// Ordinary client-token mode against the public demo plane. The
 			// plane authenticates nothing — any token value admits — so the

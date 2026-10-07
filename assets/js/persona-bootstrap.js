@@ -86,6 +86,11 @@
 		config = window.PersonaAssistantHistory.decorateConfig(config, data.history || {}, data.mode, data.context);
 	}
 
+	// Identity is function-valued and must be added after the JSON history config.
+	if (window.PersonaAssistantIdentity) {
+		config = window.PersonaAssistantIdentity.decorateConfig(config, data.identity, data.mode);
+	}
+
 	// Match the site's body font: deep-set the font onto config.theme without
 	// clobbering the primary/radius theme keys. Gated on the server flag
 	// (persona_assistant_match_site_font); never runs in the admin preview, whose

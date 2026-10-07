@@ -3,7 +3,7 @@
  * Plugin Name:       Persona Assistant
  * Plugin URI:        https://github.com/runtypelabs/persona-wordpress-plugin
  * Description:       Add a customizable AI assistant to your site.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Runtype
@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PERSONA_ASSISTANT_VERSION', '1.1.0' );
-define( 'PERSONA_ASSISTANT_PERSONA_VERSION', '4.18.0-dev' );
+define( 'PERSONA_ASSISTANT_VERSION', '1.2.0' );
+define( 'PERSONA_ASSISTANT_PERSONA_VERSION', '4.25.0' );
 define( 'PERSONA_ASSISTANT_FILE', __FILE__ );
 define( 'PERSONA_ASSISTANT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PERSONA_ASSISTANT_URL', plugin_dir_url( __FILE__ ) );
@@ -104,6 +104,7 @@ require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-runtype.p
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-ai.php';
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-history.php';
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-rest.php';
+require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-identity.php';
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-webmcp.php';
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-frontend.php';
 require_once PERSONA_ASSISTANT_DIR . 'includes/class-persona-assistant-fullscreen.php';
