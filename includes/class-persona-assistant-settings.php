@@ -1560,7 +1560,10 @@ class Persona_Assistant_Settings {
 		$ready = $is_runtype && $identity_enabled && ! $error;
 		$registered = Persona_Assistant_Identity::registered();
 		$verified = Persona_Assistant_Identity::verified();
-		$status = $error ? __( 'Unavailable', 'persona-assistant' ) : ( $verified ? __( 'Verified', 'persona-assistant' ) : ( $registered ? __( 'Awaiting verification', 'persona-assistant' ) : ( $identity_enabled ? __( 'Awaiting registration', 'persona-assistant' ) : __( 'Not configured', 'persona-assistant' ) ) ) );
+		$status = $verified ? __( 'Verified', 'persona-assistant' ) : ( $registered ? __( 'Awaiting verification', 'persona-assistant' ) : ( $identity_enabled ? __( 'Awaiting registration', 'persona-assistant' ) : __( 'Not configured', 'persona-assistant' ) ) );
+		if ( $error ) {
+			$status = $error->get_error_data()['status_label'];
+		}
 		?>
 		<div class="persona-assistant-identity" data-runtype-only <?php if ( ! $is_runtype ) : ?>style="display:none"<?php endif; ?>>
 		<h3><?php esc_html_e( 'WordPress user identity', 'persona-assistant' ); ?></h3>

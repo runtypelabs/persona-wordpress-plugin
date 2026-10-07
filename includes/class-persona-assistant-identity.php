@@ -37,15 +37,29 @@ class Persona_Assistant_Identity {
 	public static function environment_error() {
 		foreach ( array( self::issuer(), self::jwks_url() ) as $url ) {
 			$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
-			if ( 'https' !== wp_parse_url( $url, PHP_URL_SCHEME ) || '' === $host
-				|| 'localhost' === $host || false === strpos( $host, '.' )
-				|| preg_match( '/\.(localhost|local|test|internal)$/', $host )
-				|| ( filter_var( trim( $host, '[]' ), FILTER_VALIDATE_IP ) && ! filter_var( trim( $host, '[]' ), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) ) {
-				return new WP_Error( 'persona_assistant_identity_https', __( 'WordPress user identity requires a public HTTPS issuer and JWKS URL that Runtype can reach. Localhost, private addresses, and HTTP sites are not supported.', 'persona-assistant' ), array( 'status' => 503 ) );
+			$ip = trim( $host, '[]' );
+			$is_localhost = 'localhost' === $host || preg_match( '/\.localhost$/', $host ) || '::1' === $ip
+				|| ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && 0 === strpos( $ip, '127.' ) );
+			if ( $is_localhost || '' === $host || false === strpos( $host, '.' )
+				|| preg_match( '/\.(local|test|internal)$/', $host )
+				|| ( filter_var( $ip, FILTER_VALIDATE_IP ) && ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) ) {
+				return new WP_Error( 'persona_assistant_identity_https', __( 'This feature requires a publicly accessible website using HTTPS. It will become available once your site meets those requirements.', 'persona-assistant' ), array(
+					'status' => 503,
+					'status_label' => $is_localhost ? __( 'Unavailable on localhost', 'persona-assistant' ) : __( 'Unavailable: public website required', 'persona-assistant' ),
+				) );
+			}
+			if ( 'https' !== wp_parse_url( $url, PHP_URL_SCHEME ) ) {
+				return new WP_Error( 'persona_assistant_identity_https', __( 'Enable HTTPS for your website before turning on WordPress user identity.', 'persona-assistant' ), array(
+					'status' => 503,
+					'status_label' => __( 'Unavailable: HTTPS required', 'persona-assistant' ),
+				) );
 			}
 		}
 		if ( ! function_exists( 'openssl_pkey_new' ) || ! function_exists( 'openssl_sign' ) ) {
-			return new WP_Error( 'persona_assistant_identity_openssl', __( 'WordPress user identity requires the PHP OpenSSL extension.', 'persona-assistant' ), array( 'status' => 503 ) );
+			return new WP_Error( 'persona_assistant_identity_openssl', __( 'Ask your hosting provider to enable the PHP OpenSSL extension before turning on WordPress user identity.', 'persona-assistant' ), array(
+				'status' => 503,
+				'status_label' => __( 'Unavailable: OpenSSL required', 'persona-assistant' ),
+			) );
 		}
 		return null;
 	}
