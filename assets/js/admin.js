@@ -124,6 +124,18 @@
 		}
 	}
 
+	var savedIdentitySettings = null;
+
+	function identitySettingsSignature() {
+		var identity = document.getElementById('persona-assistant-identity-enabled');
+		var email = document.getElementById('persona-assistant-identity-share-email');
+		return JSON.stringify([
+			selectedValue('ai_backend', cfg.provider || ''),
+			!!(identity && identity.checked), !!(email && email.checked),
+			fieldValue('persona-assistant-surface-id'), fieldValue('persona-assistant-client-token')
+		]);
+	}
+
 	function syncIdentitySettings() {
 		var checkbox = document.getElementById('persona-assistant-identity-enabled');
 		if (!checkbox) return;
@@ -144,12 +156,18 @@
 		var setup = document.querySelector('[data-identity-setup]');
 		if (setup) {
 			setup.hidden = !active;
-			var controls = setup.querySelectorAll('button, input');
+			var changed = identitySettingsSignature() !== savedIdentitySettings;
+			var ready = active && !changed && setup.getAttribute('data-identity-ready') === 'true';
+			var workflow = setup.querySelector('[data-identity-workflow]');
+			var reminder = setup.querySelector('[data-identity-save-required]');
+			if (workflow) workflow.hidden = !ready;
+			if (reminder) reminder.hidden = !active || !changed;
+			var controls = workflow ? workflow.querySelectorAll('button, input') : [];
 			for (var c = 0; c < controls.length; c++) {
 				if (controls[c].getAttribute('data-identity-unavailable') === null) {
 					controls[c].setAttribute('data-identity-unavailable', controls[c].disabled ? 'true' : 'false');
 				}
-				controls[c].disabled = !active || controls[c].getAttribute('data-identity-unavailable') === 'true';
+				controls[c].disabled = !ready || controls[c].getAttribute('data-identity-unavailable') === 'true';
 			}
 		}
 	}
@@ -158,6 +176,7 @@
 		var button = document.getElementById('persona-assistant-copy-identity-prompt');
 		if (!button) return;
 		button.addEventListener('click', function () {
+			if (button.disabled) return;
 			var prompt = document.getElementById('persona-assistant-identity-prompt');
 			var status = document.getElementById('persona-assistant-identity-copy-status');
 			button.disabled = true;
@@ -166,6 +185,9 @@
 			fetch(cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
 				.then(function (response) { return response.json(); })
 				.then(function (response) {
+					if (identitySettingsSignature() !== savedIdentitySettings) {
+						throw new Error(strings.identityPromptError || 'Save your settings before copying the prompt.');
+					}
 					if (!response.success || !response.data || !response.data.prompt) {
 						throw new Error(response.data && response.data.message || strings.identityPromptError || 'Could not prepare the prompt.');
 					}
@@ -1172,10 +1194,12 @@
 			if (!select.value) {
 				ownInput.value = '';
 				select.setAttribute('data-current', '');
+				syncIdentitySettings();
 				return;
 			}
 			ownInput.value = select.value;
 			select.setAttribute('data-current', select.value);
+			syncIdentitySettings();
 		});
 		ownInput.addEventListener('input', function () {
 			var matching = false;
@@ -1191,6 +1215,7 @@
 	}
 
 	function onReady() {
+		savedIdentitySettings = identitySettingsSignature();
 		var providerRadios = document.querySelectorAll('input[name$="[ai_backend]"]');
 		for (var p = 0; p < providerRadios.length; p++) {
 			providerRadios[p].addEventListener('change', syncProviderVisibility);
@@ -1203,6 +1228,14 @@
 		}
 		syncIdentitySettings();
 		wireIdentityPrompt();
+		var identityFields = ['persona-assistant-identity-share-email', 'persona-assistant-client-token', 'persona-assistant-surface-id'];
+		for (var idf = 0; idf < identityFields.length; idf++) {
+			var identityField = document.getElementById(identityFields[idf]);
+			if (identityField) {
+				identityField.addEventListener('input', syncIdentitySettings);
+				identityField.addEventListener('change', syncIdentitySettings);
+			}
+		}
 
 		var placementRadios = document.querySelectorAll('input[name$="[placement_mode]"]');
 		for (var m = 0; m < placementRadios.length; m++) {

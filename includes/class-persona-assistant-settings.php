@@ -1568,7 +1568,7 @@ class Persona_Assistant_Settings {
 			</td></tr>
 			<tr data-identity-dependent aria-disabled="<?php echo $identity_enabled ? 'false' : 'true'; ?>"><th scope="row"><?php esc_html_e( 'Email sharing', 'persona-assistant' ); ?></th><td>
 				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="0" <?php disabled( ! $identity_enabled ); ?> />
-				<label><input type="checkbox" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="1" <?php checked( ! empty( $settings['identity_share_email'] ) ); ?> <?php disabled( ! $identity_enabled ); ?> /> <?php esc_html_e( 'Share user email addresses', 'persona-assistant' ); ?></label>
+				<label><input type="checkbox" id="persona-assistant-identity-share-email" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="1" <?php checked( ! empty( $settings['identity_share_email'] ) ); ?> <?php disabled( ! $identity_enabled ); ?> /> <?php esc_html_e( 'Share user email addresses', 'persona-assistant' ); ?></label>
 				<p class="description"><?php esc_html_e( 'On by default for readable user reports. Turn this off to share only a stable user identifier. New tokens omit email; existing tokens expire within five minutes. Previously shared emails are not automatically removed.', 'persona-assistant' ); ?></p>
 			</td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Status', 'persona-assistant' ); ?></th><td>
@@ -1577,9 +1577,13 @@ class Persona_Assistant_Settings {
 				<?php if ( ! empty( $state['last_result'] ) ) : ?><p class="description"><?php echo esc_html( $state['last_result'] ); ?></p><?php endif; ?>
 			</td></tr>
 		</table>
-		<div data-identity-setup <?php if ( ! $identity_enabled ) : ?>hidden<?php endif; ?>>
+		<div data-identity-setup data-identity-ready="<?php echo $ready ? 'true' : 'false'; ?>" <?php if ( ! $identity_enabled ) : ?>hidden<?php endif; ?>>
 			<?php if ( $error ) : ?><div class="notice notice-warning inline"><p><?php echo esc_html( $error->get_error_message() ); ?></p></div><?php endif; ?>
-			<?php if ( ! $ready && ! $error ) : ?><p class="description"><?php esc_html_e( 'Save your Runtype and identity settings to unlock setup.', 'persona-assistant' ); ?></p><?php endif; ?>
+			<div data-identity-save-required <?php if ( $is_runtype && $identity_enabled ) : ?>hidden<?php endif; ?>>
+				<p><?php esc_html_e( 'Save your connection and identity changes before continuing setup.', 'persona-assistant' ); ?></p>
+				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save changes to continue setup', 'persona-assistant' ); ?></button>
+			</div>
+			<div data-identity-workflow <?php if ( ! $ready ) : ?>hidden<?php endif; ?>>
 			<ol class="persona-assistant-identity-steps">
 				<li>
 					<h4><?php esc_html_e( 'Copy setup prompt', 'persona-assistant' ); ?></h4>
@@ -1612,6 +1616,7 @@ class Persona_Assistant_Settings {
 				<button type="submit" form="persona-assistant-identity-rotate" class="button" <?php disabled( ! $ready ); ?>><?php esc_html_e( 'Rotate signing key', 'persona-assistant' ); ?></button>
 				<p class="description"><?php esc_html_e( 'Rotation publishes new public keys at the same URL. Recheck setup after signing switches to the new key.', 'persona-assistant' ); ?></p>
 			</details>
+			</div>
 		</div>
 		</div>
 		<?php

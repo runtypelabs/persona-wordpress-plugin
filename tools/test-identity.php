@@ -264,6 +264,18 @@ try {
 	$render_identity->invoke( $admin, $settings );
 	$html = ob_get_clean();
 	persona_identity_test_assert( false !== strpos( $html, 'Copy setup prompt' ) && false !== strpos( $html, 'form="persona-assistant-identity-manual"' ) && false === strpos( $html, 'Register / re-register' ), 'WordPress renders the guided flow with separate setup actions' );
+	$settings['identity_enabled'] = false;
+	ob_start();
+	$render_identity->invoke( $admin, $settings );
+	$html = ob_get_clean();
+	persona_identity_test_assert( false !== strpos( $html, 'data-identity-workflow hidden' ) && false !== strpos( $html, 'Save changes to continue setup' ), 'Unsaved enablement keeps the prompt and setup steps hidden on initial render' );
+	$settings['identity_enabled'] = true;
+	$test_origin = 'http://localhost';
+	ob_start();
+	$render_identity->invoke( $admin, $settings );
+	$html = ob_get_clean();
+	persona_identity_test_assert( false !== strpos( $html, 'data-identity-ready="false"' ) && false !== strpos( $html, 'data-identity-workflow hidden' ), 'Unsupported sites keep setup hidden even when identity is saved on' );
+	$test_origin = 'https://identity.example.com';
 	$settings['ai_backend'] = 'wordpress_ai';
 	ob_start();
 	$render_identity->invoke( $admin, $settings );
