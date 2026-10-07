@@ -1576,8 +1576,8 @@ class Persona_Assistant_Settings {
 			</td></tr>
 			<tr data-identity-dependent aria-disabled="<?php echo $identity_enabled ? 'false' : 'true'; ?>"><th scope="row"><?php esc_html_e( 'Email sharing', 'persona-assistant' ); ?></th><td>
 				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="0" <?php disabled( ! $identity_enabled ); ?> />
-				<label><input type="checkbox" id="persona-assistant-identity-share-email" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="1" <?php checked( ! empty( $settings['identity_share_email'] ) ); ?> <?php disabled( ! $identity_enabled ); ?> /> <?php esc_html_e( 'Share user email addresses', 'persona-assistant' ); ?></label>
-				<p class="description"><?php esc_html_e( 'On by default for readable user reports. Turn this off to share only a stable user identifier. New tokens omit email; existing tokens expire within five minutes. Previously shared emails are not automatically removed.', 'persona-assistant' ); ?></p>
+				<label><input type="checkbox" id="persona-assistant-identity-share-email" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="1" <?php checked( ! empty( $settings['identity_share_email'] ) ); ?> <?php disabled( ! $identity_enabled ); ?> /> <?php esc_html_e( 'Include email addresses in usage reports', 'persona-assistant' ); ?></label>
+				<p class="description"><?php esc_html_e( 'Turning this off won’t remove previously shared email addresses.', 'persona-assistant' ); ?></p>
 			</td></tr>
 			<tr><th scope="row"><?php esc_html_e( 'Status', 'persona-assistant' ); ?></th><td>
 				<strong><?php echo esc_html( $status ); ?></strong>
