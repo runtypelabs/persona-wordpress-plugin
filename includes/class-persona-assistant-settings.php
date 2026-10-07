@@ -1567,7 +1567,7 @@ class Persona_Assistant_Settings {
 		?>
 		<div class="persona-assistant-identity" data-runtype-only <?php if ( ! $is_runtype ) : ?>style="display:none"<?php endif; ?>>
 		<h3><?php esc_html_e( 'WordPress user identity', 'persona-assistant' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'Link logged-in visitors’ chats and usage to their WordPress accounts. Register this site through your Runtype-connected assistant or CLI; WordPress does not need integration-management permissions.', 'persona-assistant' ); ?></p>
+		<p class="description"><?php esc_html_e( 'See which logged-in WordPress users are chatting with your assistant and how much they use it.', 'persona-assistant' ); ?></p>
 		<table class="form-table" role="presentation">
 			<tr><th scope="row"><?php esc_html_e( 'Identify logged-in users', 'persona-assistant' ); ?></th><td>
 				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="0" />
