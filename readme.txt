@@ -4,7 +4,7 @@ Tags: ai, assistant, chat, agent, support
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,7 +130,7 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 
 == Changelog ==
 
-= Unreleased =
+= 1.2.0 =
 * Added opt-in verified WordPress account identity for Runtype chats and history, with email sharing enabled by default and a separate opt-out.
 * Added guided identity registration with a copyable MCP/CLI setup prompt, public signing keys, setup verification, key rotation, and a fresh browser-only chat fallback.
 * Updated bundled Persona to 4.25.0.

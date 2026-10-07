@@ -33,6 +33,7 @@ rsync -a \
 	--exclude=tools \
 	--exclude='*.zip' \
 	--exclude=.DS_Store \
+	--exclude='/*-screenshot.*' \
 	--exclude='/assets/vendor/persona/index.js' \
 	--exclude='/assets/vendor/persona/theme-editor.js' \
 	--exclude='/assets/vendor/persona/theme-editor-preview.js' \
