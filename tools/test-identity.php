@@ -174,6 +174,63 @@ try {
 	persona_identity_test_assert( true === Persona_Assistant_Identity::use_manual_integration( 'idint_manual' ) && Persona_Assistant_Identity::registered(), 'Manual registration supports restricted credentials' );
 	persona_identity_test_assert( is_wp_error( Persona_Assistant_Identity::use_manual_integration( '../bad' ) ), 'Invalid manual integration ID is rejected' );
 
+	persona_identity_test_assert( ! Persona_Assistant_Identity::verified(), 'Saving an integration ID does not claim verification' );
+	persona_identity_test_assert( is_wp_error( Persona_Assistant_Identity::verify_registration() ), 'Subscribers cannot verify identity setup' );
+	persona_identity_test_assert( true === Persona_Assistant_Identity::prepare_setup(), 'Prompt preparation creates local signing material' );
+	$prompt = Persona_Assistant_Identity::setup_prompt();
+	persona_identity_test_assert( false !== strpos( $prompt, Persona_Assistant_Identity::jwks_url() ) && false !== strpos( $prompt, persona_assistant_get_api_base() ) && false === strpos( $prompt, 'PRIVATE KEY' ) && false === strpos( $prompt, 'identity-test@example.com' ), 'Setup prompt includes public metadata without private keys or user claims' );
+	(new WP_User( $user_id ))->set_role( 'administrator' );
+	wp_set_current_user( 0 );
+	wp_set_current_user( $user_id );
+	$settings['client_token'] = 'ct_identity_test';
+	update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings, false );
+	update_option( PERSONA_ASSISTANT_STATE_OPTION, array(), false );
+	remove_filter( 'pre_http_request', $http_hook, 10 );
+	$scenario = 'admitted';
+	$calls = array();
+	$http_hook = function ( $pre, $args, $url ) use ( &$calls, &$scenario ) {
+		if ( substr( $url, -15 ) !== '/v1/client/init' ) { throw new RuntimeException( 'Verification must not call management endpoints' ); }
+		$calls[] = array( 'url' => $url, 'args' => $args );
+		$status = 'denied' === $scenario ? 401 : 200;
+		$body = array( 'sessionId' => 'discarded-session', 'visitor' => array( 'identityStatus' => 'ignored' === $scenario ? 'ignored' : 'admitted', 'endUserId' => 'missing-user' === $scenario ? null : 'eu_test', 'token' => 'discarded-visitor-token' ) );
+		return array( 'response' => array( 'code' => $status ), 'body' => wp_json_encode( $body ), 'headers' => array() );
+	};
+	add_filter( 'pre_http_request', $http_hook, 10, 3 );
+	persona_identity_test_assert( true === Persona_Assistant_Identity::verify_registration() && Persona_Assistant_Identity::verified(), 'Only an admitted signed identity marks setup verified' );
+	$body = json_decode( $calls[0]['args']['body'], true );
+	persona_identity_test_assert( 'ct_identity_test' === $body['token'] && true === $body['visitorHistory'] && ! isset( $calls[0]['args']['headers']['Authorization'] ) && persona_assistant_site_origin() === $calls[0]['args']['headers']['Origin'], 'Verification uses origin-bound chat credentials without management authorization' );
+	$parts = explode( '.', $body['identityProof'] );
+	$claims = json_decode( persona_identity_test_decode( $parts[1] ), true );
+	persona_identity_test_assert( 'wp:' . $user_id === $claims['sub'] && 300 === $claims['exp'] - $claims['iat'] && ! isset( $claims['email'] ), 'Verification uses administrator identity and honors email opt-out' );
+	$serialized = wp_json_encode( Persona_Assistant_Identity::state() );
+	persona_identity_test_assert( false === strpos( $serialized, $body['identityProof'] ) && false === strpos( $serialized, 'discarded-' ) && false === strpos( $serialized, 'ct_identity_test' ), 'Verification persists no proof, client token, or visitor credentials' );
+	foreach ( array( 'ignored', 'missing-user', 'denied' ) as $scenario ) {
+		persona_identity_test_assert( is_wp_error( Persona_Assistant_Identity::verify_registration() ) && ! Persona_Assistant_Identity::verified(), 'Verification fails closed for ' . $scenario );
+	}
+	$scenario = 'admitted';
+	Persona_Assistant_Identity::verify_registration();
+	$settings['client_token'] = 'ct_changed';
+	update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings, false );
+	persona_identity_test_assert( ! Persona_Assistant_Identity::verified(), 'Changing the client token invalidates the setup check' );
+	$settings['client_token'] = 'ct_identity_test';
+	update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings, false );
+	Persona_Assistant_Identity::use_manual_integration( 'idint_manual' );
+	persona_identity_test_assert( ! Persona_Assistant_Identity::verified(), 'Resaving an integration ID requires verification again' );
+	Persona_Assistant_Identity::verify_registration();
+	persona_identity_test_assert( true === Persona_Assistant_Identity::rotate_keys() && Persona_Assistant_Identity::verified(), 'Published rotation retains the verified signing key during the delay' );
+	$keys = get_option( Persona_Assistant_Identity::KEYS_OPTION );
+	$keys['switch_at'] = time() - 1;
+	update_option( Persona_Assistant_Identity::KEYS_OPTION, $keys, false );
+	persona_identity_test_assert( ! Persona_Assistant_Identity::verified(), 'Switching to the new signing key requires a new setup check' );
+	$settings['ai_backend'] = 'wordpress_ai';
+	update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings, false );
+	persona_identity_test_assert( is_wp_error( Persona_Assistant_Identity::verify_registration() ), 'WordPress AI cannot verify Runtype identity setup' );
+	$settings['ai_backend'] = 'runtype';
+	update_option( PERSONA_ASSISTANT_SETTINGS_OPTION, $settings, false );
+	(new WP_User( $user_id ))->set_role( 'subscriber' );
+	wp_set_current_user( 0 );
+	wp_set_current_user( $user_id );
+
 	// Frontend localization carries routing and a nonce, never user claims or keys.
 	update_option( PERSONA_ASSISTANT_STATE_OPTION, array(), false );
 	$settings['client_token'] = 'ct_identity_test';
@@ -201,6 +258,17 @@ try {
 	persona_identity_test_assert( true === $sanitized['identity_enabled'] && false === $sanitized['identity_share_email'], 'Connection settings support email opt-out' );
 	$sanitized = $admin->sanitize( array( '_persona_assistant_scope' => 'brand' ) );
 	persona_identity_test_assert( $settings['identity_enabled'] === $sanitized['identity_enabled'] && $settings['identity_share_email'] === $sanitized['identity_share_email'], 'Unrelated settings saves preserve identity choices' );
+	$render_identity = new ReflectionMethod( $admin, 'render_identity_section' );
+	$render_identity->setAccessible( true );
+	ob_start();
+	$render_identity->invoke( $admin, $settings );
+	$html = ob_get_clean();
+	persona_identity_test_assert( false !== strpos( $html, 'Copy setup prompt' ) && false !== strpos( $html, 'form="persona-assistant-identity-manual"' ) && false === strpos( $html, 'Register / re-register' ), 'WordPress renders the guided flow with separate setup actions' );
+	$settings['ai_backend'] = 'wordpress_ai';
+	ob_start();
+	$render_identity->invoke( $admin, $settings );
+	$html = ob_get_clean();
+	persona_identity_test_assert( false !== strpos( $html, 'data-runtype-only style="display:none"' ), 'Server rendering hides identity settings for WordPress AI before JavaScript runs' );
 	echo "Identity integration checks passed.\n";
 } finally {
 	remove_all_actions( 'add_option_' . PERSONA_ASSISTANT_SETTINGS_OPTION );

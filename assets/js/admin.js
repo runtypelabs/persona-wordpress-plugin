@@ -105,12 +105,15 @@
 		// With no radio checked (e.g. a legacy 'auto' value that has no card),
 		// show both sections so nothing is hidden until the user picks one.
 		var checked = document.querySelector('input[name$="[ai_backend]"]:checked');
-		var provider = checked ? checked.value : '';
+		var provider = checked ? checked.value : (cfg.provider || '');
 		var sections = document.querySelectorAll('.persona-assistant-provider-section');
 		for (var i = 0; i < sections.length; i++) {
 			var matches = sections[i].getAttribute('data-provider') === provider;
 			show(sections[i], !checked || matches);
 		}
+		var identity = document.querySelector('[data-runtype-only]');
+		show(identity, provider === 'runtype');
+		syncIdentitySettings();
 	}
 
 	function syncPlacementVisibility() {
@@ -119,6 +122,68 @@
 		for (var i = 0; i < conditional.length; i++) {
 			show(conditional[i], conditional[i].getAttribute('data-placement') === placement);
 		}
+	}
+
+	function syncIdentitySettings() {
+		var checkbox = document.getElementById('persona-assistant-identity-enabled');
+		if (!checkbox) return;
+		var provider = selectedValue('ai_backend', cfg.provider || '');
+		var active = checkbox.checked && provider === 'runtype';
+		var toggles = document.querySelectorAll('input[name$="[identity_enabled]"]');
+		for (var t = 0; t < toggles.length; t++) toggles[t].disabled = provider !== 'runtype';
+		var rows = document.querySelectorAll('[data-identity-dependent]');
+		for (var i = 0; i < rows.length; i++) {
+			rows[i].setAttribute('aria-disabled', active ? 'false' : 'true');
+			// Disable the hidden fallback too so saving while identity is off
+			// preserves the existing email-sharing preference.
+			var inputs = rows[i].querySelectorAll('input');
+			for (var j = 0; j < inputs.length; j++) {
+				inputs[j].disabled = !active;
+			}
+		}
+		var setup = document.querySelector('[data-identity-setup]');
+		if (setup) {
+			setup.hidden = !active;
+			var controls = setup.querySelectorAll('button, input');
+			for (var c = 0; c < controls.length; c++) {
+				if (controls[c].getAttribute('data-identity-unavailable') === null) {
+					controls[c].setAttribute('data-identity-unavailable', controls[c].disabled ? 'true' : 'false');
+				}
+				controls[c].disabled = !active || controls[c].getAttribute('data-identity-unavailable') === 'true';
+			}
+		}
+	}
+
+	function wireIdentityPrompt() {
+		var button = document.getElementById('persona-assistant-copy-identity-prompt');
+		if (!button) return;
+		button.addEventListener('click', function () {
+			var prompt = document.getElementById('persona-assistant-identity-prompt');
+			var status = document.getElementById('persona-assistant-identity-copy-status');
+			button.disabled = true;
+			status.textContent = strings.identityPreparing || 'Preparing setup prompt…';
+			var body = new URLSearchParams({ action: 'persona_assistant_identity_prompt', nonce: cfg.nonce });
+			fetch(cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+				.then(function (response) { return response.json(); })
+				.then(function (response) {
+					if (!response.success || !response.data || !response.data.prompt) {
+						throw new Error(response.data && response.data.message || strings.identityPromptError || 'Could not prepare the prompt.');
+					}
+					prompt.value = response.data.prompt;
+					function fallback() {
+						prompt.parentElement.open = true;
+						prompt.focus();
+						prompt.select();
+						try { if (document.execCommand('copy')) return Promise.resolve(); } catch (error) { /* Manual copy remains available. */ }
+						return Promise.reject(new Error(strings.identityCopyFailed || 'Select and copy the prompt below.'));
+					}
+					var copied = navigator.clipboard && navigator.clipboard.writeText
+						? navigator.clipboard.writeText(prompt.value).catch(fallback) : fallback();
+					return copied.then(function () { status.textContent = strings.identityCopied || 'Setup prompt copied.'; });
+				})
+				.catch(function (error) { status.textContent = error.message; })
+				.finally(function () { syncIdentitySettings(); });
+		});
 	}
 
 	function syncAccessVisibility() {
@@ -1131,6 +1196,13 @@
 			providerRadios[p].addEventListener('change', syncProviderVisibility);
 		}
 		syncProviderVisibility();
+
+		var identityCheckbox = document.getElementById('persona-assistant-identity-enabled');
+		if (identityCheckbox) {
+			identityCheckbox.addEventListener('change', syncIdentitySettings);
+		}
+		syncIdentitySettings();
+		wireIdentityPrompt();
 
 		var placementRadios = document.querySelectorAll('input[name$="[placement_mode]"]');
 		for (var m = 0; m < placementRadios.length; m++) {

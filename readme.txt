@@ -132,7 +132,7 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 
 = Unreleased =
 * Added opt-in verified WordPress account identity for Runtype chats and history, with email sharing enabled by default and a separate opt-out.
-* Added identity integration registration, public signing keys, key rotation, and a fresh browser-only chat fallback.
+* Added guided identity registration with a copyable MCP/CLI setup prompt, public signing keys, setup verification, key rotation, and a fresh browser-only chat fallback.
 * Updated bundled Persona to 4.25.0.
 
 = 1.1.0 =

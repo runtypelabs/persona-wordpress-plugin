@@ -762,6 +762,38 @@
 .persona-assistant-needs-runtype .persona-assistant-gated-setting {
 	opacity: 0.55;
 }
+.persona-assistant-form [data-identity-dependent][aria-disabled="true"] {
+	opacity: 0.55;
+}
+.persona-assistant-identity {
+	border-top: 1px solid #dcdcde;
+	margin-top: 24px;
+	padding-top: 16px;
+}
+.persona-assistant-identity [hidden] {
+	display: none !important;
+}
+.persona-assistant-identity-steps {
+	margin: 16px 0 24px 24px;
+}
+.persona-assistant-identity-steps > li {
+	padding: 0 0 20px 8px;
+}
+.persona-assistant-identity-steps h4 {
+	margin: 0 0 8px;
+	font-size: 14px;
+}
+.persona-assistant-identity-prompt {
+	margin-top: 12px;
+}
+.persona-assistant-identity-prompt textarea {
+	margin-top: 12px;
+}
+.persona-assistant-identity-advanced pre,
+.persona-assistant-identity-advanced code {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
 /* Two classes so this outranks wp-admin's `.form-table td p` margin reset. */
 .persona-assistant-needs-runtype .persona-assistant-requires-note {
 	margin: 0 0 14px;
