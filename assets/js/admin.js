@@ -140,9 +140,12 @@
 		var checkbox = document.getElementById('persona-assistant-identity-enabled');
 		if (!checkbox) return;
 		var provider = selectedValue('ai_backend', cfg.provider || '');
-		var active = checkbox.checked && provider === 'runtype';
+		var available = checkbox.getAttribute('data-identity-available') === 'true';
+		var active = available && checkbox.checked && provider === 'runtype';
 		var toggles = document.querySelectorAll('input[name$="[identity_enabled]"]');
-		for (var t = 0; t < toggles.length; t++) toggles[t].disabled = provider !== 'runtype';
+		for (var t = 0; t < toggles.length; t++) {
+			toggles[t].disabled = provider !== 'runtype' || (toggles[t] === checkbox && !available);
+		}
 		var rows = document.querySelectorAll('[data-identity-dependent]');
 		for (var i = 0; i < rows.length; i++) {
 			rows[i].setAttribute('aria-disabled', active ? 'false' : 'true');

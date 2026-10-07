@@ -421,6 +421,11 @@ class Persona_Assistant_Settings {
 				$defaults['ai_backend']
 			);
 			$out['identity_enabled'] = isset( $input['identity_enabled'] ) ? ! empty( $input['identity_enabled'] ) : $existing['identity_enabled'];
+			$identity_error = Persona_Assistant_Identity::environment_error();
+			if ( $out['identity_enabled'] && $identity_error ) {
+				$out['identity_enabled'] = false;
+				add_settings_error( PERSONA_ASSISTANT_SETTINGS_OPTION, 'persona_assistant_identity_unavailable', $identity_error->get_error_message(), 'error' );
+			}
 			$out['identity_share_email'] = isset( $input['identity_share_email'] ) ? ! empty( $input['identity_share_email'] ) : $existing['identity_share_email'];
 			$out['client_token'] = isset( $input['client_token'] ) ? sanitize_text_field( trim( (string) $input['client_token'] ) ) : $existing['client_token'];
 			$out['product_surface_id'] = isset( $input['product_surface_id'] ) ? sanitize_text_field( trim( (string) $input['product_surface_id'] ) ) : (string) $existing['product_surface_id'];
@@ -1550,12 +1555,12 @@ class Persona_Assistant_Settings {
 		$opt = PERSONA_ASSISTANT_SETTINGS_OPTION;
 		$state = Persona_Assistant_Identity::state();
 		$error = Persona_Assistant_Identity::environment_error();
-		$identity_enabled = ! empty( $settings['identity_enabled'] );
+		$identity_enabled = ! empty( $settings['identity_enabled'] ) && ! $error;
 		$is_runtype = 'runtype' === $settings['ai_backend'] || ( 'auto' === $settings['ai_backend'] && 'runtype' === persona_assistant_resolve_mode() );
 		$ready = $is_runtype && $identity_enabled && ! $error;
 		$registered = Persona_Assistant_Identity::registered();
 		$verified = Persona_Assistant_Identity::verified();
-		$status = $verified ? __( 'Verified', 'persona-assistant' ) : ( $registered ? __( 'Awaiting verification', 'persona-assistant' ) : ( $identity_enabled ? __( 'Awaiting registration', 'persona-assistant' ) : __( 'Not configured', 'persona-assistant' ) ) );
+		$status = $error ? __( 'Unavailable', 'persona-assistant' ) : ( $verified ? __( 'Verified', 'persona-assistant' ) : ( $registered ? __( 'Awaiting verification', 'persona-assistant' ) : ( $identity_enabled ? __( 'Awaiting registration', 'persona-assistant' ) : __( 'Not configured', 'persona-assistant' ) ) ) );
 		?>
 		<div class="persona-assistant-identity" data-runtype-only <?php if ( ! $is_runtype ) : ?>style="display:none"<?php endif; ?>>
 		<h3><?php esc_html_e( 'WordPress user identity', 'persona-assistant' ); ?></h3>
@@ -1563,8 +1568,8 @@ class Persona_Assistant_Settings {
 		<table class="form-table" role="presentation">
 			<tr><th scope="row"><?php esc_html_e( 'Identify logged-in users', 'persona-assistant' ); ?></th><td>
 				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="0" />
-				<label><input type="checkbox" id="persona-assistant-identity-enabled" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="1" <?php checked( $identity_enabled ); ?> /> <?php esc_html_e( 'Identify logged-in WordPress users', 'persona-assistant' ); ?></label>
-				<p class="description"><?php esc_html_e( 'Off by default. Logged-out visitors keep browser-only identity. Save changes before starting setup.', 'persona-assistant' ); ?></p>
+				<label><input type="checkbox" id="persona-assistant-identity-enabled" data-identity-available="<?php echo $error ? 'false' : 'true'; ?>" aria-describedby="persona-assistant-identity-availability" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="1" <?php checked( $identity_enabled ); ?> <?php disabled( (bool) $error ); ?> /> <?php esc_html_e( 'Identify logged-in WordPress users', 'persona-assistant' ); ?></label>
+				<p id="persona-assistant-identity-availability" class="description"><?php if ( $error ) { echo esc_html( $error->get_error_message() ); } else { esc_html_e( 'Off by default. Logged-out visitors keep browser-only identity. Save changes before starting setup.', 'persona-assistant' ); } ?></p>
 			</td></tr>
 			<tr data-identity-dependent aria-disabled="<?php echo $identity_enabled ? 'false' : 'true'; ?>"><th scope="row"><?php esc_html_e( 'Email sharing', 'persona-assistant' ); ?></th><td>
 				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="0" <?php disabled( ! $identity_enabled ); ?> />
@@ -1578,7 +1583,6 @@ class Persona_Assistant_Settings {
 			</td></tr>
 		</table>
 		<div data-identity-setup data-identity-ready="<?php echo $ready ? 'true' : 'false'; ?>" <?php if ( ! $identity_enabled ) : ?>hidden<?php endif; ?>>
-			<?php if ( $error ) : ?><div class="notice notice-warning inline"><p><?php echo esc_html( $error->get_error_message() ); ?></p></div><?php endif; ?>
 			<div data-identity-save-required <?php if ( $is_runtype && $identity_enabled ) : ?>hidden<?php endif; ?>>
 				<p><?php esc_html_e( 'Save your connection and identity changes before continuing setup.', 'persona-assistant' ); ?></p>
 				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save changes to continue setup', 'persona-assistant' ); ?></button>

@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function fixture({ provider = 'runtype', enabled = true, savedReady = true, clipboard = true } = {}) {
+function fixture({ provider = 'runtype', enabled = true, savedReady = true, available = true, clipboard = true } = {}) {
 	function node(props = {}) {
 		const attrs = {}, handlers = {};
 		return Object.assign({ style: {}, disabled: false, checked: false, value: '', handlers,
@@ -16,7 +16,8 @@ function fixture({ provider = 'runtype', enabled = true, savedReady = true, clip
 	}
 	const runtype = node({ value: 'runtype', checked: provider === 'runtype' });
 	const wordpress = node({ value: 'wordpress_ai', checked: provider === 'wordpress_ai' });
-	const checkbox = node({ checked: enabled }), fallback = node(), email = node({ checked: false }), emailFallback = node();
+	const checkbox = node({ checked: enabled, disabled: !available }), fallback = node(), email = node({ checked: false }), emailFallback = node();
+	checkbox.setAttribute('data-identity-available', available ? 'true' : 'false');
 	const button = node({ disabled: !savedReady }), integration = node({ disabled: !savedReady });
 	const verify = node({ disabled: true }); // No saved ID yet.
 	const workflow = node({ querySelectorAll: () => [button, integration, verify] }), reminder = node();
@@ -110,8 +111,16 @@ async function settled() { await new Promise(resolve => setImmediate(resolve)); 
 	assert.equal(unsaved.reminder.hidden, false);
 	unsaved.button.fire('click'); await settled();
 	assert.equal(unsaved.requests.length, 0);
-	const blocked = fixture({ savedReady: false });
+	const blocked = fixture({ available: false, savedReady: false });
+	assert.equal(blocked.checkbox.disabled, true, 'Unsupported sites cannot enable identity');
+	assert.equal(blocked.setup.hidden, true); assert.equal(blocked.reminder.hidden, true);
 	assert.equal(blocked.workflow.hidden, true, 'An unsupported site cannot expose the setup workflow');
+	assert.equal(blocked.email.disabled, true); assert.equal(blocked.emailFallback.disabled, true);
+	blocked.selectProvider('wordpress_ai'); blocked.selectProvider('runtype');
+	assert.equal(blocked.checkbox.disabled, true, 'Provider changes cannot unlock an unsupported site');
+	assert.equal(blocked.fallback.disabled, false, 'Saving connection settings clears unavailable identity');
+	blocked.button.fire('click'); await settled();
+	assert.equal(blocked.requests.length, 0);
 	const wp = fixture({ provider: 'wordpress_ai' });
 	assert.equal(wp.identity.style.display, 'none', 'WordPress AI hides identity on initial page load');
 	console.log('PASS: provider visibility, preference preservation, setup gating, prompt preparation, copy fallback, and errors');
