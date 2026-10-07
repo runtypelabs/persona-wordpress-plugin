@@ -45,3 +45,15 @@ Commit `wordpress-org-assets/blueprints/blueprint.json` to the plugin’s SVN `a
    Walk the chips: tour → streaming/markdown → launch tree → tool call (tool row renders; demo forces AI-activity display on) → "What page am I looking at?" (real `get_current_page` approval bubble; the reply must contain the actual page title). Confirm a logged-out window shows no widget at all, and that connecting either real AI source makes the badge and demo notice disappear.
 
 Run `php -l` on the PHP files and the WordPress **Plugin Check (PCP)** tool before shipping; the only expected finding is the CDN enqueue (see [Developers](developers.md#asset-delivery--wordpressorg)).
+
+
+## Identity regression checks
+
+With Persona Assistant active in a disposable wp-env site:
+
+```bash
+node tools/test-identity.js
+npx wp-env run cli wp eval-file wp-content/plugins/wordpress-persona/tools/test-identity.php
+```
+
+The PHP check temporarily configures a synthetic HTTPS issuer and test user, mocks all registration HTTP calls, verifies JWT signatures using public JWKS parameters, checks nonce/login/mode gates, rotation, email opt-out, scoped settings saves, and user-partitioned persistence, then restores options and deletes its test user. It never sends a fixture token or credential to a live Runtype account. The Node check covers in-memory caching, concurrent refresh, malformed/failed responses, explicit fallback, and both frontend mount paths. End-user attribution and rejection by Runtype still require the HTTPS staging checks described in [Developers](developers.md#verified-wordpress-identity-in-runtype-mode).

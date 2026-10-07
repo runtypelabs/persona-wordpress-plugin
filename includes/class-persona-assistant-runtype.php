@@ -478,4 +478,24 @@ class Persona_Assistant_Runtype {
 		return $this->request( 'DELETE', '/v1/client-tokens/' . rawurlencode( $id ), $credential );
 	}
 
+	/** Create or update the site's public identity-verification descriptor. */
+	public function save_identity_integration( $credential, array $payload, $id = '' ) {
+		if ( '' !== $id ) {
+			$payload['status'] = 'active';
+		}
+		return $this->request( $id ? 'PATCH' : 'POST', '/v1/identity-integrations' . ( $id ? '/' . rawurlencode( $id ) : '' ), $credential, $payload );
+	}
+
+	public function list_identity_integrations( $credential ) {
+		$data = $this->request( 'GET', '/v1/identity-integrations', $credential );
+		if ( is_wp_error( $data ) ) {
+			return $data;
+		}
+		return isset( $data['identityIntegrations'] ) && is_array( $data['identityIntegrations'] ) ? $data['identityIntegrations'] : array();
+	}
+
+	public function delete_identity_integration( $credential, $id ) {
+		return $this->request( 'DELETE', '/v1/identity-integrations/' . rawurlencode( $id ), $credential );
+	}
+
 }

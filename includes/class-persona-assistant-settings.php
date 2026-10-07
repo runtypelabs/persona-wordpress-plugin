@@ -46,6 +46,7 @@ class Persona_Assistant_Settings {
 		add_action( 'admin_post_persona_assistant_oauth_disconnect', array( $this, 'handle_oauth_disconnect' ) );
 		add_action( 'load-settings_page_' . self::PAGE_SLUG, array( $this, 'maybe_handle_oauth_callback' ) );
 
+		add_action( 'admin_post_persona_assistant_identity', array( $this, 'handle_identity_action' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 	}
 
@@ -413,6 +414,8 @@ class Persona_Assistant_Settings {
 				array( 'auto', 'runtype', 'wordpress_ai' ),
 				$defaults['ai_backend']
 			);
+			$out['identity_enabled'] = isset( $input['identity_enabled'] ) ? ! empty( $input['identity_enabled'] ) : $existing['identity_enabled'];
+			$out['identity_share_email'] = isset( $input['identity_share_email'] ) ? ! empty( $input['identity_share_email'] ) : $existing['identity_share_email'];
 			$out['client_token'] = isset( $input['client_token'] ) ? sanitize_text_field( trim( (string) $input['client_token'] ) ) : $existing['client_token'];
 			$out['product_surface_id'] = isset( $input['product_surface_id'] ) ? sanitize_text_field( trim( (string) $input['product_surface_id'] ) ) : (string) $existing['product_surface_id'];
 			$out['wp_ai_system_prompt'] = isset( $input['wp_ai_system_prompt'] ) ? sanitize_textarea_field( (string) $input['wp_ai_system_prompt'] ) : (string) $existing['wp_ai_system_prompt'];
@@ -1318,6 +1321,12 @@ class Persona_Assistant_Settings {
 				esc_html__( 'Start setup', 'persona-assistant' )
 			);
 		}
+		if ( persona_assistant_get_setting( 'identity_enabled', false ) && 'runtype' === persona_assistant_resolve_mode() ) {
+			$error = Persona_Assistant_Identity::environment_error();
+			if ( $error || ! Persona_Assistant_Identity::registered() ) {
+				printf( '<div class="notice notice-warning"><p>%s</p></div>', esc_html( $error ? $error->get_error_message() : __( 'Persona account identity is enabled but its Runtype integration is not registered for this site. Open Persona Assistant → Connection to register it.', 'persona-assistant' ) ) );
+			}
+		}
 		if ( 'off' === persona_assistant_get_setting( 'placement_mode', 'off' ) && ! persona_assistant_page_exists() ) {
 			return;
 		}
@@ -1460,6 +1469,7 @@ class Persona_Assistant_Settings {
 					<?php $this->render_provider_choice( $settings ); ?>
 					<div class="persona-assistant-provider-section" data-provider="runtype"><?php $this->render_runtype_section( $settings ); ?></div>
 					<div class="persona-assistant-provider-section" data-provider="wordpress_ai"><?php $this->render_wp_ai_section( $settings ); ?></div>
+					<?php $this->render_identity_section( $settings ); ?>
 				<?php elseif ( 'brand' === $view ) : ?>
 					<h2><?php esc_html_e( 'Brand & Copy', 'persona-assistant' ); ?></h2>
 					<p class="description"><?php esc_html_e( 'These shared colors and words are used by both the launcher and the assistant Page.', 'persona-assistant' ); ?></p>
@@ -1482,6 +1492,85 @@ class Persona_Assistant_Settings {
 			</section>
 			<div class="persona-assistant-save-bar"><?php submit_button( __( 'Save changes', 'persona-assistant' ), 'primary', 'submit', false ); ?></div>
 		</form>
+		<?php
+		if ( 'connection' === $view ) {
+			$this->render_identity_actions();
+		}
+	}
+
+	/** Identity actions are separate POST forms so they cannot bypass saving settings. */
+	public function handle_identity_action() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You cannot manage identity settings.', 'persona-assistant' ) );
+		}
+		check_admin_referer( 'persona_assistant_identity' );
+		$operation = isset( $_POST['operation'] ) ? sanitize_key( wp_unslash( $_POST['operation'] ) ) : '';
+		if ( 'register' === $operation ) {
+			$result = Persona_Assistant_Identity::register_integration();
+			$message = __( 'Identity integration registered with Runtype.', 'persona-assistant' );
+		} elseif ( 'rotate' === $operation ) {
+			$result = Persona_Assistant_Identity::rotate_keys();
+			$message = __( 'New public key published. Signing switches in two minutes; the previous public key remains available for fifteen more minutes.', 'persona-assistant' );
+		} elseif ( 'manual' === $operation ) {
+			$id = isset( $_POST['integration_id'] ) ? sanitize_text_field( wp_unslash( $_POST['integration_id'] ) ) : '';
+			$result = Persona_Assistant_Identity::use_manual_integration( $id );
+			$message = __( 'Manually registered identity integration saved.', 'persona-assistant' );
+		} else {
+			$result = new WP_Error( 'persona_assistant_identity_action', __( 'Unknown identity action.', 'persona-assistant' ) );
+			$message = '';
+		}
+		$this->add_notice( 'persona_assistant_identity', is_wp_error( $result ) ? $result->get_error_message() : $message, is_wp_error( $result ) ? 'error' : 'success' );
+		$this->redirect_back();
+	}
+
+	private function render_identity_section( $settings ) {
+		$opt = PERSONA_ASSISTANT_SETTINGS_OPTION;
+		$state = Persona_Assistant_Identity::state();
+		$error = Persona_Assistant_Identity::environment_error();
+		?>
+		<h3><?php esc_html_e( 'WordPress user identity', 'persona-assistant' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tr><th scope="row"><?php esc_html_e( 'Identify logged-in users', 'persona-assistant' ); ?></th><td>
+				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="0" />
+				<label><input type="checkbox" name="<?php echo esc_attr( $opt ); ?>[identity_enabled]" value="1" <?php checked( ! empty( $settings['identity_enabled'] ) ); ?> /> <?php esc_html_e( 'Identify logged-in users to Runtype', 'persona-assistant' ); ?></label>
+				<p class="description"><?php esc_html_e( 'Opt in to verified account identity for chat and account conversation history in Runtype mode. Runtype can attribute executions and spend to each WordPress user. Logged-out visitors keep browser-only identity. Save changes, then register the integration below.', 'persona-assistant' ); ?></p>
+			</td></tr>
+			<tr><th scope="row"><?php esc_html_e( 'Email sharing', 'persona-assistant' ); ?></th><td>
+				<input type="hidden" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="0" />
+				<label><input type="checkbox" name="<?php echo esc_attr( $opt ); ?>[identity_share_email]" value="1" <?php checked( ! empty( $settings['identity_share_email'] ) ); ?> /> <?php esc_html_e( 'Include email address', 'persona-assistant' ); ?></label>
+				<p class="description"><?php esc_html_e( 'Enabled by default when identity sharing is on. Turn this off to share only a stable user identifier (wp: followed by the WordPress user ID). Opting out removes email from new tokens. Previously issued tokens remain valid for up to five minutes; email already held by Runtype is not erased.', 'persona-assistant' ); ?></p>
+			</td></tr>
+			<tr><th scope="row"><?php esc_html_e( 'Registration status', 'persona-assistant' ); ?></th><td>
+				<p><?php echo esc_html( Persona_Assistant_Identity::registered() ? __( 'Configured for this site and Runtype API.', 'persona-assistant' ) : __( 'Not registered for this site and Runtype API.', 'persona-assistant' ) ); ?></p>
+				<p><?php esc_html_e( 'Issuer:', 'persona-assistant' ); ?> <code><?php echo esc_html( Persona_Assistant_Identity::issuer() ); ?></code></p>
+				<p><?php esc_html_e( 'Public keys (JWKS):', 'persona-assistant' ); ?> <code><?php echo esc_html( Persona_Assistant_Identity::jwks_url() ); ?></code></p>
+				<p><?php esc_html_e( 'Integration ID:', 'persona-assistant' ); ?> <code><?php echo esc_html( isset( $state['id'] ) ? $state['id'] : '—' ); ?></code></p>
+				<?php if ( ! empty( $state['last_result'] ) ) : ?><p><?php esc_html_e( 'Last registration result:', 'persona-assistant' ); ?> <?php echo esc_html( $state['last_result'] ); ?></p><?php endif; ?>
+				<?php if ( $error ) : ?><div class="notice notice-warning inline"><p><?php echo esc_html( $error->get_error_message() ); ?></p></div><?php endif; ?>
+				<p class="description"><?php esc_html_e( 'Requires a publicly reachable HTTPS site. Use a chat surface bound to a product for end-user usage reports; pasted client tokens must also be surface-bound. Ask Runtype to enable identity admission and end-user usage analytics for your organization before testing.', 'persona-assistant' ); ?></p>
+			</td></tr>
+		</table>
+		<?php
+	}
+
+	private function render_identity_actions() {
+		$error = Persona_Assistant_Identity::environment_error();
+		?>
+		<section class="persona-assistant-card">
+			<h3><?php esc_html_e( 'Identity integration and signing keys', 'persona-assistant' ); ?></h3>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="persona_assistant_identity" />
+				<?php wp_nonce_field( 'persona_assistant_identity' ); ?>
+				<p><button type="submit" name="operation" value="register" class="button button-secondary" <?php disabled( (bool) $error ); ?>><?php esc_html_e( 'Register / re-register with Runtype', 'persona-assistant' ); ?></button>
+				<button type="submit" name="operation" value="rotate" class="button" <?php disabled( (bool) $error ); ?>><?php esc_html_e( 'Rotate signing key', 'persona-assistant' ); ?></button></p>
+				<details><summary><?php esc_html_e( 'Manual identity registration', 'persona-assistant' ); ?></summary>
+					<p><?php esc_html_e( 'If your OAuth connection cannot register integrations, POST this JSON to /v1/identity-integrations on your configured Runtype API using an API key with INTEGRATIONS:READ and INTEGRATIONS:WRITE. For an existing issuer, reuse its integration ID and PATCH its descriptor instead of creating a duplicate. Save the returned ID here. The public keys are generated when first requested.', 'persona-assistant' ); ?></p>
+					<pre style="white-space:pre-wrap;overflow-wrap:anywhere"><?php echo esc_html( wp_json_encode( Persona_Assistant_Identity::integration_payload(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); ?></pre>
+					<p><label><?php esc_html_e( 'Registered integration ID', 'persona-assistant' ); ?> <input type="text" name="integration_id" placeholder="idint_…" class="regular-text" /></label>
+					<button type="submit" name="operation" value="manual" class="button" <?php disabled( (bool) $error ); ?>><?php esc_html_e( 'Save registered integration', 'persona-assistant' ); ?></button></p>
+				</details>
+			</form>
+		</section>
 		<?php
 	}
 

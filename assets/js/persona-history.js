@@ -818,7 +818,9 @@
 		} else {
 			remove(history.browserMode === 'device' ? sessionStore : deviceStore, history.storageKey);
 			remove(history.browserMode === 'device' ? sessionStore : deviceStore, history.sessionKey);
-			config.persistState = true;
+			config.persistState = history.identityPartitioned
+				? { storage: history.browserMode === 'device' ? 'local' : 'session', keyPrefix: history.storageKey + '-' }
+				: true;
 			config.storageAdapter = browserAdapter(history.browserMode, history.storageKey);
 		}
 
@@ -863,6 +865,7 @@
 			var oldGet = config.getStoredSessionId;
 			var oldSet = config.setStoredSessionId;
 			var oldExpired = config.onSessionExpired;
+			var oldClear = config.clearStoredSessionId;
 			config.getStoredSessionId = function () {
 				var existing = typeof oldGet === 'function' ? oldGet() : '';
 				try {
@@ -882,6 +885,11 @@
 						// Session resume is optional.
 					}
 				}
+			};
+			config.clearStoredSessionId = function () {
+				if (typeof oldClear === 'function') { oldClear(); }
+				remove(sessionStore, history.sessionKey);
+				remove(deviceStore, history.sessionKey);
 			};
 			config.onSessionExpired = function () {
 				remove(sessionStore, history.sessionKey);

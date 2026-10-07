@@ -166,7 +166,13 @@ class Persona_Assistant_History {
 		$selected     = $account ? $this->selected_conversation_id() : '';
 		// Scoped by the selected surface: switching assistants partitions local
 		// history the same way re-minting rotates the server-side namespace.
-		$scope        = substr( hash( 'sha256', home_url( '/' ) . '|' . persona_assistant_resolve_mode() . '|' . persona_assistant_selected_surface_id() ), 0, 16 );
+		$identity_partition = '';
+		if ( 'runtype' === persona_assistant_resolve_mode() && ! empty( $settings['identity_enabled'] ) ) {
+			// Account switches must never inherit another user's transcript, visitor
+			// credential, or session on a shared device. Also isolate opted-out mode.
+			$identity_partition = '|identity:' . get_current_user_id();
+		}
+		$scope        = substr( hash( 'sha256', home_url( '/' ) . '|' . persona_assistant_resolve_mode() . '|' . persona_assistant_selected_surface_id() . $identity_partition ), 0, 16 );
 
 		if ( $preview ) {
 			$browser_mode = 'off';
@@ -174,6 +180,7 @@ class Persona_Assistant_History {
 
 		return array(
 			'browserMode'     => $browser_mode,
+			'identityPartitioned' => '' !== $identity_partition,
 			'storageKey'      => 'persona-assistant-' . $scope,
 			'sessionKey'      => 'persona-assistant-session-' . $scope,
 			'accountEnabled'  => $account,

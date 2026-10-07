@@ -54,7 +54,7 @@ Persona itself is bundled locally and no widget code is loaded from a third-part
 
 The plugin sends data to an external service only when a visitor uses chat or an administrator connects/configures that service:
 
-* **Runtype mode:** chat messages, attachments, available page context/tools, and tool results may be sent to Runtype and the AI providers configured for that assistant. The plugin also contacts Runtype while connecting an account, verifying site ownership, listing agents, refreshing access, and creating or revoking browser-safe client tokens. See the [Runtype Privacy Policy](https://www.runtype.com/privacy), [Terms of Service](https://www.runtype.com/terms), and [Security](https://www.runtype.com/security).
+* **Runtype mode:** chat messages, attachments, available page context/tools, and tool results may be sent to Runtype and the AI providers configured for that assistant. When “Identify logged-in users to Runtype” is enabled, signed tokens also share a stable WordPress user identifier so Runtype can link chats and usage to that account. Email is included by default with identity sharing and can be disabled separately. Identity sharing is off by default and requires a public HTTPS site and a registered identity integration. The plugin also contacts Runtype while registering or deleting identity integrations, connecting an account, verifying site ownership, listing agents, refreshing access, and creating or revoking browser-safe client tokens. See the [Runtype Privacy Policy](https://www.runtype.com/privacy), [Terms of Service](https://www.runtype.com/terms), and [Security](https://www.runtype.com/security).
 * **WordPress AI mode:** messages, attachments, selected read-only Ability results, and the configured system instruction are sent through the WordPress AI Client (or AI Services compatibility layer) to the connector/provider chosen by the site owner. Review that connector's privacy and retention terms.
 
 Suggested disclosure text is added to WordPress's Settings → Privacy → Policy Guide.
@@ -129,6 +129,11 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 4. Full-screen Assistant Example
 
 == Changelog ==
+
+= Unreleased =
+* Added opt-in verified WordPress account identity for Runtype chats and history, with email sharing enabled by default and a separate opt-out.
+* Added identity integration registration, public signing keys, key rotation, and a fresh browser-only chat fallback.
+* Updated bundled Persona to 4.25.0.
 
 = 1.1.0 =
 * Added an administrator-only demo mode with simulated streaming responses, guided tool activity, and a live browser-only WebMCP round trip before an AI is connected.

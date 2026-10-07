@@ -63,6 +63,9 @@ final class Persona_Assistant_Plugin {
 	 */
 	public $fullscreen;
 
+	/** @var Persona_Assistant_Identity */
+	public $identity;
+
 	/** @var Persona_Assistant_Privacy */
 	public $privacy;
 
@@ -91,6 +94,7 @@ final class Persona_Assistant_Plugin {
 		$this->fullscreen = new Persona_Assistant_Fullscreen( $this->frontend );
 		$this->rest     = new Persona_Assistant_REST( $this->history );
 		$this->webmcp   = new Persona_Assistant_WebMCP();
+		$this->identity = new Persona_Assistant_Identity();
 		$this->privacy  = new Persona_Assistant_Privacy();
 
 		if ( is_admin() ) {
