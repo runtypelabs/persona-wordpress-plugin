@@ -1,0 +1,1 @@
+var t=class extends Error{constructor(o,i,r){super(i),this.name="HistoryProviderError",this.code=o,r?.retryAfterSeconds!==void 0&&(this.retryAfterSeconds=r.retryAfterSeconds)}};function s(e){return e instanceof t}export{t as a,s as b};

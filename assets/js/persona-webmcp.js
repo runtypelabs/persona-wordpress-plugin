@@ -191,8 +191,11 @@
 		try {
 			import(data.polyfillUrl).then(function (mod) {
 				try {
-					if (!document.modelContext && mod && typeof mod.initializeWebMCPPolyfill === 'function') {
-						mod.initializeWebMCPPolyfill();
+					// Polyfill v6 (Persona 5) exports installWebMCP; v5 and
+					// earlier export initializeWebMCPPolyfill.
+					var install = mod && (mod.installWebMCP || mod.initializeWebMCPPolyfill);
+					if (!document.modelContext && typeof install === 'function') {
+						install();
 					}
 				} catch (e) {
 					// Fall through to the poll.
