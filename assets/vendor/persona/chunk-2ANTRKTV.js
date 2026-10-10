@@ -1,0 +1,1 @@
+var n={idle:"Online",connecting:"Connecting\u2026",connected:"Streaming\u2026",error:"Offline",paused:"Connection lost\u2026",resuming:"Reconnecting\u2026"},t=1e5,e=t+1,o="https://api.runtype.com";export{n as a,t as b,e as c,o as d};

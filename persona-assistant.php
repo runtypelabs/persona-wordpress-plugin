@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'PERSONA_ASSISTANT_VERSION', '1.2.0' );
-define( 'PERSONA_ASSISTANT_PERSONA_VERSION', '4.25.0' );
+define( 'PERSONA_ASSISTANT_PERSONA_VERSION', '4.28.1' );
 define( 'PERSONA_ASSISTANT_FILE', __FILE__ );
 define( 'PERSONA_ASSISTANT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PERSONA_ASSISTANT_URL', plugin_dir_url( __FILE__ ) );
