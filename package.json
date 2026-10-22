@@ -23,6 +23,7 @@
 		"brace-expansion": "^2.1.7",
 		"http-cache-semantics": "^4.3.0",
 		"simple-git": "^4.0.2",
-		"@simple-git/argv-parser": "^2.0.1"
+		"@simple-git/argv-parser": "^2.0.1",
+		"qs": "^6.16.0"
 	}
 }
