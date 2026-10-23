@@ -217,7 +217,7 @@ $home_content = <<<HTML
 <!-- wp:group {"style":{"border":{"top":{"color":"#d1d5db","width":"1px"},"bottom":{"color":"#d1d5db","width":"1px"}},"spacing":{"padding":{"top":"1.5rem","bottom":"1.5rem"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="border-top-color:#d1d5db;border-top-width:1px;border-bottom-color:#d1d5db;border-bottom-width:1px;padding-top:1.5rem;padding-bottom:1.5rem">
 <!-- wp:heading {"level":3} --><h3 class="wp-block-heading">03 — Publish</h3><!-- /wp:heading -->
-<!-- wp:paragraph --><p>Turn on the site-wide pill launcher, assign a full-screen WordPress Page, or place chat manually with the block or shortcode.</p><!-- /wp:paragraph -->
+<!-- wp:paragraph --><p>Turn on the site-wide floating launcher, assign a full-screen WordPress Page, or place chat manually with the block or shortcode.</p><!-- /wp:paragraph -->
 <!-- wp:paragraph --><p><a href="{$launcher_url}"><strong>Configure Launcher →</strong></a> &nbsp; <a href="{$assistant_url}"><strong>Configure Assistant Page →</strong></a></p><!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
@@ -261,7 +261,7 @@ $home_content = <<<HTML
 <!-- wp:column -->
 <div class="wp-block-column">
 <!-- wp:image {"sizeSlug":"large","linkDestination":"none","style":{"border":{"radius":"16px"}}} -->
-<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-3.png" alt="Persona Assistant floating pill launcher" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Pill launcher.</strong> Add a site-wide floating entry point, or use the block and shortcode for deliberate placement.</figcaption></figure>
+<figure class="wp-block-image size-large has-custom-border"><img src="{$screenshots_base}screenshot-3.png" alt="Persona Assistant floating launcher" style="border-radius:16px"/><figcaption class="wp-element-caption"><strong>Floating launcher.</strong> Add a site-wide floating entry point, or use the block and shortcode for deliberate placement.</figcaption></figure>
 <!-- /wp:image -->
 </div>
 <!-- /wp:column -->

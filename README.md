@@ -3,7 +3,7 @@
 *This is the initial release!* Feedback in the form of issues, celebration, or contributions is greatly appreciated :)
 
 This plugin unlocks two forms of customizable agent UIs on WordPress.
-1) "Pill": A launcher on the page that pops open the chat on click
+1) "Launcher": A launcher on the page that pops open the chat on click
 2) "Assistant": A full-screen assistant view that lives on a page
 
 By default, everything uses built-in WordPress AI. It's a great testbed for the latest functionality. Optionally, you can also connect Runtype to unlock more models, tools, and WebMCP support.
@@ -25,9 +25,9 @@ Rendering utilizes [Persona.js](https://github.com/runtypelabs/persona) (MIT) to
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="wordpress-org-assets/screenshot-3.png" alt="Pill launcher chat on a WordPress site" />
+      <img src="wordpress-org-assets/screenshot-3.png" alt="Floating launcher chat on a WordPress site" />
       <br />
-      <em>Pill launcher</em>
+      <em>Floating launcher</em>
     </td>
     <td align="center" width="50%">
       <img src="wordpress-org-assets/screenshot-4.png" alt="Full-screen assistant Page on a WordPress site" />

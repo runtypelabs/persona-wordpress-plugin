@@ -44,7 +44,7 @@ Commit `wordpress-org-assets/blueprints/blueprint.json` to the plugin’s SVN `a
 
    Walk the chips: tour → streaming/markdown → launch tree → tool call (tool row renders; demo forces AI-activity display on) → "What page am I looking at?" (real `get_current_page` approval bubble; the reply must contain the actual page title). Confirm a logged-out window shows no widget at all, and that connecting either real AI source makes the badge and demo notice disappear.
 
-Run `php -l` on the PHP files and the WordPress **Plugin Check (PCP)** tool before shipping; the only expected finding is the CDN enqueue (see [Developers](developers.md#asset-delivery--wordpressorg)).
+Run `php -l` on the PHP files and the WordPress **Plugin Check (PCP)** tool before shipping. Persona assets are bundled locally; verify the built ZIP has no missing runtime requests (see [Developers](developers.md#asset-delivery--wordpressorg)).
 
 
 ## Identity regression checks
@@ -57,3 +57,16 @@ npx wp-env run cli wp eval-file wp-content/plugins/wordpress-persona/tools/test-
 ```
 
 The PHP check temporarily configures a synthetic HTTPS issuer and test user, mocks all registration HTTP calls, verifies JWT signatures using public JWKS parameters, checks nonce/login/mode gates, rotation, email opt-out, scoped settings saves, and user-partitioned persistence, then restores options and deletes its test user. It never sends a fixture token or credential to a live Runtype account. The Node check covers in-memory caching, concurrent refresh, malformed/failed responses, explicit fallback, and both frontend mount paths. End-user attribution and rejection by Runtype still require the HTTPS staging checks described in [Developers](developers.md#verified-wordpress-identity-in-runtype-mode).
+
+## Persona v5 regression checks
+
+```bash
+php tools/test-v5-config.php
+node tools/test-v5-rendering.js
+node tools/vendor-persona.mjs --check
+npm run dist
+```
+
+These cover the shared v5 config, customization filters, saved settings, native composer options, preview updates, responsive history opening, and the packaged runtime dependency graph. Also verify actual rendering and streaming in WordPress: launcher, inline embed, full-screen Assistant Page, and both admin previews, including narrow screens and light/dark themes.
+
+For reproducible captures of the four repository screenshots, see [the screenshot fixture instructions](../tools/screenshots.md). Use a disposable local site.

@@ -849,10 +849,18 @@
 			config.layout.header.showClearChat = false;
 			window.addEventListener('persona:chat-ready', function (event) {
 				var handle = event.detail;
-				if (handle && typeof handle.showHistory === 'function') {
+				var feature = config.features.history;
+				var data = window.PersonaAssistantData || {};
+				var mount = document.querySelector(data.target || '#persona-assistant-root');
+				// Persona 4.32.2 resolves rail/auto into a conversation-replacing
+				// panel below 720px. Measure the mount (also narrow admin frames),
+				// not the viewport, before requesting the initial desktop rail.
+				var width = mount ? (mount.getBoundingClientRect().width || mount.clientWidth) : 0;
+				var rail = feature.presentation === 'rail' ||
+					(feature.presentation === 'auto' && !(config.launcher && config.launcher.enabled));
+				if (feature.enabled !== false && rail && width >= 720 && handle && typeof handle.showHistory === 'function') {
 					Promise.resolve(handle.showHistory()).catch(function () {
-						// The widget falls back to the panel presentation below its
-						// 720px minimum; leaving history closed there is correct.
+						// History/provider initialization may fail; keep conversation usable.
 					});
 				}
 			}, { once: true });

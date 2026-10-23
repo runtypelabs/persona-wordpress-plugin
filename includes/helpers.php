@@ -352,10 +352,9 @@ function persona_assistant_corner_components( $xl, $lg, $md, $xxl ) {
  * Dark-mode Persona theme derived from the accent color.
  *
  * Always emitted alongside the light theme so `colorScheme: 'auto'` (and an
- * explicit 'dark') has a legible dark palette. Modeled on the widget's
- * darkIndigo theme reference: slate grays for dark surfaces, semantic tokens
- * redirected for inverted text/surface, and a brand primary lightened so it
- * stays readable on the dark container.
+ * explicit 'dark') preserves the site's accent. Persona owns the neutral
+ * surfaces and semantic contrast for the selected defaults version; only the
+ * brand scale is lightened for dark surfaces here.
  *
  * @param string $hex Accent color (#rrggbb).
  * @return array<string,mixed> DeepPartial<PersonaTheme> token overrides.
@@ -382,30 +381,6 @@ function persona_assistant_widget_dark_theme( $hex ) {
 					'900' => persona_assistant_mix_hex( $hex, '#000000', 0.5 ),
 					'950' => persona_assistant_mix_hex( $hex, '#000000', 0.65 ),
 				),
-				'gray'    => array(
-					'50'  => '#f1f5f9',
-					'100' => '#1e293b',
-					'200' => '#334155',
-					'300' => '#cbd5e1',
-					'400' => '#94a3b8',
-					'500' => '#94a3b8',
-					'600' => '#475569',
-					'700' => '#334155',
-					'800' => '#1e293b',
-					'900' => '#0f172a',
-					'950' => '#020617',
-				),
-			),
-		),
-		'semantic' => array(
-			'colors' => array(
-				'surface'     => 'palette.colors.gray.900',
-				'background'   => 'palette.colors.gray.900',
-				'container'    => 'palette.colors.gray.100',
-				'text'        => 'palette.colors.gray.50',
-				'textMuted'    => 'palette.colors.gray.500',
-				'textInverse'  => 'palette.colors.gray.900',
-				'border'       => 'palette.colors.gray.200',
 			),
 		),
 	);
@@ -674,6 +649,7 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 				'scrollbar' => in_array( (string) $settings['scrollbar_policy'], array( 'on-scroll', 'auto', 'hidden' ), true ) ? (string) $settings['scrollbar_policy'] : 'on-scroll',
 			),
 		),
+		'future'          => array( 'v5Defaults' => true ),
 		'colorScheme'     => in_array( (string) $settings['theme_mode'], array( 'light', 'dark', 'auto' ), true ) ? (string) $settings['theme_mode'] : 'light',
 		'theme'           => persona_assistant_widget_theme( (string) $settings['theme_color'], (string) $settings['corner_style'] ),
 		'darkTheme'       => persona_assistant_widget_dark_theme( (string) $settings['theme_color'] ),
@@ -716,15 +692,6 @@ function persona_assistant_widget_config( $context, $settings = null, $is_previe
 }
 
 /**
- * Return the serializable assistant-page appearance consumed by the browser
- * decorator. Keeping this separate from the widget config lets JavaScript add
- * function-valued Persona plugins (such as renderComposer), which cannot pass
- * through wp_localize_script's JSON encoding.
- *
- * @param array<string,mixed>|null $settings Optional settings array.
- * @return array<string,mixed>
- */
-/**
  * Canonical assistant-page style preset.
  *
  * The four original presets collapsed into two real styles — each pair
@@ -744,6 +711,12 @@ function persona_assistant_normalize_assistant_preset( $preset ) {
 	return in_array( $preset, array( 'branded', 'chatgpt' ), true ) ? $preset : 'branded';
 }
 
+/**
+ * Return saved assistant-page appearance for the shared native layout decorator.
+ *
+ * @param array<string,mixed>|null $settings Optional settings array.
+ * @return array<string,mixed>
+ */
 function persona_assistant_page_appearance( $settings = null ) {
 	$settings = is_array( $settings ) ? $settings : persona_assistant_get_settings();
 
@@ -776,7 +749,6 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 		$background = '#212121';
 		$surface    = '#212121';
 		$container  = '#212121';
-		$input      = '#2f2f2f';
 		$text       = '#ececec';
 		$muted      = '#b4b4b4';
 		$border     = '#424242';
@@ -785,7 +757,6 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 		$background = '#ffffff';
 		$surface    = '#ffffff';
 		$container  = '#ffffff';
-		$input      = '#f4f4f4';
 		$text       = '#0d0d0d';
 		$muted      = '#6b6b6b';
 		$border     = '#dedede';
@@ -824,23 +795,6 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 				'subtitleForeground'   => $muted,
 				'actionIconForeground' => $muted,
 			),
-			'input'  => array(
-				'background'   => $input,
-				'foreground'   => $text,
-				'placeholder'  => $muted,
-				'border'       => $border,
-				'borderRadius' => '1.5rem',
-				'focus'        => array(
-					'border' => $border,
-					'ring'   => 'transparent',
-				),
-			),
-			'introCard' => array(
-				'background'   => 'transparent',
-				'border'       => 'transparent',
-				'shadow'       => 'none',
-				'borderRadius' => '0',
-			),
 			'message' => array(
 				'user'      => array(
 					'background'   => $user,
@@ -857,14 +811,6 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 					'shadow'       => 'none',
 				),
 			),
-			'scrollToBottom' => array(
-				'background'   => $surface,
-				'foreground'   => $text,
-				'border'       => $border,
-				'borderRadius' => '9999px',
-				'size'         => '40px',
-				'shadow'       => $dark ? '0 4px 14px rgba(0,0,0,.35)' : '0 4px 14px rgba(0,0,0,.12)',
-			),
 		),
 	);
 }
@@ -872,8 +818,8 @@ function persona_assistant_neutral_assistant_theme( $dark = false ) {
 /**
  * Apply the selected full-screen assistant appearance to a Persona config.
  *
- * Function-valued render hooks are added later by assets/js/persona-layouts.js;
- * this function handles the serializable config and theme contract.
+ * Native composer layout choices are applied by assets/js/persona-layouts.js;
+ * this function handles the shared serializable config and theme contract.
  *
  * @param array<string,mixed> $config   Widget config.
  * @param array<string,mixed> $settings Plugin settings.
@@ -937,9 +883,9 @@ function persona_assistant_apply_assistant_appearance( $config, $settings ) {
 		'layout'	 => 'row-inside',
 	);
 	$config['statusIndicator'] = array(
-		// The pill composer renders this text itself. The default composer keeps
-		// Persona's normal connection status behavior.
-		'visible'        => 'pill' !== $appearance['composerStyle'],
+		// A saved disclaimer is persistent copy, even with V5's transient status default.
+		'visible'        => true,
+		'mode'           => 'always',
 		'idleText'       => (string) $appearance['disclaimer'],
 		'connectedText'  => (string) $appearance['disclaimer'],
 		'connectingText' => __( 'Connecting…', 'persona-assistant' ),
@@ -976,16 +922,6 @@ function persona_assistant_apply_assistant_appearance( $config, $settings ) {
 	if ( 'chatgpt' === persona_assistant_normalize_assistant_preset( (string) $appearance['preset'] ) ) {
 		$config['theme'] = array_replace_recursive( $config['theme'], persona_assistant_neutral_assistant_theme( false ) );
 		$config['darkTheme'] = array_replace_recursive( $config['darkTheme'], persona_assistant_neutral_assistant_theme( true ) );
-	} else {
-		// Branded preset: the brand color belongs on accents (send button,
-		// links, focus rings — all driven by the primary palette), not on a
-		// full-width bar over the transcript. Neutralize ONLY the header
-		// tokens; everything else keeps the branded theme. Set on BOTH themes:
-		// dark mode resolves its own component tokens.
-		$neutral_light = persona_assistant_neutral_assistant_theme( false );
-		$neutral_dark  = persona_assistant_neutral_assistant_theme( true );
-		$config['theme']['components']['header']     = $neutral_light['components']['header'];
-		$config['darkTheme']['components']['header'] = $neutral_dark['components']['header'];
 	}
 
 	// "Branded" header style: identity moves into the history rail. Seed the

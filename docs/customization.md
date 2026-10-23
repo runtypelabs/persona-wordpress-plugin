@@ -15,6 +15,8 @@ The permanent administration uses focused query-based workspaces instead of a lo
 
 Each workspace submits a `_persona_assistant_scope` marker. The sanitizer begins with the saved option and updates only keys owned by that workspace, so a Launcher save cannot reset Assistant Page or Connection settings.
 
+Persona’s v5 appearance is enabled by default on every chat surface and live preview through `future.v5Defaults`. Saved branding, copy, placement, and feature choices remain in effect.
+
 The widget config is composed once, server-side, by **`persona_assistant_widget_config( $context, $settings = null, $is_preview = false )`** (`includes/helpers.php`, `$context` = `'frontend'` | `'preview'` | `'fullscreen'`): the single source of truth the front end (`Persona_Assistant_Frontend::build_data()`), assistant Page, and admin previews consume. It returns the nested installer `config` (launcher, welcome, suggestions, copy, theme, `darkTheme`, `colorScheme`, features); the theme is derived from the accent color + corner style by `persona_assistant_widget_theme()`, and a dark palette by `persona_assistant_widget_dark_theme()`.
 
 ## Persona capability mapping

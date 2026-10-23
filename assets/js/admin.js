@@ -67,6 +67,8 @@
 	// widget controller handle; `handle.update()` re-applies theme and copy in
 	// place, so appearance edits preview without saving.
 	var previewHandle = null;
+	var previousPreviewConfig = (cfg.preview && cfg.preview.config && cfg.preview.config.config) || {};
+	var previousPreviewCorner = (cfg.preview && cfg.preview.formDefaults && cfg.preview.formDefaults.corner) || 'rounded';
 	var assistantPreviewFrame = document.getElementById('persona-assistant-preview-frame');
 	var assistantPreviewReady = false;
 	window.addEventListener('persona:chat-ready', function (event) {
@@ -325,8 +327,8 @@
 		};
 	}
 
-	// Mirrors persona_assistant_widget_dark_theme(): slate grays + inverted semantic
-	// tokens + a brand primary lightened so it reads on the dark container.
+	// Mirrors persona_assistant_widget_dark_theme(): preserve the accent while
+	// the runtime supplies neutral surfaces for its selected defaults version.
 	function darkPreviewTheme(hex) {
 		return {
 			palette: {
@@ -343,31 +345,7 @@
 						800: mixHex(hex, '#000000', 0.3),
 						900: mixHex(hex, '#000000', 0.5),
 						950: mixHex(hex, '#000000', 0.65)
-					},
-					gray: {
-						50: '#f1f5f9',
-						100: '#1e293b',
-						200: '#334155',
-						300: '#cbd5e1',
-						400: '#94a3b8',
-						500: '#94a3b8',
-						600: '#475569',
-						700: '#334155',
-						800: '#1e293b',
-						900: '#0f172a',
-						950: '#020617'
 					}
-				}
-			},
-			semantic: {
-				colors: {
-					surface: 'palette.colors.gray.900',
-					background: 'palette.colors.gray.900',
-					container: 'palette.colors.gray.100',
-					text: 'palette.colors.gray.50',
-					textMuted: 'palette.colors.gray.500',
-					textInverse: 'palette.colors.gray.900',
-					border: 'palette.colors.gray.200'
 				}
 			}
 		};
@@ -583,32 +561,7 @@
 				fullHeight: true,
 				title: now.headerTitle || strings.siteName || '',
 				subtitle: now.headerSubtitle || strings.defaultLauncherSubtitle || '',
-				position: now.position,
-				// Released widget builds shallow-merge `launcher` on update(),
-				// wholesale-replacing the defaulted config, which strips the
-				// transparent button chrome and rebuilds the header buttons
-				// with UA-default gray circles. Restate the visually-critical
-				// defaults (from the widget's DEFAULT_LAUNCHER_CONFIG) so the
-				// replacement is harmless. Redundant-but-safe on builds that
-				// deep-merge the launcher.
-				headerIconSize: '40px',
-				agentIconSize: '40px',
-				closeButtonSize: '32px',
-				closeButtonPaddingX: '0px',
-				closeButtonPaddingY: '0px',
-				closeButtonBackgroundColor: 'transparent',
-				clearChat: {
-					enabled: true,
-					placement: 'inline',
-					iconName: 'refresh-cw',
-					size: '32px',
-					backgroundColor: 'transparent',
-					borderColor: 'transparent',
-					paddingX: '0px',
-					paddingY: '0px',
-					showTooltip: true,
-					tooltipText: strings.clearChat || 'Clear chat'
-				}
+				position: now.position
 			};
 			launcher.teaser = now.teaserText ? {
 				text: now.teaserText,
@@ -625,6 +578,7 @@
 			}
 			try {
 				var update = {
+					future: previousPreviewConfig.future || {},
 					theme: previewTheme(now.color, now.corner),
 					darkTheme: darkPreviewTheme(now.color),
 					colorScheme: now.mode,
@@ -655,7 +609,13 @@
 					launcher: launcher,
 					attachments: { enabled: now.launcherAttachments }
 				};
-				previewHandle.update(update);
+				// Only corner tokens belong to this form. Delete their old leaves,
+				// preserving unrelated filter-authored theme and composer settings.
+				previewHandle.update(window.PersonaAssistantLayouts
+					? window.PersonaAssistantLayouts.replacementPatch(update, { theme: previewTheme(now.color, previousPreviewCorner) }, true)
+					: update);
+				previousPreviewConfig = update;
+				previousPreviewCorner = now.corner;
 			} catch (e) {
 				// Preview-only affordance: never let it break the settings page.
 			}

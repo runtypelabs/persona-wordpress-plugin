@@ -69,9 +69,8 @@
 		};
 	}
 
-	// Full-screen presets can include function-valued Persona plugins (for
-	// example the pill composer), which PHP cannot serialize into localized
-	// JSON. The layout decorator runs before the installer consumes config.
+	// Apply native full-screen layout choices before either mount path reads
+	// the config. The same decorator also serves the live page preview.
 	if (data.context === 'fullscreen' && window.PersonaAssistantLayouts) {
 		config = window.PersonaAssistantLayouts.decorateConfig(config, data.appearance || {});
 	}

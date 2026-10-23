@@ -1,6 +1,13 @@
 Persona Assistant changelog
 ======================
 
+Unreleased
+----------
+* Updated bundled Persona to 4.32.2 with v5 defaults enabled across launcher, embeds, Assistant Pages, and previews.
+* Adopted the native Persona composer while preserving saved appearance choices, attachments, voice controls, and disclaimer copy.
+* Kept mobile Assistant Pages on the conversation at startup and corrected live-preview theme, icon, and rail-brand resets.
+* Validated all locally bundled runtime dependencies during packaging and refreshed the four repository screenshots.
+
 1.2.0
 -----
 * Added opt-in verified WordPress account identity for Runtype chats and conversation history using short-lived RS256 tokens and public JWKS keys.
