@@ -13,6 +13,9 @@ if [ -z "$VERSION" ]; then
 	exit 1
 fi
 
+# Verify the recursive browser asset graph and published-file checksums before staging.
+node tools/vendor-persona.mjs --check
+
 STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 
@@ -34,46 +37,11 @@ rsync -a \
 	--exclude='*.zip' \
 	--exclude=.DS_Store \
 	--exclude='/*-screenshot.*' \
-	--exclude='/assets/vendor/persona/index.js' \
-	--exclude='/assets/vendor/persona/theme-editor.js' \
-	--exclude='/assets/vendor/persona/theme-editor-preview.js' \
-	--exclude='/assets/vendor/persona/theme-reference.js' \
-	--exclude='/assets/vendor/persona/codegen.js' \
-	--exclude='/assets/vendor/persona/smart-dom-reader.js' \
-	--exclude='/assets/vendor/persona/plugin-kit.js' \
-	--exclude='/assets/vendor/persona/testing.js' \
-	--exclude='/assets/vendor/persona/voice-worklet-player.js' \
-	--exclude='/assets/vendor/persona/chunk-*.js' \
-	--exclude='/assets/vendor/persona/*-[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9].js' \
 	./ "$STAGE/persona-assistant/"
 
-# The Persona excludes above drop roughly 1.4 MB of the bundled npm dist/ that
-# no browser ever requests: the ESM build (index.js) with its hashed chunks, and
-# the theme-editor/codegen tooling. Only the IIFE path is reachable: the plugin
-# enqueues install.global.js (or, on the full-screen assistant, index.global.js
-# and widget.css directly); the installer loads widget.css, launcher.global.js,
-# and index.global.js, and index.global.js resolves its lazy siblings by
-# rewriting its own URL (markdown-parsers.js, context-mentions.js,
-# context-mentions-inline.js, runtype-tts.js, webmcp-polyfill.js,
-# history-view.js, event-stream-view.js).
-#
-# Re-derive the list when the bundled Persona version changes. The guard below
-# is the safety net: a missing reachable asset is a runtime 404, not a build
-# error, so fail loudly here instead of shipping a broken widget.
-VENDOR="$STAGE/persona-assistant/assets/vendor/persona"
-MISSING=""
-for asset in install.global.js widget.css launcher.global.js index.global.js \
-	markdown-parsers.js context-mentions.js context-mentions-inline.js \
-	runtype-tts.js webmcp-polyfill.js history-view.js event-stream-view.js \
-	approval-ui.js artifacts-ui.js animations-extra.js forms-ui.js icons-extra.js \
-	session-reconnect.js voice-runtime.js webmcp-runtime.js \
-	client-history.js client-stream.js history-shell.js session-actions.js ui-extras.js; do
-	[ -f "$VENDOR/$asset" ] || MISSING="$MISSING $asset"
-done
-if [ -n "$MISSING" ]; then
-	echo "Build aborted: excluded a Persona asset the browser loads at runtime:$MISSING" >&2
-	exit 1
-fi
+# Vendor contents already contain only the reachable IIFE/browser runtime. Do not
+# exclude hashed chunks: lazy modules can import them transitively.
+node tools/vendor-persona.mjs --check "$STAGE/persona-assistant/assets/vendor/persona"
 
 ZIP="$PWD/dist/persona-assistant-$VERSION.zip"
 rm -f "$ZIP"

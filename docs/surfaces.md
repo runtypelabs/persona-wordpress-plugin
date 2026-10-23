@@ -23,6 +23,6 @@ array(
 )
 ```
 
-`persona_assistant_apply_assistant_appearance()` maps the stored controls to Persona's documented layout, theme, feature, status, and scroll config. The optional pill composer is implemented as a Persona `renderComposer` plugin in `assets/js/persona-layouts.js`, so it still uses the installer's native `sendMessage()`, attachment picker, recording API, and disabled state instead of replacing the chat runtime.
+`persona_assistant_apply_assistant_appearance()` maps the stored controls to Persona's documented layout, theme, feature, status, and scroll config. Both composer choices use Persona’s native v5 composer, including its attachment picker, voice controls, streaming/stop behavior, and draft handling. The saved Pill choice explicitly selects the single-row layout; Default follows Persona’s v5 defaults. The configured disclaimer uses the native persistent status line.
 
 This surface is independent of `placement_mode`: it can coexist with the site-wide launcher or manual blocks/shortcodes. The site-wide footer instance is suppressed on the assistant Page so only the full-screen mount renders. Pages created by the plugin carry `_persona_assistant_managed_assistant_page` metadata for identification, but are intentionally preserved on disable, deactivation, and uninstall.

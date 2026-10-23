@@ -30,6 +30,10 @@ The WordPress-AI rate limit is filterable via `persona_assistant_wp_ai_rate_limi
 
 The Persona runtime is shipped under `assets/vendor/persona/`, including its MIT license, at the exact version pinned by the `PERSONA_ASSISTANT_PERSONA_VERSION` constant. The widget discovers all of its dynamic chunks from that same local directory (so the files must keep their canonical names and stay colocated), and the plugin does not depend on a JavaScript CDN. `PERSONA_ASSISTANT_INSTALL_URL` remains available for reviewed self-hosted overrides.
 
+The bundled version is currently Persona **4.32.2**. The shared widget config enables `future.v5Defaults: true` for launcher, embed, full-screen, and preview contexts; explicit site settings and the `persona_assistant_widget_config` filter still take precedence.
+
+To upgrade the runtime, download the exact published npm package, update `PERSONA_ASSISTANT_PERSONA_VERSION`, then run `node tools/vendor-persona.mjs --from /path/to/unpacked/package`. This copies the browser entry points and their recursively referenced assets, and records file checksums in `assets/vendor/persona/manifest.json`. Run `node tools/vendor-persona.mjs --check` to validate the checkout. `npm run dist` also validates the staged plugin so missing lazy modules or mismatched bytes fail the build.
+
 
 ## Verified WordPress identity in Runtype mode
 

@@ -125,10 +125,14 @@ Deleting the plugin from the Plugins screen runs its uninstall routine, which **
 
 1. Configure AI
 2. Theme Brand & Copy
-3. Pill Launcher Example
+3. Floating Launcher Example
 4. Full-screen Assistant Example
 
 == Changelog ==
+
+= Unreleased =
+* Updated bundled Persona to 4.32.2 and enabled its v5 appearance across chat surfaces and previews.
+* Adopted the native Persona composer and refreshed the repository screenshots.
 
 = 1.2.0 =
 * Added opt-in verified WordPress account identity for Runtype chats and history, with email sharing enabled by default and a separate opt-out.

@@ -15,6 +15,7 @@
 	var pending = null;
 	var timer = null;
 	var requestId = 0;
+	var previousConfig = (window.PersonaAssistantData || {}).config || {};
 
 	try {
 		if (document.referrer) {
@@ -52,45 +53,26 @@
 		}
 		return config;
 	}
-
-	/**
-	 * Persona's handle.update() deep-merges theme patches, so a theme key set
-	 * by an earlier preview round-trip (the ChatGPT preset's neutral
-	 * `semantic.colors`) would survive a later config that no longer defines
-	 * it, rendering a hybrid of both presets. The server config is the FULL
-	 * theme opinion, and an explicitly-undefined key is a delete in Persona's
-	 * patch merge — so reset every contested subtree the config leaves absent.
-	 */
-	function resetAbsentThemeKeys(config) {
-		['theme', 'darkTheme'].forEach(function (key) {
-			var theme = config[key] = config[key] || {};
-			var semantic = theme.semantic = theme.semantic || {};
-			if (!('colors' in semantic)) {
-				semantic.colors = undefined;
-			}
-			if (!('palette' in theme)) {
-				theme.palette = undefined;
-			}
-			if (!('components' in theme)) {
-				theme.components = undefined;
-			}
-		});
-		return config;
-	}
-
 	function apply(payload) {
 		pending = payload;
 		if (!handle || !payload || !payload.config) {
 			return;
 		}
 
-		var config = resetAbsentThemeKeys(matchSiteFont(payload.config));
+		var config = payload.config;
+		if ((window.PersonaAssistantData || {}).matchFont !== false) {
+			config = matchSiteFont(config);
+		}
 		if (window.PersonaAssistantLayouts) {
 			config = window.PersonaAssistantLayouts.decorateConfig(config, payload.appearance || {});
 		}
 
+		var patch = window.PersonaAssistantLayouts
+			? window.PersonaAssistantLayouts.replacementPatch(config, previousConfig)
+			: config;
 		try {
-			handle.update(config);
+			handle.update(patch);
+			previousConfig = config;
 			post('persona-assistant-preview-updated');
 		} catch (e) {
 			post('persona-assistant-preview-error', { message: e && e.message ? e.message : 'Preview update failed.' });

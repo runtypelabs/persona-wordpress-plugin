@@ -17,7 +17,7 @@ includes/
   class-persona-assistant-ai.php       # built-in AI detection + invocation (isolation layer)
   helpers.php                     # options, defaults, origin, mode resolution
 assets/js/persona-bootstrap.js    # composes window.siteAgentConfig from localized data
-assets/js/persona-layouts.js      # optional Persona render hooks for page layouts
+assets/js/persona-layouts.js      # native page layout options and preview config resets
 assets/js/persona-webmcp.js       # registers page tools on document.modelContext (WebMCP)
 assets/js/admin.js                # settings UI behavior (no build step)
 assets/css/admin.css              # status-badge styling

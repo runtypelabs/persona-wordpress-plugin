@@ -123,27 +123,6 @@ body.persona-assistant-fullscreen-page {
 	min-height: 0;
 }
 
-/* Keep small timestamps legible on both branded and neutral user messages.
-   The template emits only the canonical preset classes (branded | chatgpt);
-   legacy stored values are normalized before the body class is stamped. */
-body.persona-assistant-preset-branded .persona-assistant-fullscreen-shell
-	[data-persona-theme-zone="user-message"]
-	.persona-text-persona-muted,
-body.persona-assistant-preset-branded .persona-assistant-fullscreen-shell
-	[data-persona-theme-zone="user-message"]
-	.persona-timestamp-inline {
-	color: #fff !important;
-}
-
-body.persona-assistant-preset-chatgpt .persona-assistant-fullscreen-shell
-	[data-persona-theme-zone="user-message"]
-	.persona-text-persona-muted,
-body.persona-assistant-preset-chatgpt .persona-assistant-fullscreen-shell
-	[data-persona-theme-zone="user-message"]
-	.persona-timestamp-inline {
-	color: #5d626b !important;
-}
-
 .persona-assistant-fullscreen-unavailable {
 	box-sizing: border-box;
 	display: grid;
